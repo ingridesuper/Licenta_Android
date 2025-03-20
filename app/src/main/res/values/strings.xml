@@ -1,3 +1,7 @@
 <resources>
-    <string name="app_name">LicentaAgain</string>
+    <string name="app_name">Conectat la București</string>
+    <string name="name">Prenume</string>
+    <string name="surname">Nume</string>
+    <string name="email">Email</string>
+    <string name="password">Parolă</string>
 </resources>

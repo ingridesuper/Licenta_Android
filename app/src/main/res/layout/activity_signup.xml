@@ -31,7 +31,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:startIconContentDescription="Enter your email"
         app:endIconMode="clear_text"
-        android:hint="Email"
+        android:hint="@string/email"
         app:errorEnabled="true"
         app:cursorColor="@color/primaryPurple">
 
@@ -50,7 +50,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:startIconContentDescription="Enter your password"
-        android:hint="Parola"
+        android:hint="@string/password"
         app:cursorColor="@color/primaryPurple"
         app:endIconMode="password_toggle">
 
@@ -77,7 +77,7 @@
             android:layout_width="140dp"
             android:layout_height="56dp"
             android:layout_marginRight="20dp"
-            android:hint="Nume"
+            android:hint="@string/surname"
             app:cursorColor="@color/primaryPurple"
             app:startIconContentDescription="Enter your name">
 
@@ -92,7 +92,7 @@
             android:id="@+id/tfPrenume"
             android:layout_width="140dp"
             android:layout_height="56dp"
-            android:hint="Prenume"
+            android:hint="@string/name"
             app:cursorColor="@color/primaryPurple"
             app:startIconContentDescription="Enter your ...">
 
