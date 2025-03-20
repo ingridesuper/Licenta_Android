@@ -1,0 +1,11 @@
+<resources>
+    <!-- Theme cu ActionBar -->
+    <style name="ThemeWithActionBar" parent="Theme.Material3.DayNight">
+        <item name="colorPrimary">@color/primaryPurple</item>
+    </style>
+
+    <!-- Theme fara ActionBar -->
+    <style name="ThemeWithoutActionBar" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/primaryPurple</item>
+    </style>
+</resources>
