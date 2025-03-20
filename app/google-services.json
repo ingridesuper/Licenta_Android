@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "739276874828",
+    "project_id": "licentaurbanapp",
+    "storage_bucket": "licentaurbanapp.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:739276874828:android:1c57feb6488dc56df000e9",
+        "android_client_info": {
+          "package_name": "com.example.licentaagain"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCAOZLqFJuZ44uqPUwjP785SnF9Z-iIHz0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
