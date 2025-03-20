@@ -3,16 +3,22 @@ package com.example.licentaagain.models;
 import java.io.Serializable;
 
 public class User implements Serializable {
+    private String uid;
     private String name;
     private String surname;
     private String email;
-    private String password;
+    private int sector;
 
-    public User(String email, String password, String name, String surname) {
+    public User(String uid, String email, String name, String surname, int sector) {
+        this.uid=uid;
         this.email = email;
-        this.password = password;
         this.name = name;
         this.surname = surname;
+        this.sector=sector;
+    }
+
+    public String getUid() {
+        return uid;
     }
 
     public String getEmail() {
@@ -31,14 +37,6 @@ public class User implements Serializable {
         this.name = name;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
     public String getSurname() {
         return surname;
     }
@@ -53,7 +51,6 @@ public class User implements Serializable {
                 "email='" + email + '\'' +
                 ", name='" + name + '\'' +
                 ", surname='" + surname + '\'' +
-                ", password='" + password + '\'' +
                 '}';
     }
 }
