@@ -22,8 +22,8 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-public class MainActivity extends AppCompatActivity {
-    TextInputEditText etEmail, etPassword, etNume,etPrenume;
+public class LoginActivity extends AppCompatActivity {
+    TextInputEditText etEmail, etPassword;
     Button btnSignup;
     MaterialButton btnLogin;
     FirebaseAuth mAuth;
@@ -43,25 +43,30 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_login);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
 
+        initializeVariables();
+        subscribeToEvents();
+    }
+
+    private void initializeVariables(){
         mAuth=FirebaseAuth.getInstance();
+
         btnSignup=findViewById(R.id.btnSignup);
         btnLogin=findViewById(R.id.btnLogin);
         etEmail=findViewById(R.id.etEmail);
         etPassword=findViewById(R.id.etPassword);
+    }
 
-        btnSignup.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent=new Intent(getApplicationContext(), SignupActivity.class);
-                startActivity(intent);
-            }
+    private void subscribeToEvents(){
+        btnSignup.setOnClickListener(v -> {
+            Intent intent = new Intent(getApplicationContext(), SignupActivity.class);
+            startActivity(intent);
         });
 
         btnLogin.setOnClickListener(v->{
@@ -78,14 +83,11 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
-                                // Sign in success, update UI with the signed-in user's information
                                 Intent intent=new Intent(getApplicationContext(), HomePageActivity.class);
                                 startActivity(intent);
                                 finish();
                             } else {
-                                // If sign in fails, display a message to the user.
-                                Toast.makeText(MainActivity.this, "Authentication failed.",
-                                        Toast.LENGTH_SHORT).show();
+                                Toast.makeText(LoginActivity.this, "Authentication failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                             }
                         }
                     });

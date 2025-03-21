@@ -14,8 +14,6 @@ import androidx.core.view.WindowInsetsCompat;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import org.w3c.dom.Text;
-
 public class HomePageActivity extends AppCompatActivity {
     FirebaseAuth auth;
     Button btnLogout;
@@ -39,7 +37,7 @@ public class HomePageActivity extends AppCompatActivity {
 
         user=auth.getCurrentUser();
         if(user==null){
-            Intent intent=new Intent(getApplicationContext(), MainActivity.class);
+            Intent intent=new Intent(getApplicationContext(), LoginActivity.class);
             startActivity(intent);
             finish();
         }
@@ -49,7 +47,7 @@ public class HomePageActivity extends AppCompatActivity {
 
         btnLogout.setOnClickListener(v->{
             FirebaseAuth.getInstance().signOut();
-            Intent intent=new Intent(getApplicationContext(), MainActivity.class);
+            Intent intent=new Intent(getApplicationContext(), LoginActivity.class);
             startActivity(intent);
             finish();
         });

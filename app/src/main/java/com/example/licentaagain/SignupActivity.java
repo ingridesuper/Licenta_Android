@@ -27,10 +27,11 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class SignupActivity extends AppCompatActivity {
-    TextInputEditText etEmail, etPassword, etNume,etPrenume;
+    TextInputEditText etEmail, etPassword, etName, etSurname;
     MaterialButton btnSignup;
     Spinner spnSector;
     FirebaseAuth mAuth;
+    FirebaseFirestore db;
 
     @Override
     public void onStart() {
@@ -53,51 +54,56 @@ public class SignupActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        initializeVariables();
+        populateSpinner();
+        subscribeToEvents();
+    }
+
+    private void initializeVariables(){
         mAuth=FirebaseAuth.getInstance();
+        db= FirebaseFirestore.getInstance();
 
         etEmail=findViewById(R.id.etEmail);
         etPassword=findViewById(R.id.etPassword);
-        etNume=findViewById(R.id.etNume);
-        etPrenume=findViewById(R.id.etPrenume);
+        etSurname=findViewById(R.id.etSurname);
+        etName=findViewById(R.id.etName);
         btnSignup=findViewById(R.id.btnSignup);
         spnSector=findViewById(R.id.spnSector);
-
+    }
+    private void populateSpinner(){
         ArrayAdapter<Sector> arrayAdapterSpinner=new ArrayAdapter<Sector>(this, android.R.layout.simple_spinner_item, Sector.values());
         spnSector.setAdapter(arrayAdapterSpinner);
-
+    }
+    private void subscribeToEvents(){
         btnSignup.setOnClickListener(v->{
             String email=String.valueOf(etEmail.getText());
             String password=String.valueOf(etPassword.getText());
-            String nume=String.valueOf(etNume.getText());
-            String prenume=String.valueOf(etPrenume.getText());
+            String surname=String.valueOf(etSurname.getText());
+            String name=String.valueOf(etName.getText());
             Sector selectedSector = (Sector) spnSector.getSelectedItem();
 
-
-            if(TextUtils.isEmpty(email) || TextUtils.isEmpty(password) || TextUtils.isEmpty(nume) || TextUtils.isEmpty(prenume)){
+            if(TextUtils.isEmpty(email) || TextUtils.isEmpty(password) || TextUtils.isEmpty(name) || TextUtils.isEmpty(surname)){
                 Toast.makeText(this, "Please complete all fields", Toast.LENGTH_SHORT).show();
                 return;
             }
-
-            FirebaseFirestore db = FirebaseFirestore.getInstance();
 
             mAuth.createUserWithEmailAndPassword(email, password)
                     .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
-                                // Sign in success, update UI with the signed-in user's information
                                 FirebaseUser firebaseUser = mAuth.getCurrentUser();
                                 if (firebaseUser != null) {
                                     String uid = firebaseUser.getUid();
-                                    User user = new User(uid, email, nume, prenume, selectedSector.getNumar());
-                                    // Save user to Firestore
+                                    User user = new User(uid, email, name, surname, selectedSector.getNumar());
                                     db.collection("users").document(uid)
                                             .set(user)
                                             .addOnSuccessListener(aVoid -> {
                                                 Toast.makeText(SignupActivity.this, "Account created and data saved.", Toast.LENGTH_SHORT).show();
-//                                                Intent intent = new Intent(getApplicationContext(), HomePageActivity.class);
-//                                                startActivity(intent);
-//                                                finish();
+                                                Intent intent = new Intent(getApplicationContext(), HomePageActivity.class);
+                                                startActivity(intent);
+                                                finish();
                                             })
                                             .addOnFailureListener(e -> {
                                                 Log.e("FirestoreError", "Error adding document", e);
@@ -105,14 +111,23 @@ public class SignupActivity extends AppCompatActivity {
                                             });
                                 }
                             } else {
-                                // If sign in fails, display a message to the user.
                                 Exception e = task.getException();
-                                Log.e("SignupError", "Failed to create user", e);
-                                Toast.makeText(SignupActivity.this, "Signing up failed.",
-                                        Toast.LENGTH_SHORT).show();
+                                handleSignupException(e);
+
                             }
                         }
                     });
+
         });
+    }
+    private void handleSignupException(Exception e){
+        if (e instanceof com.google.firebase.auth.FirebaseAuthUserCollisionException) {
+            Toast.makeText(SignupActivity.this, "This email is already in use.", Toast.LENGTH_SHORT).show();
+        } else if (e instanceof com.google.firebase.auth.FirebaseAuthWeakPasswordException) {
+            Toast.makeText(SignupActivity.this, "Weak password. Please use at least 6 characters.", Toast.LENGTH_SHORT).show();
+        } else {
+            Log.e("SignupError", "Failed to create user", e);
+            Toast.makeText(SignupActivity.this, "Signing up failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
     }
 }
