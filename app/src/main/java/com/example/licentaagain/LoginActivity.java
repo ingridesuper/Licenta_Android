@@ -26,6 +26,7 @@ import androidx.credentials.GetCredentialRequest;
 import androidx.credentials.GetCredentialResponse;
 import androidx.credentials.exceptions.GetCredentialException;
 
+import com.example.licentaagain.models.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption;
@@ -38,12 +39,15 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class LoginActivity extends AppCompatActivity {
     TextInputEditText etEmail, etPassword;
     Button btnSignup, btnGoogleSignin;
     MaterialButton btnLogin;
     FirebaseAuth mAuth;
+    FirebaseFirestore db;
+
 
     @Override
     public void onStart() {
@@ -73,6 +77,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private void initializeVariables(){
         mAuth=FirebaseAuth.getInstance();
+        db= FirebaseFirestore.getInstance();
 
         btnSignup=findViewById(R.id.btnSignup);
         btnLogin=findViewById(R.id.btnLogin);
@@ -85,6 +90,7 @@ public class LoginActivity extends AppCompatActivity {
         btnSignup.setOnClickListener(v -> {
             Intent intent = new Intent(getApplicationContext(), SignupActivity.class);
             startActivity(intent);
+            finish();
         });
 
         btnLogin.setOnClickListener(v->{
@@ -187,6 +193,13 @@ public class LoginActivity extends AppCompatActivity {
                         //updateUI(user);
                         Log.i("user", user.getEmail()+" "+user.getDisplayName());
                         Toast.makeText(this, "Succes", Toast.LENGTH_SHORT).show();
+                        boolean isNewUser = task.getResult().getAdditionalUserInfo().isNewUser();
+                        if (isNewUser) { //verific pt ca altfel it is overwritten si asta nuuu ne dorim
+                            Log.i("count logare", "prima logare" );
+                            addGoogleUserFirestoreDB(user);
+                        } else {
+                            Log.i("count logare", "nu e prima logare");
+                        }
                         Intent intent=new Intent(getApplicationContext(), HomePageActivity.class);
                         startActivity(intent);
                         finish();
@@ -199,4 +212,29 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 });
     }
+
+
+    private void addGoogleUserFirestoreDB(FirebaseUser firebaseUser){
+        String uid = firebaseUser.getUid();
+        User user=new User(uid, firebaseUser.getEmail());
+        db.collection("users").document(uid)
+                .set(user)
+                .addOnSuccessListener(aVoid -> {
+                    Intent intent = new Intent(getApplicationContext(), HomePageActivity.class);
+                    startActivity(intent);
+                    finish();
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("FirestoreError", "Error adding document", e);
+                    Toast.makeText(this, "Failed to save user data.", Toast.LENGTH_SHORT).show();
+                });
+    }
 }
+
+
+
+/*
+* to do
+* DONE adaugare BD userul de pe mail
+* sign up google (acelasi cod practic)
+* */

@@ -9,12 +9,21 @@ public class User implements Serializable {
     private String email;
     private int sector; //nu l-am pus for now de type sector pt ca firestore nu suporta enums
 
+    //user for default sign up
     public User(String uid, String email, String name, String surname, int sector) {
         this.uid=uid;
         this.email = email;
         this.name = name;
         this.surname = surname;
         this.sector=sector;
+    }
+
+    //used for google signup
+    public User(String uid, String email){
+        this.uid=uid;
+        this.email=email;
+        this.name=name;
+        this.surname=surname;
     }
 
     public String getUid() {
