@@ -6,15 +6,20 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.android.gms.maps.GoogleMap;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.OnMapReadyCallback;
 
-public class HomePageActivity extends AppCompatActivity {
+
+public class HomePageActivity extends AppCompatActivity /*implements OnMapReadyCallback*/ {
     FirebaseAuth auth;
     Button btnLogout;
     TextView tvWelcome;
@@ -51,5 +56,14 @@ public class HomePageActivity extends AppCompatActivity {
             startActivity(intent);
             finish();
         });
+
+//        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.maps);
+//        mapFragment.getMapAsync(this);
+
     }
+
+//    @Override
+//    public void onMapReady(@NonNull GoogleMap googleMap) {
+//
+//    }
 }

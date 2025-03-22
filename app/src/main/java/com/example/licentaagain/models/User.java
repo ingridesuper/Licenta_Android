@@ -7,7 +7,7 @@ public class User implements Serializable {
     private String name;
     private String surname;
     private String email;
-    private int sector;
+    private int sector; //nu l-am pus for now de type sector pt ca firestore nu suporta enums
 
     public User(String uid, String email, String name, String surname, int sector) {
         this.uid=uid;
