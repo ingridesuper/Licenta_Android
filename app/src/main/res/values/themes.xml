@@ -7,5 +7,11 @@
     <!-- Theme fara ActionBar -->
     <style name="ThemeWithoutActionBar" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="colorPrimary">@color/primaryPurple</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorSurface">@color/lightYellow</item> <!-- surfaces of components, such as cards, sheets, and menus  -->
+
+        <!--
+        <item name="android:fontFamily">@font/manrope_semibold</item>
+        -->
     </style>
 </resources>
