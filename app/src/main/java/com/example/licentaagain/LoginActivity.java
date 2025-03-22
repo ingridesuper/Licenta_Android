@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.os.CancellationSignal;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -29,7 +28,6 @@ import androidx.credentials.exceptions.GetCredentialException;
 import com.example.licentaagain.models.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.libraries.identity.googleid.GetGoogleIdOption;
 import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption;
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential;
 import com.google.android.material.button.MaterialButton;
@@ -54,9 +52,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onStart();
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if(currentUser != null){
-            Intent intent=new Intent(getApplicationContext(), HomePageActivity.class);
-            startActivity(intent);
-            finish();
+            goToHomePage();
         }
     }
 
@@ -107,9 +103,7 @@ public class LoginActivity extends AppCompatActivity {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
-                                Intent intent=new Intent(getApplicationContext(), HomePageActivity.class);
-                                startActivity(intent);
-                                finish();
+                                goToHomePage();
                             } else {
                                 Toast.makeText(LoginActivity.this, "Authentication failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                             }
@@ -181,7 +175,6 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-
     private void firebaseAuthWithGoogle(String idToken) {
         AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
         mAuth.signInWithCredential(credential)
@@ -196,13 +189,14 @@ public class LoginActivity extends AppCompatActivity {
                         boolean isNewUser = task.getResult().getAdditionalUserInfo().isNewUser();
                         if (isNewUser) { //verific pt ca altfel it is overwritten si asta nuuu ne dorim
                             Log.i("count logare", "prima logare" );
-                            addGoogleUserFirestoreDB(user);
+                            String uid=user.getUid();
+                            User newUser=new User(uid, user.getEmail());
+                            addUserToFirestore(uid, newUser);
+
                         } else {
                             Log.i("count logare", "nu e prima logare");
                         }
-                        Intent intent=new Intent(getApplicationContext(), HomePageActivity.class);
-                        startActivity(intent);
-                        finish();
+                        goToHomePage();
 
                     } else {
                         // If sign in fails, display a message to the user
@@ -213,16 +207,17 @@ public class LoginActivity extends AppCompatActivity {
                 });
     }
 
+    private void goToHomePage(){
+        Intent intent=new Intent(getApplicationContext(), HomePageActivity.class);
+        startActivity(intent);
+        finish();
+    }
 
-    private void addGoogleUserFirestoreDB(FirebaseUser firebaseUser){
-        String uid = firebaseUser.getUid();
-        User user=new User(uid, firebaseUser.getEmail());
+    private void addUserToFirestore(String uid, User user) {
         db.collection("users").document(uid)
                 .set(user)
                 .addOnSuccessListener(aVoid -> {
-                    Intent intent = new Intent(getApplicationContext(), HomePageActivity.class);
-                    startActivity(intent);
-                    finish();
+                    goToHomePage();
                 })
                 .addOnFailureListener(e -> {
                     Log.e("FirestoreError", "Error adding document", e);
@@ -230,11 +225,3 @@ public class LoginActivity extends AppCompatActivity {
                 });
     }
 }
-
-
-
-/*
-* to do
-* DONE adaugare BD userul de pe mail
-* sign up google (acelasi cod practic)
-* */
