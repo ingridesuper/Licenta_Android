@@ -4,5 +4,5 @@
     <string name="surname">Nume</string>
     <string name="email">Email</string>
     <string name="password">Parolă</string>
-    <string name="default_web_client_id">739276874828-g6c7cvvmcgm8a7jn9oek57ejcg6tigem.apps.googleusercontent.com</string>
+    <string name="default_web_client_id">739276874828-g6c7cvvmcgm8a7jn9oek57ejcg6tigem.apps.googleusercontent.com</string> <!--this needs to be the web one! not the android one-->
 </resources>

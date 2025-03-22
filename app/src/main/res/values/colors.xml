@@ -4,4 +4,5 @@
     <color name="white">#FFFFFFFF</color>
     <color name="primaryPurple">#816CF3</color>
     <color name="beige">#EFEFEF</color>
+    <color name="darkGray">#615E5E</color>
 </resources>

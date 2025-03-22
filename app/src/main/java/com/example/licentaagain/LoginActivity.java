@@ -1,9 +1,11 @@
 package com.example.licentaagain;
 
+import static android.content.ContentValues.TAG;
 import static com.google.android.libraries.identity.googleid.GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.CancellationSignal;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -17,12 +19,17 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.credentials.Credential;
+import androidx.credentials.CredentialManager;
+import androidx.credentials.CredentialManagerCallback;
 import androidx.credentials.CustomCredential;
 import androidx.credentials.GetCredentialRequest;
+import androidx.credentials.GetCredentialResponse;
+import androidx.credentials.exceptions.GetCredentialException;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption;
+import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption;
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
@@ -69,7 +76,7 @@ public class LoginActivity extends AppCompatActivity {
 
         btnSignup=findViewById(R.id.btnSignup);
         btnLogin=findViewById(R.id.btnLogin);
-        btnGoogleSignin=findViewById(R.id.btnGoogleLogin);
+        btnGoogleSignin=findViewById(R.id.btnSigninGoogle);
         etEmail=findViewById(R.id.etEmail);
         etPassword=findViewById(R.id.etPassword);
     }
@@ -105,53 +112,91 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         btnGoogleSignin.setOnClickListener(v->{
-            Intent intent=new Intent(this, GoogleSigninActivity.class);
-            startActivity(intent);
-            finish();
-//            GetGoogleIdOption googleIdOption = new GetGoogleIdOption.Builder()
-//                    .setFilterByAuthorizedAccounts(false)
-//                    .setServerClientId(getBaseContext().getString(R.string.default_web_client_id))
-//                    .build();
-//
-//            GetCredentialRequest request = new GetCredentialRequest.Builder()
-//                    .addCredentialOption(googleIdOption)
-//                    .build();
+            CredentialManager credentialManager = CredentialManager.create(getApplicationContext());
+
+            GetSignInWithGoogleOption googleOption = new GetSignInWithGoogleOption.Builder(getString(R.string.default_web_client_id))
+                    .setNonce("optional random string to increase encyption security")
+                    .build();
+
+            GetCredentialRequest credentialsRequest = new GetCredentialRequest.Builder()
+                    .addCredentialOption(googleOption)
+                    .build();
+
+            CancellationSignal cancellationSignal = new CancellationSignal();
+            cancellationSignal.setOnCancelListener(new CancellationSignal.OnCancelListener() {
+                @Override
+                public void onCancel() {
+                    //handle cancellation if needed
+                }
+            });
+
+            credentialManager.getCredentialAsync(
+                    getApplicationContext(),
+                    credentialsRequest,
+                    cancellationSignal,
+                    Runnable::run,
+                    new CredentialManagerCallback<GetCredentialResponse, GetCredentialException>(){
+                        @Override
+                        public void onResult(GetCredentialResponse result) {
+                            handleGoogleSignIn(result);
+                        }
+
+                        @Override
+                        public void onError(GetCredentialException e) {
+                            //handle failure exception
+                            Log.e(TAG, "CredentialManager Error: " + e.getMessage(), e);
+                        }
+                    }
+            );
 
         });
     }
 
-//    private void handleSignIn(Credential credential) {
-//        // Check if credential is of type Google ID
-//        if (credential instanceof CustomCredential &&
-//                credential.getType().equals(TYPE_GOOGLE_ID_TOKEN_CREDENTIAL)) {
-//
-//            CustomCredential customCredential = (CustomCredential) credential;
-//            // Create Google ID Token
-//            Bundle credentialData = customCredential.getData();
-//            GoogleIdTokenCredential googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credentialData);
-//
-//            // Sign in to Firebase using the token
-//            firebaseAuthWithGoogle(googleIdTokenCredential.getIdToken());
-//        } else {
-//            Log.w("credential warning", "Credential is not of type Google ID!");
-//        }
-//    }
+    private void handleGoogleSignIn(GetCredentialResponse result) {
+        Credential credential = result.getCredential();
+
+        // Check if credential is of type Google ID
+        if (credential instanceof CustomCredential &&
+                credential.getType().equals(TYPE_GOOGLE_ID_TOKEN_CREDENTIAL)) {
+
+            // Perform explicit casting to CustomCredential
+            CustomCredential customCredential = (CustomCredential) credential;
+
+            // Create Google ID Token
+            Bundle credentialData = customCredential.getData();
+            GoogleIdTokenCredential googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credentialData);
+            Log.d(TAG, "ID Token: " + googleIdTokenCredential);
 
 
-//    private void firebaseAuthWithGoogle(String idToken) {
-//        AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
-//        mAuth.signInWithCredential(credential)
-//                .addOnCompleteListener(this, task -> {
-//                    if (task.isSuccessful()) {
-//                        // Sign in success, update UI with the signed-in user's information
-//                        Log.d("credential success", "signInWithCredential:success");
-//                        FirebaseUser user = mAuth.getCurrentUser();
-//                        //updateUI(user);
-//                    } else {
-//                        // If sign in fails, display a message to the user
-//                        Log.w("credential success", "signInWithCredential:failure", task.getException());
-//                        //updateUI(null);
-//                    }
-//                });
-//    }
+            // Sign in to Firebase using the token
+            firebaseAuthWithGoogle(googleIdTokenCredential.getIdToken());
+        } else {
+            Log.w(TAG, "Credential is not of type Google ID!");
+        }
+    }
+
+
+    private void firebaseAuthWithGoogle(String idToken) {
+        AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
+        mAuth.signInWithCredential(credential)
+                .addOnCompleteListener(this, task -> {
+                    if (task.isSuccessful()) {
+                        // Sign in success, update UI with the signed-in user's information
+                        Log.d(TAG, "signInWithCredential:success");
+                        FirebaseUser user = mAuth.getCurrentUser();
+                        //updateUI(user);
+                        Log.i("user", user.getEmail()+" "+user.getDisplayName());
+                        Toast.makeText(this, "Succes", Toast.LENGTH_SHORT).show();
+                        Intent intent=new Intent(getApplicationContext(), HomePageActivity.class);
+                        startActivity(intent);
+                        finish();
+
+                    } else {
+                        // If sign in fails, display a message to the user
+                        Log.w(TAG, "signInWithCredential:failure", task.getException());
+                        Toast.makeText(this, "Fail", Toast.LENGTH_SHORT).show();
+                        //updateUI(null);
+                    }
+                });
+    }
 }
