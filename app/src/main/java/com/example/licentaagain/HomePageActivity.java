@@ -6,24 +6,20 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
-import com.google.android.gms.maps.GoogleMap;
+import com.example.licentaagain.auth.LoginActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.OnMapReadyCallback;
 
 
 public class HomePageActivity extends AppCompatActivity /*implements OnMapReadyCallback*/ {
-    FirebaseAuth auth;
-    Button btnLogout;
-    TextView tvWelcome;
-    FirebaseUser user;
+    FragmentManager fragmentManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,34 +32,24 @@ public class HomePageActivity extends AppCompatActivity /*implements OnMapReadyC
             return insets;
         });
 
-        auth=FirebaseAuth.getInstance();
-        btnLogout=findViewById(R.id.btnLogout);
-        tvWelcome=findViewById(R.id.tvWelcome);
-
-        user=auth.getCurrentUser();
-        if(user==null){
-            Intent intent=new Intent(getApplicationContext(), LoginActivity.class);
-            startActivity(intent);
-            finish();
-        }
-        else {
-            tvWelcome.setText("Welcome, "+user.getEmail());
-        }
-
-        btnLogout.setOnClickListener(v->{
-            FirebaseAuth.getInstance().signOut();
-            Intent intent=new Intent(getApplicationContext(), LoginActivity.class);
-            startActivity(intent);
-            finish();
-        });
-
-//        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.maps);
-//        mapFragment.getMapAsync(this);
-
+        initializeVariables();
+        setDefaultFragment();
     }
 
-//    @Override
-//    public void onMapReady(@NonNull GoogleMap googleMap) {
-//
-//    }
+    private void goToLoginPage(){
+        Intent intent=new Intent(getApplicationContext(), LoginActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
+    private void initializeVariables(){
+        fragmentManager=getSupportFragmentManager();
+    }
+
+    private void setDefaultFragment(){
+        AccountFragment accountFragment=new AccountFragment();
+        FragmentTransaction fragmentTransaction=fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.fragment_container_view, accountFragment);
+        fragmentTransaction.commit();
+    }
 }

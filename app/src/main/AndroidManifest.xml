@@ -20,10 +20,10 @@
             android:name=".HomePageActivity"
             android:exported="false" />
         <activity
-            android:name=".SignupActivity"
+            android:name=".auth.SignupActivity"
             android:exported="false" />
         <activity
-            android:name=".LoginActivity"
+            android:name=".auth.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

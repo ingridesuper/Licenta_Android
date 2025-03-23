@@ -1,7 +1,6 @@
-package com.example.licentaagain;
+package com.example.licentaagain.auth;
 
 import static android.content.ContentValues.TAG;
-
 import static com.google.android.libraries.identity.googleid.GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL;
 
 import android.content.Intent;
@@ -9,9 +8,7 @@ import android.os.Bundle;
 import android.os.CancellationSignal;
 import android.text.TextUtils;
 import android.util.Log;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -28,7 +25,8 @@ import androidx.credentials.GetCredentialRequest;
 import androidx.credentials.GetCredentialResponse;
 import androidx.credentials.exceptions.GetCredentialException;
 
-import com.example.licentaagain.enums.Sector;
+import com.example.licentaagain.HomePageActivity;
+import com.example.licentaagain.R;
 import com.example.licentaagain.models.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -43,20 +41,18 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-public class SignupActivity extends AppCompatActivity {
-    TextInputEditText etEmail, etPassword, etName, etSurname;
-    MaterialButton btnSignup;
-    Button btnSignupGoogle;
-    Spinner spnSector;
+public class LoginActivity extends AppCompatActivity {
+    TextInputEditText etEmail, etPassword;
+    Button btnSignup, btnGoogleSignin;
+    MaterialButton btnLogin;
     FirebaseAuth mAuth;
     FirebaseFirestore db;
-    String email, password, surname, name;
-    Sector selectedSector;
+
 
     @Override
     public void onStart() {
         super.onStart();
-        FirebaseUser currentUser = mAuth.getCurrentUser(); //? se repeta, care e ok?
+        FirebaseUser currentUser = mAuth.getCurrentUser();
         if(currentUser != null){
             goToHomePage();
         }
@@ -66,7 +62,7 @@ public class SignupActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_signup);
+        setContentView(R.layout.activity_login);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -74,47 +70,50 @@ public class SignupActivity extends AppCompatActivity {
         });
 
         initializeVariables();
-        populateSpinner();
         subscribeToEvents();
     }
 
     private void initializeVariables(){
-        mAuth=FirebaseAuth.getInstance(); //aici se repeta
+        mAuth=FirebaseAuth.getInstance();
         db= FirebaseFirestore.getInstance();
 
+        btnSignup=findViewById(R.id.btnSignup);
+        btnLogin=findViewById(R.id.btnLogin);
+        btnGoogleSignin=findViewById(R.id.btnSigninGoogle);
         etEmail=findViewById(R.id.etEmail);
         etPassword=findViewById(R.id.etPassword);
-        etSurname=findViewById(R.id.etSurname);
-        etName=findViewById(R.id.etName);
-        btnSignup=findViewById(R.id.btnSignup);
-        btnSignupGoogle=findViewById(R.id.btnSignupGoogle);
-        spnSector=findViewById(R.id.spnSector);
     }
-    private void populateSpinner(){
-        ArrayAdapter<Sector> arrayAdapterSpinner=new ArrayAdapter<Sector>(this, android.R.layout.simple_spinner_item, Sector.values());
-        spnSector.setAdapter(arrayAdapterSpinner);
-    }
+
     private void subscribeToEvents(){
-        btnSignup.setOnClickListener(v->{
-            getUserInputValues();
-            if(!isUserInputOk()){
+        btnSignup.setOnClickListener(v -> {
+            Intent intent = new Intent(getApplicationContext(), SignupActivity.class);
+            startActivity(intent);
+            finish();
+        });
+
+        btnLogin.setOnClickListener(v->{
+            String email=String.valueOf(etEmail.getText());
+            String password=String.valueOf(etPassword.getText());
+
+            if(TextUtils.isEmpty(email) || TextUtils.isEmpty(password)){
+                Toast.makeText(this, "Password and email required.", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            mAuth.createUserWithEmailAndPassword(email, password)
-                    .addOnCompleteListener(task -> {
-                        if (task.isSuccessful()) {
-                            FirebaseUser firebaseUser = mAuth.getCurrentUser();
-                            addUserToFirestore(firebaseUser);
-                        } else {
-                            Exception e = task.getException();
-                            handleSignupException(e);
+            mAuth.signInWithEmailAndPassword(email, password)
+                    .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if (task.isSuccessful()) {
+                                goToHomePage();
+                            } else {
+                                Toast.makeText(LoginActivity.this, "Authentication failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                            }
                         }
                     });
-
         });
 
-        btnSignupGoogle.setOnClickListener(v->{
+        btnGoogleSignin.setOnClickListener(v->{
             CredentialManager credentialManager = CredentialManager.create(getApplicationContext());
 
             GetSignInWithGoogleOption googleOption = new GetSignInWithGoogleOption.Builder(getString(R.string.default_web_client_id))
@@ -153,47 +152,6 @@ public class SignupActivity extends AppCompatActivity {
             );
 
         });
-
-    }
-    private void handleSignupException(Exception e){
-        if (e instanceof com.google.firebase.auth.FirebaseAuthUserCollisionException) {
-            Toast.makeText(SignupActivity.this, "This email is already in use.", Toast.LENGTH_SHORT).show();
-        } else if (e instanceof com.google.firebase.auth.FirebaseAuthWeakPasswordException) {
-            Toast.makeText(SignupActivity.this, "Weak password. Please use at least 6 characters.", Toast.LENGTH_SHORT).show();
-        } else {
-            Log.e("SignupError", "Failed to create user", e);
-            Toast.makeText(SignupActivity.this, "Signing up failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private void addUserToFirestore(FirebaseUser firebaseUser){
-        if (firebaseUser != null) {
-            String uid = firebaseUser.getUid();
-            User user = new User(uid, email, name, surname, selectedSector.getNumar());
-            addUserToFirestore(uid, user);
-        }
-    }
-
-    private void getUserInputValues(){
-        email=String.valueOf(etEmail.getText());
-        password=String.valueOf(etPassword.getText());
-        surname=String.valueOf(etSurname.getText());
-        name=String.valueOf(etName.getText());
-        selectedSector = (Sector) spnSector.getSelectedItem();
-    }
-
-    private void goToHomePage(){
-        Intent intent=new Intent(getApplicationContext(), HomePageActivity.class);
-        startActivity(intent);
-        finish();
-    }
-
-    private boolean isUserInputOk(){
-        if(TextUtils.isEmpty(email) || TextUtils.isEmpty(password) || TextUtils.isEmpty(name) || TextUtils.isEmpty(surname)){
-            Toast.makeText(this, "Please complete all fields", Toast.LENGTH_SHORT).show();
-            return false;
-        }
-        return true;
     }
 
     private void handleGoogleSignIn(GetCredentialResponse result) {
@@ -224,26 +182,37 @@ public class SignupActivity extends AppCompatActivity {
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
+                        // Sign in success, update UI with the signed-in user's information
                         Log.d(TAG, "signInWithCredential:success");
                         FirebaseUser user = mAuth.getCurrentUser();
                         //updateUI(user);
+                        Log.i("user", user.getEmail()+" "+user.getDisplayName());
                         Toast.makeText(this, "Succes", Toast.LENGTH_SHORT).show();
                         boolean isNewUser = task.getResult().getAdditionalUserInfo().isNewUser();
                         if (isNewUser) { //verific pt ca altfel it is overwritten si asta nuuu ne dorim
                             Log.i("count logare", "prima logare" );
-                            String uid = user.getUid();
+                            String uid=user.getUid();
                             User newUser=new User(uid, user.getEmail());
                             addUserToFirestore(uid, newUser);
+
                         } else {
                             Log.i("count logare", "nu e prima logare");
                         }
                         goToHomePage();
 
                     } else {
+                        // If sign in fails, display a message to the user
                         Log.w(TAG, "signInWithCredential:failure", task.getException());
                         Toast.makeText(this, "Fail", Toast.LENGTH_SHORT).show();
+                        //updateUI(null);
                     }
                 });
+    }
+
+    private void goToHomePage(){
+        Intent intent=new Intent(getApplicationContext(), HomePageActivity.class);
+        startActivity(intent);
+        finish();
     }
 
     private void addUserToFirestore(String uid, User user) {
@@ -257,5 +226,4 @@ public class SignupActivity extends AppCompatActivity {
                     Toast.makeText(this, "Failed to save user data.", Toast.LENGTH_SHORT).show();
                 });
     }
-
 }
