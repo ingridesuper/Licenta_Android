@@ -103,7 +103,7 @@ public class SignupActivity extends AppCompatActivity {
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
                             FirebaseUser firebaseUser = mAuth.getCurrentUser();
-                            addUserToFirestore(firebaseUser);
+                            addUserToFirestore(firebaseUser, false);
                         } else {
                             Exception e = task.getException();
                             handleSignupException(e);
@@ -164,14 +164,6 @@ public class SignupActivity extends AppCompatActivity {
         }
     }
 
-    private void addUserToFirestore(FirebaseUser firebaseUser){
-        if (firebaseUser != null) {
-            String uid = firebaseUser.getUid();
-            User user = new User(uid, email, name, surname, selectedSector.getNumar());
-            addUserToFirestore(uid, user);
-        }
-    }
-
     private void getUserInputValues(){
         email=String.valueOf(etEmail.getText());
         password=String.valueOf(etPassword.getText());
@@ -223,15 +215,13 @@ public class SignupActivity extends AppCompatActivity {
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
                         Log.d(TAG, "signInWithCredential:success");
-                        FirebaseUser user = mAuth.getCurrentUser();
+                        FirebaseUser firebaseUser = mAuth.getCurrentUser();
                         //updateUI(user);
                         Toast.makeText(this, "Succes", Toast.LENGTH_SHORT).show();
                         boolean isNewUser = task.getResult().getAdditionalUserInfo().isNewUser();
                         if (isNewUser) { //verific pt ca altfel it is overwritten si asta nuuu ne dorim
                             Log.i("count logare", "prima logare" );
-                            String uid = user.getUid();
-                            User newUser=new User(uid, user.getEmail());
-                            addUserToFirestore(uid, newUser);
+                            addUserToFirestore(firebaseUser, true);
                         } else {
                             Log.i("count logare", "nu e prima logare");
                         }
@@ -244,7 +234,20 @@ public class SignupActivity extends AppCompatActivity {
                 });
     }
 
-    private void addUserToFirestore(String uid, User user) {
+    private void addUserToFirestore(FirebaseUser firebaseUser, boolean usesGoogleSignup) {
+        if (firebaseUser == null) {
+            return;
+        }
+        String uid = firebaseUser.getUid();
+        User user;
+        if(usesGoogleSignup){
+            user=new User(uid, firebaseUser.getEmail());
+        }
+        else {
+            user = new User(uid, email, name, surname, selectedSector.getNumar());
+            Log.i("new user see sector", user.toString());
+        }
+
         db.collection("users").document(uid)
                 .set(user)
                 .addOnSuccessListener(aVoid -> {

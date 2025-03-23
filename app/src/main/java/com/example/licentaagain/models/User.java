@@ -54,12 +54,24 @@ public class User implements Serializable {
         this.surname = surname;
     }
 
+    public int getSector() {
+        return sector;
+    }
+
+    public void setSector(int sector) {
+        this.sector = sector;
+    }
+
+
+
     @Override
     public String toString() {
         return "User{" +
                 "email='" + email + '\'' +
+                ", uid='" + uid + '\'' +
                 ", name='" + name + '\'' +
                 ", surname='" + surname + '\'' +
+                ", sector=" + sector +
                 '}';
     }
 }
