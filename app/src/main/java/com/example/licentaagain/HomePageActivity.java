@@ -13,10 +13,15 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.example.licentaagain.account.AccountFragment;
 import com.example.licentaagain.auth.LoginActivity;
+import com.example.licentaagain.mainpage.MainPageFragment;
+import com.example.licentaagain.problem.AddProblemFragment;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.navigation.NavigationBarView;
 
 
 public class HomePageActivity extends AppCompatActivity /*implements OnMapReadyCallback*/ {
     FragmentManager fragmentManager;
+    BottomNavigationView bottomNavigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +36,7 @@ public class HomePageActivity extends AppCompatActivity /*implements OnMapReadyC
 
         initializeVariables();
         setDefaultFragment();
+        setupNavigationMenuEvents();
     }
 
     private void goToLoginPage(){
@@ -41,12 +47,33 @@ public class HomePageActivity extends AppCompatActivity /*implements OnMapReadyC
 
     private void initializeVariables(){
         fragmentManager=getSupportFragmentManager();
+        bottomNavigationView=findViewById(R.id.bottom_navigation);
     }
 
     private void setDefaultFragment(){
-        AccountFragment accountFragment=new AccountFragment();
+        MainPageFragment mainPageFragment=new MainPageFragment();
         FragmentTransaction fragmentTransaction=fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.fragment_container_view, accountFragment);
+        fragmentTransaction.replace(R.id.fragment_container_view, mainPageFragment);
         fragmentTransaction.commit();
+    }
+
+    private void setupNavigationMenuEvents(){
+        bottomNavigationView.setOnItemSelectedListener(item->{
+            FragmentTransaction fragmentTransaction=fragmentManager.beginTransaction();
+            if(item.getItemId()==R.id.bmAccount){
+                AccountFragment accountFragment=new AccountFragment();
+                fragmentTransaction.replace(R.id.fragment_container_view, accountFragment);
+            }
+            else if (item.getItemId()==R.id.bmHome){
+                MainPageFragment mainPageFragment=new MainPageFragment();
+                fragmentTransaction.replace(R.id.fragment_container_view, mainPageFragment);
+            }
+            else if (item.getItemId()==R.id.bmAdd){
+                AddProblemFragment addProblemFragment=new AddProblemFragment();
+                fragmentTransaction.replace(R.id.fragment_container_view, addProblemFragment);
+            }
+            fragmentTransaction.commit();
+            return true;
+        });
     }
 }
