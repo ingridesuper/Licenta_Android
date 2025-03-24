@@ -1,8 +1,9 @@
-package com.example.licentaagain;
+package com.example.licentaagain.account;
 
 import android.content.Intent;
 import android.os.Bundle;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.example.licentaagain.R;
 import com.example.licentaagain.auth.LoginActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -22,9 +24,12 @@ public class AccountFragment extends Fragment {
 
     FirebaseAuth auth;
     Button btnLogout;
-    TextView tvName;
+    Button btnEditAccount;
+    TextView tvName, tvSector, tvEmail;
     FirebaseUser user;
     FirebaseFirestore db;
+    String name, surname;
+    int sector;
 
     public AccountFragment() {
         // Required empty public constructor
@@ -41,11 +46,28 @@ public class AccountFragment extends Fragment {
         }
         else {
             getUserInfo();
+            populateWithUserData();
         }
 
         btnLogout.setOnClickListener(v->{
             FirebaseAuth.getInstance().signOut();
             goToLoginPage();
+        });
+
+        btnEditAccount.setOnClickListener(v->{
+            EditAccountFragment editAccountFragment=new EditAccountFragment();
+            Bundle bundle = new Bundle();
+            bundle.putString("nume", name);
+            bundle.putString("prenume", surname);
+            bundle.putInt("sector", sector);
+            bundle.putString("email", user.getEmail());
+
+            editAccountFragment.setArguments(bundle);
+
+            FragmentTransaction fragmentTransaction = requireActivity().getSupportFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.fragment_container_view, editAccountFragment);
+            fragmentTransaction.addToBackStack(null);
+            fragmentTransaction.commit();
         });
 
         return view;
@@ -60,9 +82,13 @@ public class AccountFragment extends Fragment {
     private void initializeVariables(View view){
         db=FirebaseFirestore.getInstance();
         auth=FirebaseAuth.getInstance();
-        btnLogout=view.findViewById(R.id.btnLogout);
-        tvName=view.findViewById(R.id.tvName);
         user=auth.getCurrentUser();
+
+        btnLogout=view.findViewById(R.id.btnLogout);
+        btnEditAccount=view.findViewById(R.id.btnEditAccount);
+        tvName=view.findViewById(R.id.tvName);
+        tvSector=view.findViewById(R.id.tvSector);
+        tvEmail=view.findViewById(R.id.tvEmail);
     }
 
 
@@ -73,11 +99,9 @@ public class AccountFragment extends Fragment {
                     if (task.isSuccessful()) {
                         DocumentSnapshot document = task.getResult();
                         if (document.exists()) {
-                            String name = document.getString("name");
-                            String surname = document.getString("surname");
-                            //int sector=Integer.parseInt(String.valueOf(document.getLong("sector")));
-                            populateWithUserData(name, surname);
-
+                            name = document.getString("name");
+                            surname = document.getString("surname");
+                            sector=document.getLong("sector").intValue();
                         } else {
                             Log.d("Firestore", "Documentul nu există!");
                         }
@@ -86,16 +110,22 @@ public class AccountFragment extends Fragment {
                     }
                 });
     }
-    private void populateWithUserData(String name, String surname){
+    private void populateWithUserData(){
         if(name!=null && surname!=null){
             tvName.setText(name+" "+surname);
         }
         else {
             tvName.setText("Va rugam sa va completati numele si prenumele. Astfel veti putea semna.");
         }
-//        if (sector){
-//
-//        }
+
+        if (sector!=0){
+            tvSector.setText("Sectorul "+sector);
+        }
+        else {
+            tvSector.setText("Va rugam sa va completati sectorul.");
+        }
+
+        tvEmail.setText(user.getEmail());
 
     }
 }
