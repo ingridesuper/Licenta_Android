@@ -112,4 +112,6 @@ public class EditAccountFragment extends Fragment {
     private void goBackToAccountPage(){
         requireActivity().getSupportFragmentManager().popBackStack(); //popBackStack - returns to previous fragment
     }
+
+
 }

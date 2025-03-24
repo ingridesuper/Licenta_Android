@@ -46,7 +46,6 @@ public class AccountFragment extends Fragment {
         }
         else {
             getUserInfo();
-            populateWithUserData();
         }
 
         btnLogout.setOnClickListener(v->{
@@ -102,6 +101,7 @@ public class AccountFragment extends Fragment {
                             name = document.getString("name");
                             surname = document.getString("surname");
                             sector=document.getLong("sector").intValue();
+                            populateWithUserData();
                         } else {
                             Log.d("Firestore", "Documentul nu există!");
                         }
@@ -128,4 +128,7 @@ public class AccountFragment extends Fragment {
         tvEmail.setText(user.getEmail());
 
     }
+
+
+
 }
