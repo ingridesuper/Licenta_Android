@@ -2,6 +2,7 @@ package com.example.licentaagain;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -26,10 +27,9 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 
 
-public class HomePageActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class HomePageActivity extends AppCompatActivity {
     FragmentManager fragmentManager;
     BottomNavigationView bottomNavigationView;
-    private GoogleMap myMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,12 +41,6 @@ public class HomePageActivity extends AppCompatActivity implements OnMapReadyCal
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        SupportMapFragment mapFragment=(SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-        if (mapFragment != null) {
-            mapFragment.getMapAsync(this);
-        }
-
-
         initializeVariables();
         setDefaultFragment();
         setupNavigationMenuEvents();
@@ -90,12 +84,4 @@ public class HomePageActivity extends AppCompatActivity implements OnMapReadyCal
         });
     }
 
-    @Override
-    public void onMapReady(@NonNull GoogleMap googleMap) {
-        myMap=googleMap;
-        LatLng sydney= new LatLng(-34, 151);
-        myMap.addMarker(new MarkerOptions().position(sydney).title("Sydney"));
-        myMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-
-    }
 }
