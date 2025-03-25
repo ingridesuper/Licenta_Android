@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -15,13 +16,20 @@ import com.example.licentaagain.account.AccountFragment;
 import com.example.licentaagain.auth.LoginActivity;
 import com.example.licentaagain.mainpage.MainPageFragment;
 import com.example.licentaagain.problem.AddProblemFragment;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 
 
-public class HomePageActivity extends AppCompatActivity /*implements OnMapReadyCallback*/ {
+public class HomePageActivity extends AppCompatActivity implements OnMapReadyCallback {
     FragmentManager fragmentManager;
     BottomNavigationView bottomNavigationView;
+    private GoogleMap myMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +41,11 @@ public class HomePageActivity extends AppCompatActivity /*implements OnMapReadyC
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        SupportMapFragment mapFragment=(SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        if (mapFragment != null) {
+            mapFragment.getMapAsync(this);
+        }
+
 
         initializeVariables();
         setDefaultFragment();
@@ -75,5 +88,14 @@ public class HomePageActivity extends AppCompatActivity /*implements OnMapReadyC
             fragmentTransaction.commit();
             return true;
         });
+    }
+
+    @Override
+    public void onMapReady(@NonNull GoogleMap googleMap) {
+        myMap=googleMap;
+        LatLng sydney= new LatLng(-34, 151);
+        myMap.addMarker(new MarkerOptions().position(sydney).title("Sydney"));
+        myMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+
     }
 }
