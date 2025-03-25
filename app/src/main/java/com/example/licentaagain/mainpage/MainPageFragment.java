@@ -1,26 +1,52 @@
 package com.example.licentaagain.mainpage;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.example.licentaagain.R;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 
 public class MainPageFragment extends Fragment implements OnMapReadyCallback {
-    private GoogleMap googleMap;
+    private final int FINE_PERMISSION_CODE=1;
+    private GoogleMap myMap;
+    Location currentLocation;
+    FusedLocationProviderClient fusedLocationProviderClient;
+
+    private ActivityResultLauncher<String> requestPermissionLauncher =
+            registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+                if (isGranted) {
+                    getLastLocation();
+                } else {
+                    Toast.makeText(getActivity(), "Location permission is denied, please allow", Toast.LENGTH_SHORT).show();
+                }
+            });
+
+
 
     public MainPageFragment() {
         // Required empty public constructor
@@ -30,10 +56,32 @@ public class MainPageFragment extends Fragment implements OnMapReadyCallback {
     //getSupportFragmentManager() is for the parent activity,
     // but getChildFragmentManager() is used to manage fragments within a fragment.
 
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        fusedLocationProviderClient= LocationServices.getFusedLocationProviderClient(getActivity()); //used to access location data
     }
+
+    private void getLastLocation() {
+        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
+            return;
+        }
+
+        Task<Location> task = fusedLocationProviderClient.getLastLocation();
+        task.addOnSuccessListener(location -> {
+            if (location != null) {
+                currentLocation = location;
+                SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+                if (mapFragment != null) {
+                    mapFragment.getMapAsync(MainPageFragment.this);
+                }
+            }
+        });
+    }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -44,6 +92,8 @@ public class MainPageFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        getLastLocation();
+
         // Initialize map
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         if (mapFragment != null) {
@@ -56,11 +106,31 @@ public class MainPageFragment extends Fragment implements OnMapReadyCallback {
 
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
-        this.googleMap = googleMap;
+        this.myMap = googleMap;
+        if(currentLocation!=null){
+            LatLng current = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
+            myMap.moveCamera(CameraUpdateFactory.newLatLngZoom(current, 11));
+        }
+        else {
+            Log.i("current loc", "current loc is null");
+        }
 
-        // Example marker at Sydney
-        LatLng sydney = new LatLng(-34, 151);
-        googleMap.addMarker(new MarkerOptions().position(sydney).title("Sydney"));
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
     }
-    }
+
+}
+
+/**
+ * Initial Setup:
+ * The fragment is created and its layout is inflated.
+ * Permission Check:
+ * The app checks if location permission is granted.
+ * Location Fetching:
+ * If permission is granted, the app retrieves the last known location using Google’s location service.
+ * Map Initialization:
+ * The map is loaded using SupportMapFragment.
+ * Map Display:
+ * The camera moves to the user’s current location.
+ * Permission Handling:
+ * If the user denies permission, a warning is shown via a Toast.
+ */
+
