@@ -4,6 +4,8 @@
     <string name="surname">Nume</string>
     <string name="email">Email</string>
     <string name="password">Parolă</string>
+    <string name="title">Titlu</string>
+    <string name="description">Descriere</string>
     <string name="default_web_client_id">739276874828-g6c7cvvmcgm8a7jn9oek57ejcg6tigem.apps.googleusercontent.com</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
