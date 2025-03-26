@@ -15,6 +15,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.libraries.places.api.Places;
@@ -37,7 +38,7 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Initialize Google Places API (Add your API key here)
+        //sterge harcodare aici!
         if (!Places.isInitialized()) {
             Places.initialize(requireContext(), "AIzaSyBbOOjwR9Eq3CGJnGZhg9fMssUBRFlMDpc");
         }
@@ -63,6 +64,7 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
         AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment)
                 getChildFragmentManager().findFragmentById(R.id.autocomplete_fragment);
         autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.DISPLAY_NAME, Place.Field.LOCATION));
+        autocompleteFragment.setHint(getString(R.string.search_place));
 
         // Handle the place selection
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
@@ -71,7 +73,7 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
                 LatLng latLng = place.getLocation();
                 if (latLng != null) {
                     myMap.clear();
-                    myMap.addMarker(new MarkerOptions().position(latLng).title(place.getName()));
+                    myMap.addMarker(new MarkerOptions().position(latLng).title(place.getDisplayName()));
                     myMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
                     Log.i("Selected Place", "Place: " + place.getDisplayName() + ", LatLng: " + latLng);
                 }
@@ -87,6 +89,10 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         myMap = googleMap;
+        UiSettings uiSettings= myMap.getUiSettings();
+        uiSettings.setZoomGesturesEnabled(true);
+        uiSettings.setScrollGesturesEnabled(true);
+        uiSettings.setZoomControlsEnabled(true);
         Log.i("AddProblemFragment", "Map is ready");
     }
 }

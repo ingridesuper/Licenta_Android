@@ -112,7 +112,8 @@ public class MainPageFragment extends Fragment implements OnMapReadyCallback {
         this.myMap = googleMap;
         UiSettings uiSettings = myMap.getUiSettings();
         uiSettings.setMyLocationButtonEnabled(true);
-
+        uiSettings.setZoomGesturesEnabled(true);
+        uiSettings.setScrollGesturesEnabled(true);
         if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
                 ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             myMap.setMyLocationEnabled(true);
