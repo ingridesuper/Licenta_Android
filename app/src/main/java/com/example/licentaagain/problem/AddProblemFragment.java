@@ -68,7 +68,7 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(@NonNull Place place) {
-                LatLng latLng = place.getLocation(;
+                LatLng latLng = place.getLocation();
                 if (latLng != null) {
                     myMap.clear();
                     myMap.addMarker(new MarkerOptions().position(latLng).title(place.getName()));
