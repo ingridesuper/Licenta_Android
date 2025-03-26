@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_margin="20dp"
         android:layout_height="wrap_content"
-        android:text="Add a problem!" />
+        android:text="@string/add_problem" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/tfTitle"
@@ -75,7 +75,7 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Save"
+        android:text="@string/save"
         android:layout_margin="20dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

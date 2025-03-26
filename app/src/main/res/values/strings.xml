@@ -1,12 +1,26 @@
 <resources>
     <string name="app_name">Conectat la București</string>
-    <string name="name">Prenume</string>
-    <string name="surname">Nume</string>
+    <string name="name">Name</string>
+    <string name="surname">Surname</string>
     <string name="email">Email</string>
-    <string name="password">Parolă</string>
-    <string name="title">Titlu</string>
-    <string name="description">Descriere</string>
+    <string name="password">Password</string>
+    <string name="title">Title</string>
+    <string name="description">Description</string>
     <string name="default_web_client_id">739276874828-g6c7cvvmcgm8a7jn9oek57ejcg6tigem.apps.googleusercontent.com</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="log_out">Log out</string>
+    <string name="log_in">Log in</string>
+    <string name="sign_up">Sign up</string>
+    <string name="sign_in_using_google">Sign in using Google</string>
+    <string name="sign_up_with_google">Sign up with Google</string>
+    <string name="contact">Contact</string>
+    <string name="sector">Sector</string>
+    <string name="address">Address</string>
+    <string name="main_page">This is the main page!</string>
+    <string name="add_problem">Add a problem!</string>
+    <string name="your_profile">Your profile</string>
+    <string name="edit_account_title">Editing your account</string>
+    <string name="edit_account">Edit account</string>
 </resources>
