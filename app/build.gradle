@@ -57,6 +57,8 @@ dependencies {
     implementation 'com.google.android.gms:play-services-auth:21.3.0'
     implementation(libs.gms.play.services.maps)
     implementation libs.play.services.location
+    implementation libs.dexter
+    implementation 'com.google.android.libraries.places:places:4.2.0'
 
 
     implementation libs.fragment

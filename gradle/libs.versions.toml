@@ -1,5 +1,6 @@
 [versions]
 agp = "8.7.0"
+dexter = "6.2.3"
 firebaseBom = "33.11.0"
 fragment = "1.8.6"
 junit = "4.13.2"
@@ -21,6 +22,7 @@ playServicesMapsVersion = "19.0.0"
 secretsGradlePlugin = "2.0.1"
 
 [libraries]
+dexter = { module = "com.karumi:dexter", version.ref = "dexter" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
 fragment = { module = "androidx.fragment:fragment", version.ref = "fragment" }
 gms-play-services-maps = { module = "com.google.android.gms:play-services-maps", version.ref = "playServicesMapsVersion" }

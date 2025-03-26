@@ -26,66 +26,70 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
 public class MainPageFragment extends Fragment implements OnMapReadyCallback {
-    private final int FINE_PERMISSION_CODE=1;
     private GoogleMap myMap;
-    Location currentLocation;
-    FusedLocationProviderClient fusedLocationProviderClient;
-
-    private ActivityResultLauncher<String> requestPermissionLauncher =
-            registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
-                if (isGranted) {
-                    getLastLocation();
-                } else {
-                    Toast.makeText(getActivity(), "Location permission is denied, please allow", Toast.LENGTH_SHORT).show();
-                }
-            });
-
-
+    private Location currentLocation;
+    private FusedLocationProviderClient fusedLocationProviderClient;
+    private ActivityResultLauncher<String> requestPermissionLauncher;
 
     public MainPageFragment() {
         // Required empty public constructor
     }
 
-    //obs
-    //getSupportFragmentManager() is for the parent activity,
-    // but getChildFragmentManager() is used to manage fragments within a fragment.
-
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        fusedLocationProviderClient= LocationServices.getFusedLocationProviderClient(getActivity()); //used to access location data
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
+        setupPermissionLauncher();
+        getLastLocation();
     }
 
-    private void getLastLocation() {
-        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
-            return;
-        }
-
-        Task<Location> task = fusedLocationProviderClient.getLastLocation();
-        task.addOnSuccessListener(location -> {
-            if (location != null) {
-                currentLocation = location;
-                SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
-                if (mapFragment != null) {
-                    mapFragment.getMapAsync(MainPageFragment.this);
-                }
+    private void setupPermissionLauncher() {
+        requestPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+            if (isGranted) {
+                getLastLocation();
+            } else {
+                Toast.makeText(getActivity(), "Location permission is denied, please allow", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
+    private void getLastLocation() {
+        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            fetchLocation();
+        } else if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            fetchLocation();
+        } else {
+            requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
+        }
+    }
+
+    private void fetchLocation() {
+        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        Task<Location> task = fusedLocationProviderClient.getLastLocation();
+        task.addOnSuccessListener(location -> {
+            if (location != null) {
+                currentLocation = location;
+                Log.i("cur", currentLocation.getLongitude() + " " + currentLocation.getLatitude());
+                SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+                if (mapFragment != null) {
+                    mapFragment.getMapAsync(MainPageFragment.this);
+                }
+            } else {
+                Log.i("cur", "Failed to retrieve location");
+            }
+        });
+    }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_main_page, container, false);
     }
 
@@ -94,11 +98,10 @@ public class MainPageFragment extends Fragment implements OnMapReadyCallback {
         super.onViewCreated(view, savedInstanceState);
         getLastLocation();
 
-        // Initialize map
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         if (mapFragment != null) {
             mapFragment.getMapAsync(this);
-            Log.i("map found", "map found");
+            Log.i("map found", "Map found and initialized");
         } else {
             Log.e("MainPageFragment", "Map fragment not found");
         }
@@ -107,19 +110,30 @@ public class MainPageFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         this.myMap = googleMap;
-        if(currentLocation!=null){
-            LatLng current = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
-            myMap.moveCamera(CameraUpdateFactory.newLatLngZoom(current, 11));
-        }
-        else {
-            Log.i("current loc", "current loc is null");
+        UiSettings uiSettings = myMap.getUiSettings();
+        uiSettings.setMyLocationButtonEnabled(true);
+
+        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            myMap.setMyLocationEnabled(true);
         }
 
+        updateMap();
     }
 
+    private void updateMap() {
+        if (myMap != null && currentLocation != null) {
+            LatLng current = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
+            myMap.moveCamera(CameraUpdateFactory.newLatLngZoom(current, 11));
+            myMap.addMarker(new MarkerOptions().position(current).title("You are here"));
+            Log.i("map", "Camera moved to current location");
+        } else {
+            Log.i("map", "Map or location not available yet");
+        }
+    }
 }
 
-/**
+/*
  * Initial Setup:
  * The fragment is created and its layout is inflated.
  * Permission Check:
@@ -133,4 +147,3 @@ public class MainPageFragment extends Fragment implements OnMapReadyCallback {
  * Permission Handling:
  * If the user denies permission, a warning is shown via a Toast.
  */
-
