@@ -8,8 +8,15 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.example.licentaagain.R;
+import com.example.licentaagain.enums.CategorieProblema;
+import com.example.licentaagain.enums.Sector;
+import com.example.licentaagain.models.Problem;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -22,13 +29,24 @@ import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import org.checkerframework.checker.units.qual.A;
 
 import java.util.Arrays;
 
 public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
 
     private GoogleMap myMap;
+    private Place selectedPlace;
+    FirebaseFirestore db;
+
     private SupportMapFragment mapFragment;
+    private TextInputEditText etTitle, etDescription;
+    private Spinner spnSector, spnCategorie;
 
     public AddProblemFragment() {
         // Required empty public constructor
@@ -53,6 +71,8 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        initializeVariables(view);
+        populateSpinners();
 
         // Initialize the Map
         mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
@@ -70,6 +90,7 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(@NonNull Place place) {
+                selectedPlace=place;
                 LatLng latLng = place.getLocation();
                 if (latLng != null) {
                     myMap.clear();
@@ -84,6 +105,58 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
                 Log.e("Autocomplete Error", "Error: " + status.getStatusMessage());
             }
         });
+
+        Button btnSave=view.findViewById(R.id.btnSave);
+        btnSave.setOnClickListener(v->{
+            //trebuie salvat in firebase
+            addProblemToFirebase();
+        });
+    }
+
+    private void initializeVariables(@NonNull View view) {
+        db=FirebaseFirestore.getInstance();
+        spnCategorie=view.findViewById(R.id.spnCategorie);
+        spnSector=view.findViewById(R.id.spnSector);
+        etDescription=view.findViewById(R.id.etDescription);
+        etTitle=view.findViewById(R.id.etTitle);
+    }
+
+    private void populateSpinners() {
+        //aici ai duplicate code
+        ArrayAdapter<Sector> arrayAdapterSector=new ArrayAdapter<Sector>(getActivity(), android.R.layout.simple_spinner_item, Sector.values());
+        spnSector.setAdapter(arrayAdapterSector);
+
+        ArrayAdapter<CategorieProblema> arrayAdapterCategorie=new ArrayAdapter<CategorieProblema>(getActivity(), android.R.layout.simple_spinner_item, CategorieProblema.values());
+        spnCategorie.setAdapter(arrayAdapterCategorie);
+    }
+
+    private void addProblemToFirebase(){
+        FirebaseAuth mAuth= FirebaseAuth.getInstance();
+        FirebaseUser currentUser=mAuth.getCurrentUser();
+        if(currentUser==null){
+            return;
+        }
+
+        //aici !verifica daca totul e selectat!
+
+        String authorUid = currentUser.getUid();
+        String description=etDescription.getText().toString();
+        String title=etTitle.getText().toString();
+        int sector=((Sector) spnSector.getSelectedItem()).getNumar();
+        String category=String.valueOf((CategorieProblema) spnCategorie.getSelectedItem());
+        LatLng latLng=selectedPlace.getLocation();
+
+
+        Problem problem=new Problem(selectedPlace.getDisplayName(), authorUid, description, latLng.latitude, latLng.longitude, sector, title, category); // de unde uid?
+
+        db.collection("problems").add(problem)
+                .addOnSuccessListener(aVoid -> {
+                    Toast.makeText(getActivity(), "Problem added", Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("FirestoreError", "Error adding document", e);
+                    Toast.makeText(getActivity(), "Failed to save problem.", Toast.LENGTH_SHORT).show();
+                });
     }
 
     @Override
@@ -91,8 +164,7 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
         myMap = googleMap;
 
         //setez poz originala pe Bucuresti
-        LatLng bucharest = new LatLng(44.4268, 26.1025);
-        myMap.moveCamera(CameraUpdateFactory.newLatLngZoom(bucharest, 12));
+        myMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(44.4268, 26.1025), 12));
 
         UiSettings uiSettings= myMap.getUiSettings();
         uiSettings.setZoomGesturesEnabled(true);

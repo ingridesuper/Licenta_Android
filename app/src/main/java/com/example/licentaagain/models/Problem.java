@@ -1,7 +1,6 @@
 package com.example.licentaagain.models;
 
 public class Problem {
-    private String uid;
     private String title;
     private String description;
     private String authorUid;
@@ -12,10 +11,10 @@ public class Problem {
     private String categorieProblema;
 
     private Problem(){
-
+        //for Firebase
     }
 
-    public Problem(String address, String authorUid, String description, double latitude, double longitude, int sector, String title, String uid) {
+    public Problem(String address, String authorUid, String description, double latitude, double longitude, int sector, String title, String categorieProblema) {
         this.address = address;
         this.authorUid = authorUid;
         this.description = description;
@@ -23,7 +22,15 @@ public class Problem {
         this.longitude = longitude;
         this.sector = sector;
         this.title = title;
-        this.uid = uid;
+        this.categorieProblema=categorieProblema;
+    }
+
+    public String getCategorieProblema() {
+        return categorieProblema;
+    }
+
+    public void setCategorieProblema(String categorieProblema) {
+        this.categorieProblema = categorieProblema;
     }
 
     public String getAddress() {
@@ -82,7 +89,4 @@ public class Problem {
         this.title = title;
     }
 
-    public String getUid() {
-        return uid;
-    }
 }

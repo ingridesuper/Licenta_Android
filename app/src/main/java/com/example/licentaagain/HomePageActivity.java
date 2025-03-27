@@ -38,7 +38,8 @@ public class HomePageActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home_page);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            //changed the bottom to 0, i don't think it's a good idea but it looks better now
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, 0);
             return insets;
         });
         initializeVariables();
