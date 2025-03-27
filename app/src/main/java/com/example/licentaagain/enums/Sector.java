@@ -16,4 +16,5 @@ public enum Sector {
     public int getNumar() {
         return this.numar;
     }
+
 }

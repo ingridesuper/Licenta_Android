@@ -9,6 +9,7 @@ public class Problem {
     private String address; //the human readable one?
     private double latitude;
     private double longitude;
+    private String categorieProblema;
 
     private Problem(){
 

@@ -89,6 +89,11 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         myMap = googleMap;
+
+        //setez poz originala pe Bucuresti
+        LatLng bucharest = new LatLng(44.4268, 26.1025);
+        myMap.moveCamera(CameraUpdateFactory.newLatLngZoom(bucharest, 12));
+
         UiSettings uiSettings= myMap.getUiSettings();
         uiSettings.setZoomGesturesEnabled(true);
         uiSettings.setScrollGesturesEnabled(true);
