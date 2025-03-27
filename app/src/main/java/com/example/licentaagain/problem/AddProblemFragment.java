@@ -71,16 +71,23 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
         initializeVariables(view);
-        populateSpinners();
+        setupSpinners();
 
-        // Initialize the Map
-        mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
-        if (mapFragment != null) {
-            mapFragment.getMapAsync(this);
-        }
+        setUpMapFragment();
+        setUpAutocompleteFragment();
+        btnSaveSubscribeToEvent(view);
+    }
 
-        // Initialize AutocompleteSupportFragment
+    private void btnSaveSubscribeToEvent(@NonNull View view) {
+        Button btnSave= view.findViewById(R.id.btnSave);
+        btnSave.setOnClickListener(v->{
+            addProblemToFirebase();
+        });
+    }
+
+    private void setUpAutocompleteFragment() {
         AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment)
                 getChildFragmentManager().findFragmentById(R.id.autocomplete_fragment);
         autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.DISPLAY_NAME, Place.Field.LOCATION));
@@ -105,12 +112,13 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
                 Log.e("Autocomplete Error", "Error: " + status.getStatusMessage());
             }
         });
+    }
 
-        Button btnSave=view.findViewById(R.id.btnSave);
-        btnSave.setOnClickListener(v->{
-            //trebuie salvat in firebase
-            addProblemToFirebase();
-        });
+    private void setUpMapFragment() {
+        mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+        if (mapFragment != null) {
+            mapFragment.getMapAsync(this);
+        }
     }
 
     private void initializeVariables(@NonNull View view) {
@@ -121,13 +129,14 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
         etTitle=view.findViewById(R.id.etTitle);
     }
 
-    private void populateSpinners() {
-        //aici ai duplicate code
-        ArrayAdapter<Sector> arrayAdapterSector=new ArrayAdapter<Sector>(getActivity(), android.R.layout.simple_spinner_item, Sector.values());
-        spnSector.setAdapter(arrayAdapterSector);
+    private void setupSpinners() {
+        setupSpinner(spnSector, Sector.values());
+        setupSpinner(spnCategorie, CategorieProblema.values());
+    }
 
-        ArrayAdapter<CategorieProblema> arrayAdapterCategorie=new ArrayAdapter<CategorieProblema>(getActivity(), android.R.layout.simple_spinner_item, CategorieProblema.values());
-        spnCategorie.setAdapter(arrayAdapterCategorie);
+    private <T> void setupSpinner(Spinner spinner, T[] items) {
+        ArrayAdapter<T> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, items);
+        spinner.setAdapter(adapter);
     }
 
     private void addProblemToFirebase(){
@@ -144,8 +153,14 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
         String title=etTitle.getText().toString();
         int sector=((Sector) spnSector.getSelectedItem()).getNumar();
         String category=String.valueOf((CategorieProblema) spnCategorie.getSelectedItem());
-        LatLng latLng=selectedPlace.getLocation();
+        LatLng latLng=null;
+        if (selectedPlace!=null){
+            latLng=selectedPlace.getLocation();
+        }
 
+        if(!checkUserInput(description, title, sector, category, selectedPlace)){
+            return;
+        }
 
         Problem problem=new Problem(selectedPlace.getDisplayName(), authorUid, description, latLng.latitude, latLng.longitude, sector, title, category); // de unde uid?
 
@@ -158,6 +173,36 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
                     Toast.makeText(getActivity(), "Failed to save problem.", Toast.LENGTH_SHORT).show();
                 });
     }
+
+    private boolean checkUserInput(String description, String title, int sector, String category, Place selectedPlace) {
+        if (title.isEmpty()) {
+            etTitle.setError(String.valueOf(R.string.required_title_error_message));
+            return false;
+        }
+
+        if (description.isEmpty()) {
+            etDescription.setError(String.valueOf(R.string.required_description_error_message));
+            return false;
+        }
+
+        if (sector <= 0) {
+            Toast.makeText(getActivity(), String.valueOf(R.string.required_sector_error_message), Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        if (category == null || category.isEmpty()) {
+            Toast.makeText(getActivity(), String.valueOf(R.string.required_category_error_message), Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        if (selectedPlace == null) {
+            Toast.makeText(getActivity(), String.valueOf(R.string.required_location_error_message), Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        return true;
+    }
+
 
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {

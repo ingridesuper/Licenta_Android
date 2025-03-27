@@ -31,4 +31,10 @@
     <string name="edit_account_title">Editing your account</string>
     <string name="edit_account">Edit account</string>
     <string name="search_place">Search for a place...</string>
+
+    <string name="required_title_error_message">Title is required</string>
+    <string name="required_description_error_message">Description is required</string>
+    <string name="required_sector_error_message">Please select a valid sector</string>
+    <string name="required_category_error_message">Please select a valid category</string>
+    <string name="required_location_error_message">Please select a location</string>
 </resources>
