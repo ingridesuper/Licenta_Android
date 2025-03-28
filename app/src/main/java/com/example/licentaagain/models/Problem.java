@@ -25,6 +25,20 @@ public class Problem {
         this.categorieProblema=categorieProblema;
     }
 
+    @Override
+    public String toString() {
+        return "Problem{" +
+                "address='" + address + '\'' +
+                ", title='" + title + '\'' +
+                ", description='" + description + '\'' +
+                ", authorUid='" + authorUid + '\'' +
+                ", sector=" + sector +
+                ", latitude=" + latitude +
+                ", longitude=" + longitude +
+                ", categorieProblema='" + categorieProblema + '\'' +
+                '}';
+    }
+
     public String getCategorieProblema() {
         return categorieProblema;
     }

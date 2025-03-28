@@ -12,6 +12,8 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -33,6 +35,7 @@ import com.google.android.gms.tasks.Task;
 
 public class MainPageFragment extends Fragment implements OnMapReadyCallback {
     private GoogleMap myMap;
+    FragmentManager fragmentManager;
     private Location currentLocation;
     private FusedLocationProviderClient fusedLocationProviderClient;
     private ActivityResultLauncher<String> requestPermissionLauncher;
@@ -45,6 +48,7 @@ public class MainPageFragment extends Fragment implements OnMapReadyCallback {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
+        fragmentManager=getChildFragmentManager();
         setupPermissionLauncher();
         getLastLocation();
     }
@@ -105,6 +109,12 @@ public class MainPageFragment extends Fragment implements OnMapReadyCallback {
         } else {
             Log.e("MainPageFragment", "Map fragment not found");
         }
+
+        FragmentTransaction fragmentTransaction=fragmentManager.beginTransaction();
+        ProblemListFragment problemListFragment=new ProblemListFragment();
+        fragmentTransaction.add(R.id.problemListFragment, problemListFragment);
+        fragmentTransaction.commit();
+
     }
 
     @Override
