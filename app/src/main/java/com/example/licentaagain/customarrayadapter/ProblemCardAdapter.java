@@ -9,37 +9,48 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.licentaagain.R;
 import com.example.licentaagain.models.Problem;
 
 import java.util.List;
 
-public class ProblemCardAdapter extends ArrayAdapter<Problem> {
+public class ProblemCardAdapter extends RecyclerView.Adapter<ProblemCardAdapter.ProblemViewHolder> {
 
-    private Context context;
     private List<Problem> problemList;
-    private int resourceId;
-    private LayoutInflater layoutInflater;
 
-
-    public ProblemCardAdapter(@NonNull Context context, int resource, @NonNull List<Problem> objects, LayoutInflater layoutInflater) {
-        super(context, resource, objects);
-        this.context=context;
-        this.resourceId=resource;
-        this.problemList=objects;
-        this.layoutInflater = layoutInflater;
+    // Constructor
+    public ProblemCardAdapter(List<Problem> problemList) {
+        this.problemList = problemList;
     }
 
     @NonNull
     @Override
-    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        View view=layoutInflater.inflate(resourceId, parent, false);
-        Problem problem=problemList.get(position);
+    public ProblemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        // Inflate the item layout for each problem
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_item, parent, false);
+        return new ProblemViewHolder(view);
+    }
 
-        TextView tvTitle=view.findViewById(R.id.tvTitle);
-        tvTitle.setText(problem.getTitle());
+    @Override
+    public void onBindViewHolder(@NonNull ProblemViewHolder holder, int position) {
+        // Bind the problem data to the CardView
+        Problem problem = problemList.get(position);
+        holder.titleTextView.setText(problem.getTitle());
+    }
 
-        return view;
+    @Override
+    public int getItemCount() {
+        return problemList.size();
+    }
+
+    public static class ProblemViewHolder extends RecyclerView.ViewHolder {
+        TextView titleTextView;
+
+        public ProblemViewHolder(@NonNull View itemView) {
+            super(itemView);
+            titleTextView = itemView.findViewById(R.id.tvTitle);
+        }
     }
 }
