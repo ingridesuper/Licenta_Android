@@ -44,8 +44,6 @@ public class ProblemListFragment extends Fragment {
         db=FirebaseFirestore.getInstance();
         auth=FirebaseAuth.getInstance();
         problemViewModel = new ViewModelProvider(requireActivity()).get(ProblemViewModel.class);
-
-
     }
 
     private void fetchAllProblems(View view) {
@@ -65,7 +63,7 @@ public class ProblemListFragment extends Fragment {
                                     problem.getString("categorieProblema")
                             ));
                         }
-                        problemViewModel.setProblems(fetchedProblems);  // Actualizează ViewModel-ul cu lista de probleme
+                        problemViewModel.setProblems(fetchedProblems);  //Actualizeaza ViewModel-ul cu lista de probleme
                         updateUi(view, fetchedProblems);
                     }
                 });
