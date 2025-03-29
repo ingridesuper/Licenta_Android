@@ -14,6 +14,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -22,6 +23,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.example.licentaagain.R;
+import com.example.licentaagain.models.Problem;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -39,6 +41,7 @@ public class MainPageFragment extends Fragment implements OnMapReadyCallback {
     private Location currentLocation;
     private FusedLocationProviderClient fusedLocationProviderClient;
     private ActivityResultLauncher<String> requestPermissionLauncher;
+    private ProblemViewModel problemViewModel;
 
     public MainPageFragment() {
         // Required empty public constructor
@@ -47,6 +50,7 @@ public class MainPageFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        problemViewModel=new ViewModelProvider(requireActivity()).get(ProblemViewModel.class);
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
         fragmentManager=getChildFragmentManager();
         setupPermissionLauncher();
@@ -115,6 +119,16 @@ public class MainPageFragment extends Fragment implements OnMapReadyCallback {
         fragmentTransaction.add(R.id.problemListFragment, problemListFragment);
         fragmentTransaction.commit();
 
+        problemViewModel.getProblems().observe(getViewLifecycleOwner(), problems -> {
+            if (myMap != null && currentLocation != null) {
+                for (Problem problem : problems) {
+                    LatLng location = new LatLng(problem.getLatitude(), problem.getLongitude());
+                    myMap.addMarker(new MarkerOptions().position(location).title(problem.getTitle()));
+                }
+                updateMap();
+            }
+        });
+
     }
 
     @Override
@@ -136,8 +150,6 @@ public class MainPageFragment extends Fragment implements OnMapReadyCallback {
         if (myMap != null && currentLocation != null) {
             LatLng current = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
             myMap.moveCamera(CameraUpdateFactory.newLatLngZoom(current, 11));
-            myMap.addMarker(new MarkerOptions().position(current).title("You are here"));
-            Log.i("map", "Camera moved to current location");
         } else {
             Log.i("map", "Map or location not available yet");
         }
