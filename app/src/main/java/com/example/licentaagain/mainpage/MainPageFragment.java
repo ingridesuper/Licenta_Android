@@ -43,7 +43,6 @@ public class MainPageFragment extends Fragment implements OnMapReadyCallback {
     private Location currentLocation;
     private FusedLocationProviderClient fusedLocationProviderClient;
     private ActivityResultLauncher<String> requestPermissionLauncher;
-    private ProblemViewModel problemViewModel;
 
     public MainPageFragment() {
         // Required empty public constructor
@@ -52,11 +51,14 @@ public class MainPageFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        problemViewModel=new ViewModelProvider(requireActivity()).get(ProblemViewModel.class);
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
-        fragmentManager=getChildFragmentManager();
+        initializeVariables();
         setupPermissionLauncher();
         getLastLocation();
+    }
+
+    private void initializeVariables() {
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
+        fragmentManager=getChildFragmentManager();
     }
 
     private void setupPermissionLauncher() {
@@ -83,6 +85,7 @@ public class MainPageFragment extends Fragment implements OnMapReadyCallback {
         if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
+
         Task<Location> task = fusedLocationProviderClient.getLastLocation();
         task.addOnSuccessListener(location -> {
             if (location != null) {
@@ -107,7 +110,33 @@ public class MainPageFragment extends Fragment implements OnMapReadyCallback {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         getLastLocation();
+        setUpCustomMapFragmentScroll(view);
+        setUpProblemListFragment();
+        observeMapMarkers();
 
+    }
+
+    private void observeMapMarkers() {
+        ProblemViewModel problemViewModel = new ViewModelProvider(requireActivity()).get(ProblemViewModel.class);
+        problemViewModel.getProblems().observe(getViewLifecycleOwner(), problems -> {
+            if (myMap != null && currentLocation != null) {
+                for (Problem problem : problems) {
+                    LatLng location = new LatLng(problem.getLatitude(), problem.getLongitude());
+                    myMap.addMarker(new MarkerOptions().position(location).title(problem.getTitle()));
+                    updateMap();
+                }
+            }
+        });
+    }
+
+    private void setUpProblemListFragment() {
+        FragmentTransaction fragmentTransaction=fragmentManager.beginTransaction();
+        ProblemListFragment problemListFragment=new ProblemListFragment();
+        fragmentTransaction.add(R.id.problemListFragment, problemListFragment);
+        fragmentTransaction.commit();
+    }
+
+    private void setUpCustomMapFragmentScroll(View view) {
         ScrollView mScrollView = view.findViewById(R.id.scrollView);
         WorkaroundMapFragment mapFragment = (WorkaroundMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
 
@@ -119,29 +148,11 @@ public class MainPageFragment extends Fragment implements OnMapReadyCallback {
         } else {
             Log.e("MainPageFragment", "Map fragment not found");
         }
-
-
-        FragmentTransaction fragmentTransaction=fragmentManager.beginTransaction();
-        ProblemListFragment problemListFragment=new ProblemListFragment();
-        fragmentTransaction.add(R.id.problemListFragment, problemListFragment);
-        fragmentTransaction.commit();
-
-        problemViewModel.getProblems().observe(getViewLifecycleOwner(), problems -> {
-            if (myMap != null && currentLocation != null) {
-                for (Problem problem : problems) {
-                    LatLng location = new LatLng(problem.getLatitude(), problem.getLongitude());
-                    myMap.addMarker(new MarkerOptions().position(location).title(problem.getTitle()));
-                    updateMap();
-                }
-            }
-        });
-
     }
 
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         this.myMap = googleMap;
-
         UiSettings uiSettings = myMap.getUiSettings();
         uiSettings.setMyLocationButtonEnabled(true);
         uiSettings.setZoomGesturesEnabled(true);

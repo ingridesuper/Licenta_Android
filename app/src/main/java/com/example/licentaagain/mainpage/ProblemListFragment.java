@@ -30,7 +30,6 @@ import java.util.List;
 public class ProblemListFragment extends Fragment {
     FirebaseFirestore db;
     FirebaseAuth auth;
-    List<Problem> problemList=new ArrayList<>();
     ProblemViewModel problemViewModel;
 
 

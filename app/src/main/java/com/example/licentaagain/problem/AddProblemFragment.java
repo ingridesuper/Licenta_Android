@@ -46,7 +46,6 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
     private Place selectedPlace;
     FirebaseFirestore db;
 
-    private SupportMapFragment mapFragment;
     private TextInputEditText etTitle, etDescription;
     private Spinner spnSector, spnCategorie;
 
@@ -76,7 +75,6 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
 
         initializeVariables(view);
         setupSpinners();
-
         setUpMapFragment(view);
         setUpAutocompleteFragment();
         btnSaveSubscribeToEvent(view);
