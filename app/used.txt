@@ -6,4 +6,9 @@ LiveData
 https://developer.android.com/topic/libraries/architecture/livedata.html
 https://medium.com/mindorks/livedata-viewmodel-making-your-own-magic-73facb06fbb
 
+Map inside ScrollView - scrolling events:
+vezi toate solutiile
+https://stackoverflow.com/questions/30525066/how-to-set-google-map-fragment-inside-scroll-view
+
+
 

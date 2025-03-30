@@ -20,9 +20,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ScrollView;
 import android.widget.Toast;
 
 import com.example.licentaagain.R;
+import com.example.licentaagain.views.WorkaroundMapFragment;
 import com.example.licentaagain.models.Problem;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -106,13 +108,18 @@ public class MainPageFragment extends Fragment implements OnMapReadyCallback {
         super.onViewCreated(view, savedInstanceState);
         getLastLocation();
 
-        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+        ScrollView mScrollView = view.findViewById(R.id.scrollView);
+        WorkaroundMapFragment mapFragment = (WorkaroundMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+
         if (mapFragment != null) {
             mapFragment.getMapAsync(this);
             Log.i("map found", "Map found and initialized");
+            // set custom listener to prevent ScrollView interference when touching the map
+            mapFragment.setListener(() -> mScrollView.requestDisallowInterceptTouchEvent(true));
         } else {
             Log.e("MainPageFragment", "Map fragment not found");
         }
+
 
         FragmentTransaction fragmentTransaction=fragmentManager.beginTransaction();
         ProblemListFragment problemListFragment=new ProblemListFragment();
