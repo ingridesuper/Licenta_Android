@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -137,7 +138,7 @@ public class MainPageFragment extends Fragment implements OnMapReadyCallback {
     }
 
     private void setUpCustomMapFragmentScroll(View view) {
-        ScrollView mScrollView = view.findViewById(R.id.scrollView);
+        NestedScrollView mScrollView = view.findViewById(R.id.scrollView);
         WorkaroundMapFragment mapFragment = (WorkaroundMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
 
         if (mapFragment != null) {
