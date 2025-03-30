@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -17,6 +18,7 @@ import com.example.licentaagain.R;
 import com.example.licentaagain.enums.CategorieProblema;
 import com.example.licentaagain.enums.Sector;
 import com.example.licentaagain.models.Problem;
+import com.example.licentaagain.views.WorkaroundMapFragment;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -75,7 +77,7 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
         initializeVariables(view);
         setupSpinners();
 
-        setUpMapFragment();
+        setUpMapFragment(view);
         setUpAutocompleteFragment();
         btnSaveSubscribeToEvent(view);
     }
@@ -114,10 +116,16 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
         });
     }
 
-    private void setUpMapFragment() {
-        mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+    private void setUpMapFragment(View view) {
+        ScrollView mScrollView = view.findViewById(R.id.scrollView);
+        WorkaroundMapFragment mapFragment = (WorkaroundMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+
         if (mapFragment != null) {
             mapFragment.getMapAsync(this);
+            Log.i("map found", "Map found and initialized");
+            mapFragment.setListener(() -> mScrollView.requestDisallowInterceptTouchEvent(true));
+        } else {
+            Log.e("map not found", "Map fragment not found");
         }
     }
 

@@ -9,6 +9,7 @@ https://medium.com/mindorks/livedata-viewmodel-making-your-own-magic-73facb06fbb
 Map inside ScrollView - scrolling events:
 vezi toate solutiile
 https://stackoverflow.com/questions/30525066/how-to-set-google-map-fragment-inside-scroll-view
+ai implementat 1 - vezi explicatii pe Notion
 
 
 
