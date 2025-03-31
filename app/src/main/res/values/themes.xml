@@ -9,9 +9,10 @@
         <item name="colorPrimary">@color/primaryPurple</item>
         <item name="colorOnPrimary">@color/white</item>
         <item name="colorSurface">@color/lightYellow</item> <!-- surfaces of components, such as cards, sheets, and menus  -->
+    </style>
 
-        <!--
-        <item name="android:fontFamily">@font/manrope_semibold</item>
-        -->
+    <style name="customrounded">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">15dp</item>
     </style>
 </resources>

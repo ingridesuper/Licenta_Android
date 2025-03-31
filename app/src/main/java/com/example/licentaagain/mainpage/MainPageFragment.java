@@ -175,6 +175,8 @@ public class MainPageFragment extends Fragment implements OnMapReadyCallback {
             Log.i("map", "Map or location not available yet");
         }
     }
+
+
 }
 
 /*

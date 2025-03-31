@@ -1,17 +1,15 @@
-package com.example.licentaagain.customarrayadapter;
+package com.example.licentaagain.custom_array_adapters;
 
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.licentaagain.R;
+import com.example.licentaagain.enums.Sector;
 import com.example.licentaagain.models.Problem;
 
 import java.util.List;
@@ -38,6 +36,8 @@ public class ProblemCardAdapter extends RecyclerView.Adapter<ProblemCardAdapter.
         // Bind the problem data to the CardView
         Problem problem = problemList.get(position);
         holder.titleTextView.setText(problem.getTitle());
+        holder.addressTextView.setText(problem.getAddress()+", Sector "+problem.getSector());
+        holder.categoryTextView.setText("Categorie: "+problem.getCategorieProblema());
     }
 
     @Override
@@ -46,11 +46,13 @@ public class ProblemCardAdapter extends RecyclerView.Adapter<ProblemCardAdapter.
     }
 
     public static class ProblemViewHolder extends RecyclerView.ViewHolder {
-        TextView titleTextView;
+        TextView titleTextView, addressTextView, categoryTextView;
 
         public ProblemViewHolder(@NonNull View itemView) {
             super(itemView);
             titleTextView = itemView.findViewById(R.id.tvTitle);
+            addressTextView=itemView.findViewById(R.id.tvAddress);
+            categoryTextView=itemView.findViewById(R.id.tvCategory);
         }
     }
 }
