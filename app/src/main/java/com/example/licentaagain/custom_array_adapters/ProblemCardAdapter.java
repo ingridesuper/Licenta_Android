@@ -8,6 +8,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.transition.Visibility;
 
 import com.example.licentaagain.R;
 import com.example.licentaagain.enums.Sector;
@@ -44,7 +45,14 @@ public class ProblemCardAdapter extends RecyclerView.Adapter<ProblemCardAdapter.
         holder.addressTextView.setText(problem.getAddress()+", Sector "+problem.getSector());
         holder.categoryTextView.setText("Categorie: "+problem.getCategorieProblema());
         problemSignedByUser(problem, isSigned -> {
-            holder.btnSign.setText(isSigned ? R.string.signed : R.string.sign_problem);
+            if(isSigned){
+                holder.btnSign.setVisibility(View.INVISIBLE);
+                holder.btnSigned.setVisibility(View.VISIBLE);
+            }
+            else {
+                holder.btnSign.setVisibility(View.VISIBLE);
+                holder.btnSigned.setVisibility(View.INVISIBLE);
+            }
         });
     }
 
@@ -81,7 +89,7 @@ public class ProblemCardAdapter extends RecyclerView.Adapter<ProblemCardAdapter.
 
     public static class ProblemViewHolder extends RecyclerView.ViewHolder {
         TextView titleTextView, addressTextView, categoryTextView;
-        MaterialButton btnSign;
+        MaterialButton btnSign, btnSigned;
 
         public ProblemViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -89,6 +97,7 @@ public class ProblemCardAdapter extends RecyclerView.Adapter<ProblemCardAdapter.
             addressTextView=itemView.findViewById(R.id.tvAddress);
             categoryTextView=itemView.findViewById(R.id.tvCategory);
             btnSign=itemView.findViewById(R.id.btnSign);
+            btnSigned=itemView.findViewById(R.id.btnSigned);
         }
     }
 }
