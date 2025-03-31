@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,7 @@ import android.view.ViewGroup;
 import com.example.licentaagain.R;
 import com.example.licentaagain.custom_array_adapters.ProblemCardAdapter;
 import com.example.licentaagain.models.Problem;
+import com.example.licentaagain.models.ProblemSignature;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -47,7 +49,7 @@ public class ProblemListFragment extends Fragment {
                     if (task.isSuccessful()) {
                         List<Problem> fetchedProblems = new ArrayList<>();
                         for (QueryDocumentSnapshot problem : task.getResult()) {
-                            fetchedProblems.add(new Problem(
+                            Problem newProblem=new Problem(
                                     problem.getString("address"),
                                     problem.getString("authorUid"),
                                     problem.getString("description"),
@@ -56,13 +58,16 @@ public class ProblemListFragment extends Fragment {
                                     problem.getDouble("sector").intValue(),
                                     problem.getString("title"),
                                     problem.getString("categorieProblema")
-                            ));
+                            );
+                            newProblem.setId(problem.getId());
+                            fetchedProblems.add(newProblem);
                         }
                         problemViewModel.setProblems(fetchedProblems);  //Actualizeaza ViewModel-ul cu lista de probleme
                         updateUi(view, fetchedProblems);
                     }
                 });
     }
+
 
     private void updateUi(View view, List<Problem> problems) {
         RecyclerView recyclerView = view.findViewById(R.id.rvProblems);
@@ -84,7 +89,5 @@ public class ProblemListFragment extends Fragment {
         fetchAllProblems(view);
     }
 
-    private void signToggleButtonAppearance(){
-        
-    }
+
 }

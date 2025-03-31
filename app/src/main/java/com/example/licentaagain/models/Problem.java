@@ -1,6 +1,7 @@
 package com.example.licentaagain.models;
 
 public class Problem {
+    private String id;
     private String title;
     private String description;
     private String authorUid;
@@ -23,6 +24,14 @@ public class Problem {
         this.sector = sector;
         this.title = title;
         this.categorieProblema=categorieProblema;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getCategorieProblema() {

@@ -37,4 +37,7 @@
     <string name="required_sector_error_message">Please select a valid sector</string>
     <string name="required_category_error_message">Please select a valid category</string>
     <string name="required_location_error_message">Please select a location</string>
+
+    <string name="sign_problem">Semnează</string>
+    <string name="signed">Semnat</string>
 </resources>

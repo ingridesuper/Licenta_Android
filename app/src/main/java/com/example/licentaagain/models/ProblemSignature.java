@@ -4,11 +4,11 @@ public class ProblemSignature {
     private String problemId;
     private String userId;
 
-    private ProblemSignature(){
+    public ProblemSignature(){
 
     }
 
-    private ProblemSignature(String problemId, String userId){
+    public ProblemSignature(String problemId, String userId){
         this.problemId=problemId;
         this.userId=userId;
     }

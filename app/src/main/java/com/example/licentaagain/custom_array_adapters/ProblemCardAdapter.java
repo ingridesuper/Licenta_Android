@@ -1,5 +1,6 @@
 package com.example.licentaagain.custom_array_adapters;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,8 +12,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.licentaagain.R;
 import com.example.licentaagain.enums.Sector;
 import com.example.licentaagain.models.Problem;
+import com.google.android.material.button.MaterialButton;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 public class ProblemCardAdapter extends RecyclerView.Adapter<ProblemCardAdapter.ProblemViewHolder> {
 
@@ -38,6 +43,35 @@ public class ProblemCardAdapter extends RecyclerView.Adapter<ProblemCardAdapter.
         holder.titleTextView.setText(problem.getTitle());
         holder.addressTextView.setText(problem.getAddress()+", Sector "+problem.getSector());
         holder.categoryTextView.setText("Categorie: "+problem.getCategorieProblema());
+        problemSignedByUser(problem, isSigned -> {
+            holder.btnSign.setText(isSigned ? R.string.signed : R.string.sign_problem);
+        });
+    }
+
+
+    //Consumer<Boolean> - interfata functionala Java ce primeste Boolean
+    //o folosim pt calback pt ca operatiile sunt asincrone
+    private void problemSignedByUser(Problem problem, Consumer<Boolean> callback) {
+        String currentUid= FirebaseAuth.getInstance().getCurrentUser().getUid();
+        FirebaseFirestore db=FirebaseFirestore.getInstance();
+        db.collection("problem_signatures")
+                .whereEqualTo("userId", currentUid)
+                .whereEqualTo("problemId", problem.getId())
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        if(task.getResult().isEmpty()){
+                            callback.accept(false);
+                        }
+                        else {
+                            callback.accept(true);
+                        }
+                    }
+                    else {
+                        Log.e("semnaturi", "eroare");
+                        callback.accept(false);
+                    }
+                });
     }
 
     @Override
@@ -47,12 +81,14 @@ public class ProblemCardAdapter extends RecyclerView.Adapter<ProblemCardAdapter.
 
     public static class ProblemViewHolder extends RecyclerView.ViewHolder {
         TextView titleTextView, addressTextView, categoryTextView;
+        MaterialButton btnSign;
 
         public ProblemViewHolder(@NonNull View itemView) {
             super(itemView);
             titleTextView = itemView.findViewById(R.id.tvTitle);
             addressTextView=itemView.findViewById(R.id.tvAddress);
             categoryTextView=itemView.findViewById(R.id.tvCategory);
+            btnSign=itemView.findViewById(R.id.btnSign);
         }
     }
 }
