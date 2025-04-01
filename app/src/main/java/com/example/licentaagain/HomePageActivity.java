@@ -71,6 +71,7 @@ public class HomePageActivity extends AppCompatActivity {
             if(item.getItemId()==R.id.bmAccount){
                 AccountFragment accountFragment=new AccountFragment();
                 fragmentTransaction.replace(R.id.fragment_container_view, accountFragment);
+
             }
             else if (item.getItemId()==R.id.bmHome){
                 MainPageFragment mainPageFragment=new MainPageFragment();
@@ -80,6 +81,7 @@ public class HomePageActivity extends AppCompatActivity {
                 AddProblemFragment addProblemFragment=new AddProblemFragment();
                 fragmentTransaction.replace(R.id.fragment_container_view, addProblemFragment);
             }
+            fragmentTransaction.addToBackStack(null);
             fragmentTransaction.commit();
             return true;
         });

@@ -34,6 +34,7 @@ import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -186,11 +187,19 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
 
     private void navigateBackToMainPage() {
         FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-        fragmentManager.beginTransaction()
-                .replace(R.id.fragment_container_view, new MainPageFragment())
-                .addToBackStack(null) //revenire cu butonul de back
-                .commit();
+
+        if (fragmentManager.getBackStackEntryCount() > 0) {
+            fragmentManager.popBackStack();  // revine la fragmentul anterior fara a crea unul nou
+            //cred ca aucu mai bn te uiti la cum il pornesti si alegi una (mai tarziu)
+        } else {
+            fragmentManager.beginTransaction()
+                    .replace(R.id.fragment_container_view, new MainPageFragment())
+                    .commit();
+        }
+        BottomNavigationView bottomNavigationView = requireActivity().findViewById(R.id.bottom_navigation);
+        bottomNavigationView.setSelectedItemId(R.id.bmHome);
     }
+
 
 
     private boolean checkUserInput(String description, String title, int sector, String category, Place selectedPlace) {
