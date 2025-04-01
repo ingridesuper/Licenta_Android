@@ -13,9 +13,11 @@ import androidx.transition.Visibility;
 import com.example.licentaagain.R;
 import com.example.licentaagain.enums.Sector;
 import com.example.licentaagain.models.Problem;
+import com.example.licentaagain.models.ProblemSignature;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -39,21 +41,79 @@ public class ProblemCardAdapter extends RecyclerView.Adapter<ProblemCardAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull ProblemViewHolder holder, int position) {
-        // Bind the problem data to the CardView
+        // Binds the problem data to the CardView
         Problem problem = problemList.get(position);
-        holder.titleTextView.setText(problem.getTitle());
-        holder.addressTextView.setText(problem.getAddress()+", Sector "+problem.getSector());
-        holder.categoryTextView.setText("Categorie: "+problem.getCategorieProblema());
-        problemSignedByUser(problem, isSigned -> {
-            if(isSigned){
-                holder.btnSign.setVisibility(View.INVISIBLE);
-                holder.btnSigned.setVisibility(View.VISIBLE);
-            }
-            else {
-                holder.btnSign.setVisibility(View.VISIBLE);
-                holder.btnSigned.setVisibility(View.INVISIBLE);
-            }
-        });
+        fillUiWithData(holder, problem);
+        setButtonListeners(holder, problem);
+    }
+
+    private void setButtonListeners(ProblemViewHolder holder, Problem problem) {
+        holder.btnSign.setOnClickListener(v ->
+                addSignature(problem, success -> updateButtonVisibility(holder, true))
+        );
+
+        holder.btnSigned.setOnClickListener(v ->
+                removeSignature(problem, success -> updateButtonVisibility(holder, false))
+        );
+    }
+
+    private void updateButtonVisibility(ProblemViewHolder holder, boolean isSigned) {
+        holder.btnSign.setVisibility(isSigned ? View.INVISIBLE : View.VISIBLE);
+        holder.btnSigned.setVisibility(isSigned ? View.VISIBLE : View.INVISIBLE);
+    }
+
+    private void fillUiWithData(@NonNull ProblemViewHolder holder, Problem problem) {
+    holder.titleTextView.setText(problem.getTitle());
+    holder.addressTextView.setText(problem.getAddress()+", Sector "+problem.getSector());
+    holder.categoryTextView.setText("Categorie: "+problem.getCategorieProblema());
+    problemSignedByUser(problem, isSigned -> {
+        updateButtonVisibility(holder, isSigned);
+    });
+}
+
+    private void addSignature(Problem problem, Consumer<Boolean> callback) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        ProblemSignature newSignature=new ProblemSignature(problem.getId(), FirebaseAuth.getInstance().getCurrentUser().getUid());
+
+        db.collection("problem_signatures")
+                .add(newSignature)
+                .addOnSuccessListener(documentReference -> {
+                    Log.i("Firestore", "Semnatura adaugata: " + documentReference.getId());
+                    callback.accept(true);
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("Firestore", "Eroare la adaugarea semnaturii", e);
+                    callback.accept(false);
+                });
+    }
+
+    private void removeSignature(Problem problem, Consumer<Boolean> callback){
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("problem_signatures")
+                .whereEqualTo("userId", FirebaseAuth.getInstance().getCurrentUser().getUid())
+                .whereEqualTo("problemId", problem.getId())
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if (!queryDocumentSnapshots.isEmpty()) {
+                        for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
+                            db.collection("problem_signatures").document(doc.getId()).delete()
+                                    .addOnSuccessListener(aVoid -> {
+                                        Log.i("Firestore", "Semnatura eliminata");
+                                        callback.accept(true);
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        Log.e("Firestore", "Eroare la stergerea semnaturii", e);
+                                        callback.accept(false);
+                                    });
+                        }
+                    } else {
+                        callback.accept(false);
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("Firestore", "Eroare la cautarea semnaturii", e);
+                    callback.accept(false);
+                });
     }
 
 
