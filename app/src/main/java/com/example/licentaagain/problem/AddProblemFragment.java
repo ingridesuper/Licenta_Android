@@ -4,6 +4,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +19,7 @@ import android.widget.Toast;
 import com.example.licentaagain.R;
 import com.example.licentaagain.enums.CategorieProblema;
 import com.example.licentaagain.enums.Sector;
+import com.example.licentaagain.mainpage.MainPageFragment;
 import com.example.licentaagain.models.Problem;
 import com.example.licentaagain.views.WorkaroundMapFragment;
 import com.google.android.gms.common.api.Status;
@@ -173,12 +176,22 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
         db.collection("problems").add(problem)
                 .addOnSuccessListener(aVoid -> {
                     Toast.makeText(getActivity(), "Problem added", Toast.LENGTH_SHORT).show();
+                    navigateBackToMainPage();
                 })
                 .addOnFailureListener(e -> {
                     Log.e("FirestoreError", "Error adding document", e);
                     Toast.makeText(getActivity(), "Failed to save problem.", Toast.LENGTH_SHORT).show();
                 });
     }
+
+    private void navigateBackToMainPage() {
+        FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+        fragmentManager.beginTransaction()
+                .replace(R.id.fragment_container_view, new MainPageFragment())
+                .addToBackStack(null) //revenire cu butonul de back
+                .commit();
+    }
+
 
     private boolean checkUserInput(String description, String title, int sector, String category, Place selectedPlace) {
         if (title.isEmpty()) {
