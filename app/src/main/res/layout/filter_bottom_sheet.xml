@@ -13,12 +13,12 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         android:fontFamily="@font/manrope_bold"
-        android:textSize="25dp"
+        android:textSize="23dp"
     />
 
     <RadioGroup
         android:id="@+id/rgSort"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="15dp"
         app:layout_constraintTop_toBottomOf="@+id/tvSortHeading"
         app:layout_constraintStart_toStartOf="parent"
         android:layout_width="wrap_content"
@@ -38,10 +38,91 @@
 
     </RadioGroup>
 
-    <Button
-        android:id="@+id/btnApply"
-        app:layout_constraintStart_toStartOf="parent"
+    <TextView
+        android:layout_marginTop="20dp"
+        android:id="@+id/tvFilterHeading"
+        android:text="Filter by"
+        android:fontFamily="@font/manrope_bold"
+        android:textSize="23dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@+id/rgSort"
+        app:layout_constraintStart_toStartOf="parent"
+        />
+
+    <TextView
+        android:id="@+id/tvSectorSubheading"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/tvFilterHeading"
+        app:layout_constraintStart_toStartOf="parent"
+        android:text="Sector"
+        android:fontFamily="@font/manrope_bold"
+        android:textSize="18dp"
+        android:layout_marginTop="8dp"/>
+
+    <com.google.android.material.chip.ChipGroup
+        android:id="@+id/chipGroupSector"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvSectorSubheading">
+
+        <com.google.android.material.chip.Chip
+            style="@style/Widget.Material3.Chip.Filter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sectorul 1"/>
+
+        <com.google.android.material.chip.Chip
+            style="@style/Widget.Material3.Chip.Filter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sectorul 2"/>
+
+        <com.google.android.material.chip.Chip
+            style="@style/Widget.Material3.Chip.Filter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sectorul 3"/>
+
+        <com.google.android.material.chip.Chip
+            style="@style/Widget.Material3.Chip.Filter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sectorul 4"/>
+
+        <com.google.android.material.chip.Chip
+            style="@style/Widget.Material3.Chip.Filter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sectorul 5"/>
+
+        <com.google.android.material.chip.Chip
+            style="@style/Widget.Material3.Chip.Filter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sectorul 6"/>
+
+    </com.google.android.material.chip.ChipGroup>
+
+    <!--
+    sort idei:
+    - recommended for you
+    - around you
+
+    filter idei:
+    - dupa categorie
+    - dupa zona -> buton gen: near you
+    -->
+
+
+    <Button
+        android:layout_marginTop="15dp"
+        android:id="@+id/btnApply"
+        android:textSize="15dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/chipGroupSector"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Apply"/>
