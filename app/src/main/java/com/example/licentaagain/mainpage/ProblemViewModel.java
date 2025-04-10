@@ -9,12 +9,14 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.licentaagain.models.Problem;
+import com.example.licentaagain.utils.ProblemFilterState;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -24,7 +26,17 @@ import java.util.function.Consumer;
 
 public class ProblemViewModel extends ViewModel {
     private MutableLiveData<List<Problem>> problemsLiveData=new MutableLiveData<>();
+    private final MutableLiveData<ProblemFilterState> filterState = new MutableLiveData<>(new ProblemFilterState());
 
+    //getters and setters
+    public LiveData<ProblemFilterState> getFilterState() {
+        return filterState;
+    }
+
+    public void updateFilterState(ProblemFilterState state) {
+        filterState.setValue(state);
+        applyFilter(state);
+    }
 
     public LiveData<List<Problem>> getProblems() {
         return problemsLiveData;
@@ -32,6 +44,10 @@ public class ProblemViewModel extends ViewModel {
 
     public void setProblems(List<Problem> problems) {
         problemsLiveData.setValue(problems);
+    }
+
+    private void applyFilter(ProblemFilterState state) {
+        orderByAge(state.getSortOrder()==ProblemFilterState.SortOrder.NEWEST);
     }
 
     //aici va tb implementat cu Algolia, pt ca asa nu
@@ -64,10 +80,17 @@ public class ProblemViewModel extends ViewModel {
                     }
                 }
                 setProblems(searchedList);
+                resetProblemFilterState();
+
             } else {
                 Log.e("FirestoreSearch", "Error retrieving search results", task.getException());
             }
         });
+    }
+
+    private void resetProblemFilterState() { //resetam si asta! ca sa nu arate ce A FOST selectat, nu ce e selectat in prezent
+        ProblemFilterState state=new ProblemFilterState();
+        updateFilterState(state);
     }
 
     public void fetchAllProblems() {
@@ -90,8 +113,34 @@ public class ProblemViewModel extends ViewModel {
                             fetchedProblems.add(newProblem);
                         }
                         setProblems(fetchedProblems);
+                        resetProblemFilterState();
                     }
                 });
+    }
+
+    public void orderByAge(boolean byNewest){
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        Query query;
+
+        if (byNewest) {
+            query = db.collection("problems").orderBy("createDate", Query.Direction.DESCENDING);
+        } else {
+            query = db.collection("problems").orderBy("createDate", Query.Direction.ASCENDING);
+        }
+
+        query.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                List<Problem> orderedProblems = new ArrayList<>();
+                for (QueryDocumentSnapshot doc : task.getResult()) {
+                    Problem problem = doc.toObject(Problem.class);
+                    problem.setId(doc.getId());
+                    orderedProblems.add(problem);
+                }
+                setProblems(orderedProblems);
+            } else {
+                Log.e("FirestoreOrder", "Error ordering by createDate", task.getException());
+            }
+        });
     }
 
 }

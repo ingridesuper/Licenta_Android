@@ -29,6 +29,7 @@ import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.example.licentaagain.R;
+import com.example.licentaagain.utils.ProblemFilterState;
 import com.example.licentaagain.views.FilterBottomSheet;
 import com.example.licentaagain.views.WorkaroundMapFragment;
 import com.example.licentaagain.models.Problem;
@@ -130,7 +131,8 @@ public class MainPageFragment extends Fragment implements OnMapReadyCallback, Fi
     private void setUpFilterEvent(View view) {
         Button btnFilter=view.findViewById(R.id.btnFilter);
         btnFilter.setOnClickListener(v->{
-            FilterBottomSheet filterBottomSheet=new FilterBottomSheet(this);
+            ProblemFilterState currentState=problemViewModel.getFilterState().getValue();
+            FilterBottomSheet filterBottomSheet=new FilterBottomSheet(this, currentState);
             filterBottomSheet.show(getChildFragmentManager(), filterBottomSheet.getTag());
         });
     }
@@ -229,12 +231,7 @@ public class MainPageFragment extends Fragment implements OnMapReadyCallback, Fi
 
 
     @Override
-    public void onFilterApplied(boolean newestSelected, boolean oldestSelected) {
-        if(newestSelected){
-            Toast.makeText(getActivity(), "Newest", Toast.LENGTH_SHORT).show();
-        }
-        else {
-            Toast.makeText(getActivity(), "Oldest", Toast.LENGTH_SHORT).show();
-        }
+    public void onFilterApplied(ProblemFilterState newState) { //metoda def in interfata FilterBottomSheet.FilterListener
+        problemViewModel.updateFilterState(newState);
     }
 }

@@ -38,6 +38,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import org.checkerframework.checker.units.qual.A;
@@ -172,10 +173,11 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
             return;
         }
 
-        Problem problem=new Problem(selectedPlace.getDisplayName(), authorUid, description, latLng.latitude, latLng.longitude, sector, title, category); // de unde uid?
+        Problem problem=new Problem(selectedPlace.getDisplayName(), authorUid, description, latLng.latitude, latLng.longitude, sector, title, category);
 
         db.collection("problems").add(problem)
-                .addOnSuccessListener(aVoid -> {
+                .addOnSuccessListener(documentReference -> {
+                    documentReference.update("createDate", FieldValue.serverTimestamp());
                     Toast.makeText(getActivity(), "Problem added", Toast.LENGTH_SHORT).show();
                     navigateBackToMainPage();
                 })
@@ -199,7 +201,6 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
         BottomNavigationView bottomNavigationView = requireActivity().findViewById(R.id.bottom_navigation);
         bottomNavigationView.setSelectedItemId(R.id.bmHome);
     }
-
 
 
     private boolean checkUserInput(String description, String title, int sector, String category, Place selectedPlace) {
@@ -230,7 +231,6 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
 
         return true;
     }
-
 
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {

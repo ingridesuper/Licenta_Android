@@ -1,7 +1,9 @@
 package com.example.licentaagain.models;
 
+import com.google.firebase.Timestamp;
+
 public class Problem {
-    private String id;
+    private String id; //cred ca tb sa stergi atributul asta
     private String title;
     private String description;
     private String authorUid;
@@ -10,6 +12,7 @@ public class Problem {
     private double latitude;
     private double longitude;
     private String categorieProblema;
+    private Timestamp createDate;
 
     private Problem(){
         //for Firebase
@@ -98,10 +101,19 @@ public class Problem {
         this.title = title;
     }
 
+    public Timestamp getCreateDate() {
+        return createDate;
+    }
+
+    public void setCreateDate(Timestamp createDate) {
+        this.createDate = createDate;
+    }
+
     @Override
     public String toString() {
         return "Problem{" +
                 "address='" + address + '\'' +
+                ", id='" + id + '\'' +
                 ", title='" + title + '\'' +
                 ", description='" + description + '\'' +
                 ", authorUid='" + authorUid + '\'' +
@@ -109,7 +121,7 @@ public class Problem {
                 ", latitude=" + latitude +
                 ", longitude=" + longitude +
                 ", categorieProblema='" + categorieProblema + '\'' +
+                ", createDate=" + createDate +
                 '}';
     }
-
 }
