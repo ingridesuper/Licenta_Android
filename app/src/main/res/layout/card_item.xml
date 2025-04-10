@@ -6,9 +6,9 @@
     style="?attr/materialCardViewElevatedStyle"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toBottomOf="@+id/map"
-    android:layout_margin="10dp"
+    android:layout_margin="15dp"
     android:layout_width="match_parent"
-    android:layout_height="160dp"
+    android:layout_height="180dp"
     app:shapeAppearance="?attr/shapeAppearanceCornerMedium"
     app:cardCornerRadius="15dp">
 
@@ -40,7 +40,7 @@
                 android:fontFamily="@font/manrope_bold"
                 android:id="@+id/tvTitle"
                 android:layout_width="match_parent"
-                android:layout_height="20dp"
+                android:layout_height="wrap_content"
                 android:text="This is the Title" />
 
             <TextView

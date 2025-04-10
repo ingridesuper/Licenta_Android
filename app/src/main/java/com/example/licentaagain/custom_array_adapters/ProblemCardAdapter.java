@@ -4,6 +4,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.SearchView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -26,7 +27,6 @@ public class ProblemCardAdapter extends RecyclerView.Adapter<ProblemCardAdapter.
 
     private List<Problem> problemList;
 
-    // Constructor
     public ProblemCardAdapter(List<Problem> problemList) {
         this.problemList = problemList;
     }
@@ -147,6 +147,9 @@ public class ProblemCardAdapter extends RecyclerView.Adapter<ProblemCardAdapter.
         return problemList.size();
     }
 
+
+    //am definit viewholder aici, pt ca e specific adaptorului
+    //e static inner class
     public static class ProblemViewHolder extends RecyclerView.ViewHolder {
         TextView titleTextView, addressTextView, categoryTextView;
         MaterialButton btnSign, btnSigned;
@@ -160,4 +163,10 @@ public class ProblemCardAdapter extends RecyclerView.Adapter<ProblemCardAdapter.
             btnSigned=itemView.findViewById(R.id.btnSigned);
         }
     }
+
+    public void updateData(List<Problem> newProblems) {
+        this.problemList = newProblems;
+        notifyDataSetChanged(); // You could use DiffUtil for better performance
+    }
+
 }

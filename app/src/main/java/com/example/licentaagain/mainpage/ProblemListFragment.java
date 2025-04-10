@@ -9,72 +9,34 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.licentaagain.R;
 import com.example.licentaagain.custom_array_adapters.ProblemCardAdapter;
-import com.example.licentaagain.models.Problem;
-import com.example.licentaagain.models.ProblemSignature;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class ProblemListFragment extends Fragment {
     FirebaseFirestore db;
     FirebaseAuth auth;
     ProblemViewModel problemViewModel;
-
+    ProblemCardAdapter adapter;
 
 
     public ProblemListFragment() {
         // Required empty public constructor
     }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         db=FirebaseFirestore.getInstance();
         auth=FirebaseAuth.getInstance();
         problemViewModel = new ViewModelProvider(requireActivity()).get(ProblemViewModel.class);
-    }
-
-    private void fetchAllProblems(View view) {
-        db.collection("problems").get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        List<Problem> fetchedProblems = new ArrayList<>();
-                        for (QueryDocumentSnapshot problem : task.getResult()) {
-                            Problem newProblem=new Problem(
-                                    problem.getString("address"),
-                                    problem.getString("authorUid"),
-                                    problem.getString("description"),
-                                    problem.getDouble("latitude"),
-                                    problem.getDouble("longitude"),
-                                    problem.getDouble("sector").intValue(),
-                                    problem.getString("title"),
-                                    problem.getString("categorieProblema")
-                            );
-                            newProblem.setId(problem.getId());
-                            fetchedProblems.add(newProblem);
-                        }
-                        problemViewModel.setProblems(fetchedProblems);  //Actualizeaza ViewModel-ul cu lista de probleme
-                        updateUi(view, fetchedProblems);
-                    }
-                });
-    }
-
-
-    private void updateUi(View view, List<Problem> problems) {
-        RecyclerView recyclerView = view.findViewById(R.id.rvProblems);
-        recyclerView.setNestedScrollingEnabled(false);
-        ProblemCardAdapter adapter = new ProblemCardAdapter(problems);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        recyclerView.setAdapter(adapter);
     }
 
 
@@ -86,7 +48,15 @@ public class ProblemListFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        fetchAllProblems(view);
+
+        RecyclerView recyclerView = view.findViewById(R.id.rvProblems);
+        recyclerView.setNestedScrollingEnabled(false);
+        adapter = new ProblemCardAdapter(new ArrayList<>());
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setAdapter(adapter);
+        problemViewModel.getProblems().observe(getViewLifecycleOwner(), problems -> adapter.updateData(problems));
+
+        problemViewModel.fetchAllProblems();
     }
 
 

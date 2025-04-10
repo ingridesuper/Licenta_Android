@@ -22,6 +22,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ScrollView;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.example.licentaagain.R;
@@ -40,6 +41,7 @@ import com.google.android.gms.tasks.Task;
 
 public class MainPageFragment extends Fragment implements OnMapReadyCallback {
     private GoogleMap myMap;
+    private ProblemViewModel problemViewModel;
     FragmentManager fragmentManager;
     private Location currentLocation;
     private FusedLocationProviderClient fusedLocationProviderClient;
@@ -55,11 +57,14 @@ public class MainPageFragment extends Fragment implements OnMapReadyCallback {
         initializeVariables();
         setupPermissionLauncher();
         getLastLocation();
+
     }
 
     private void initializeVariables() {
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
         fragmentManager=getChildFragmentManager();
+        problemViewModel = new ViewModelProvider(requireActivity()).get(ProblemViewModel.class);
+
     }
 
     private void setupPermissionLauncher() {
@@ -114,11 +119,27 @@ public class MainPageFragment extends Fragment implements OnMapReadyCallback {
         setUpCustomMapFragmentScroll(view);
         setUpProblemListFragment();
         observeMapMarkers();
+        setUpSearchEvents(view);
+    }
 
+    private void setUpSearchEvents(View view) {
+        SearchView searchView=view.findViewById(R.id.searchView);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                problemViewModel.searchDataTitleDescription(query);
+                Log.i("search", query);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return true;
+            }
+        });
     }
 
     private void observeMapMarkers() {
-        ProblemViewModel problemViewModel = new ViewModelProvider(requireActivity()).get(ProblemViewModel.class);
         problemViewModel.getProblems().observe(getViewLifecycleOwner(), problems -> {
             if (myMap != null && currentLocation != null) {
                 for (Problem problem : problems) {

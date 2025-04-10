@@ -63,7 +63,7 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnLogin"
-        android:layout_width="96dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
         android:backgroundTint="@color/primaryPurple"
@@ -78,7 +78,7 @@
     <Button
         android:id="@+id/btnSignup"
         style="@style/Widget.Material3.Button.ElevatedButton"
-        android:layout_width="96dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:text="@string/sign_up"
