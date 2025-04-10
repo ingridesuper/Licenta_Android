@@ -11,5 +11,8 @@ vezi toate solutiile
 https://stackoverflow.com/questions/30525066/how-to-set-google-map-fragment-inside-scroll-view
 ai implementat 1 - vezi explicatii pe Notion
 
+Filtering (using MD3 widgets)
+https://medium.com/@darush/build-a-simple-sort-and-filter-screen-in-your-android-app-318f0d86e228
+
 
 

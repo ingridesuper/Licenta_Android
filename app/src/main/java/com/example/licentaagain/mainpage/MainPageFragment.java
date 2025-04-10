@@ -1,6 +1,7 @@
 package com.example.licentaagain.mainpage;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -21,11 +22,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.ScrollView;
 import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.example.licentaagain.R;
+import com.example.licentaagain.views.FilterBottomSheet;
 import com.example.licentaagain.views.WorkaroundMapFragment;
 import com.example.licentaagain.models.Problem;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -39,7 +43,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.Task;
 
-public class MainPageFragment extends Fragment implements OnMapReadyCallback {
+public class MainPageFragment extends Fragment implements OnMapReadyCallback, FilterBottomSheet.FilterListener{
     private GoogleMap myMap;
     private ProblemViewModel problemViewModel;
     FragmentManager fragmentManager;
@@ -120,7 +124,17 @@ public class MainPageFragment extends Fragment implements OnMapReadyCallback {
         setUpProblemListFragment();
         observeMapMarkers();
         setUpSearchEvents(view);
+        setUpFilterEvent(view);
     }
+
+    private void setUpFilterEvent(View view) {
+        Button btnFilter=view.findViewById(R.id.btnFilter);
+        btnFilter.setOnClickListener(v->{
+            FilterBottomSheet filterBottomSheet=new FilterBottomSheet(this);
+            filterBottomSheet.show(getChildFragmentManager(), filterBottomSheet.getTag());
+        });
+    }
+
 
     private void setUpSearchEvents(View view) {
         SearchView searchView=view.findViewById(R.id.searchView);
@@ -128,20 +142,36 @@ public class MainPageFragment extends Fragment implements OnMapReadyCallback {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 problemViewModel.searchDataTitleDescription(query);
-                Log.i("search", query);
+                hideKeyboard(view);
                 return true;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
+                if(newText.isEmpty()){
+                    problemViewModel.fetchAllProblems();
+                }
                 return true;
             }
         });
+
+        searchView.setOnCloseListener(()->{
+            problemViewModel.fetchAllProblems();
+            return true;
+        });
+    }
+
+    private void hideKeyboard(View view) {
+        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (imm != null) {
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
     }
 
     private void observeMapMarkers() {
         problemViewModel.getProblems().observe(getViewLifecycleOwner(), problems -> {
             if (myMap != null && currentLocation != null) {
+                myMap.clear();
                 for (Problem problem : problems) {
                     LatLng location = new LatLng(problem.getLatitude(), problem.getLongitude());
                     myMap.addMarker(new MarkerOptions().position(location).title(problem.getTitle()));
@@ -198,19 +228,13 @@ public class MainPageFragment extends Fragment implements OnMapReadyCallback {
     }
 
 
+    @Override
+    public void onFilterApplied(boolean newestSelected, boolean oldestSelected) {
+        if(newestSelected){
+            Toast.makeText(getActivity(), "Newest", Toast.LENGTH_SHORT).show();
+        }
+        else {
+            Toast.makeText(getActivity(), "Oldest", Toast.LENGTH_SHORT).show();
+        }
+    }
 }
-
-/*
- * Initial Setup:
- * The fragment is created and its layout is inflated.
- * Permission Check:
- * The app checks if location permission is granted.
- * Location Fetching:
- * If permission is granted, the app retrieves the last known location using Google’s location service.
- * Map Initialization:
- * The map is loaded using SupportMapFragment.
- * Map Display:
- * The camera moves to the user’s current location.
- * Permission Handling:
- * If the user denies permission, a warning is shown via a Toast.
- */

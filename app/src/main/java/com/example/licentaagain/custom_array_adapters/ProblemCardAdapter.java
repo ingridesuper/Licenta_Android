@@ -39,9 +39,10 @@ public class ProblemCardAdapter extends RecyclerView.Adapter<ProblemCardAdapter.
         return new ProblemViewHolder(view);
     }
 
+
+    //leaga datele dintr-un Problem concret la cardul asta
     @Override
     public void onBindViewHolder(@NonNull ProblemViewHolder holder, int position) {
-        // Binds the problem data to the CardView
         Problem problem = problemList.get(position);
         fillUiWithData(holder, problem);
         setButtonListeners(holder, problem);
@@ -151,6 +152,9 @@ public class ProblemCardAdapter extends RecyclerView.Adapter<ProblemCardAdapter.
     //am definit viewholder aici, pt ca e specific adaptorului
     //e static inner class
     public static class ProblemViewHolder extends RecyclerView.ViewHolder {
+        //view holder e specific recycler view pt imbunatatire performanta
+        //e practic doar o cutie cu referintele astea, ca sa nu apelam la fiecare binding
+        //legat de onBindViewHolder de mai sus!
         TextView titleTextView, addressTextView, categoryTextView;
         MaterialButton btnSign, btnSigned;
 
