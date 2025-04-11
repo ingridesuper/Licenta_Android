@@ -29,6 +29,7 @@ import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.example.licentaagain.R;
+import com.example.licentaagain.enums.Sector;
 import com.example.licentaagain.utils.ProblemFilterState;
 import com.example.licentaagain.views.FilterBottomSheet;
 import com.example.licentaagain.views.WorkaroundMapFragment;
@@ -43,6 +44,8 @@ import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.Task;
+
+import java.util.List;
 
 public class MainPageFragment extends Fragment implements OnMapReadyCallback, FilterBottomSheet.FilterListener{
     private GoogleMap myMap;

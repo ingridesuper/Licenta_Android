@@ -61,7 +61,7 @@ public class FilterBottomSheet extends BottomSheetDialogFragment {
                 newState.setSortOrder(ProblemFilterState.SortOrder.OLDEST);
             }
 
-            newState.setSectorList(currentState.getSectorList());
+            newState.setSelectedSectors(currentState.getSelectedSectors());
 
             listener.onFilterApplied(newState);
             dismiss();
@@ -75,7 +75,7 @@ public class FilterBottomSheet extends BottomSheetDialogFragment {
             radioGroup.check(currentState.getSortOrder() == ProblemFilterState.SortOrder.NEWEST ? R.id.rbNewest : R.id.rbOldest);
         }
 
-        List<Sector> selectedSectors = currentState.getSectorList();
+        List<Sector> selectedSectors = currentState.getSelectedSectors();
         SectorChipAdapter sectorChipAdapter = new SectorChipAdapter(getContext(), sectorChipGroup, Arrays.asList(Sector.values()), selectedSectors);
         sectorChipAdapter.bindChips();
     }

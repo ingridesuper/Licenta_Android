@@ -13,13 +13,13 @@ public class ProblemFilterState { //practic doar o clasa care ma ajuta sa tin mi
     }
 
     private SortOrder sortOrder;
-    private List<Sector> sectorList;
+    private List<Sector> selectedSectors;
     //and more here
 
 
     public ProblemFilterState() {
         this.sortOrder = SortOrder.NONE;
-        sectorList =new ArrayList<>();
+        selectedSectors =new ArrayList<>();
     }
 
     public SortOrder getSortOrder() {
@@ -30,15 +30,15 @@ public class ProblemFilterState { //practic doar o clasa care ma ajuta sa tin mi
         this.sortOrder = sortOrder;
     }
 
-    public List<Sector> getSectorList() {
-        return sectorList;
+    public List<Sector> getSelectedSectors() {
+        return selectedSectors;
     }
 
-    public void setSectorList(List<Sector> sectorList) {
-        this.sectorList = sectorList;
+    public void setSelectedSectors(List<Sector> sectorList) {
+        this.selectedSectors = sectorList;
     }
 
     public void addSector(Sector sector){
-        this.sectorList.add(sector);
+        this.selectedSectors.add(sector);
     }
 }

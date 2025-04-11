@@ -8,6 +8,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.example.licentaagain.enums.Sector;
 import com.example.licentaagain.models.Problem;
 import com.example.licentaagain.utils.ProblemFilterState;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -47,7 +48,8 @@ public class ProblemViewModel extends ViewModel {
     }
 
     private void applyFilter(ProblemFilterState state) {
-        orderByAge(state.getSortOrder()==ProblemFilterState.SortOrder.NEWEST);
+        //orderByAge(state.getSortOrder()==ProblemFilterState.SortOrder.NEWEST);
+        getBySector(filterState.getValue().getSelectedSectors());
     }
 
     //aici va tb implementat cu Algolia, pt ca asa nu
@@ -141,6 +143,35 @@ public class ProblemViewModel extends ViewModel {
                 Log.e("FirestoreOrder", "Error ordering by createDate", task.getException());
             }
         });
+    }
+
+
+    public void getBySector(List<Sector> selectedSectors){
+        if(selectedSectors.isEmpty()){
+            return;
+        }
+        List<Integer> sectorNumbers = new ArrayList<>();
+        for (Sector sector : selectedSectors) {
+            sectorNumbers.add(sector.getNumar());
+        }
+
+        FirebaseFirestore.getInstance().collection("problems")
+                .whereIn("sector", sectorNumbers)
+                .get()
+                .addOnCompleteListener(task->{
+                    if (task.isSuccessful()){
+                        List<Problem> fetchedProblems = new ArrayList<>();
+                        for (QueryDocumentSnapshot doc : task.getResult()) {
+                            Problem problem = doc.toObject(Problem.class);
+                            problem.setId(doc.getId());
+                            fetchedProblems.add(problem);
+                        }
+                        setProblems(fetchedProblems);
+                    }
+                    else {
+                        Log.i("fetch sector", "error");
+                    }
+                });
     }
 
 }
