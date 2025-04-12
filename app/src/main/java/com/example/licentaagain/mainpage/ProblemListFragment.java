@@ -39,7 +39,6 @@ public class ProblemListFragment extends Fragment {
         problemViewModel = new ViewModelProvider(requireActivity()).get(ProblemViewModel.class);
     }
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_problem_list, container, false);

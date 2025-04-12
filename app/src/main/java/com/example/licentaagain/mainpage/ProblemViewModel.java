@@ -116,37 +116,7 @@ public class ProblemViewModel extends ViewModel implements ProblemRepository.Pro
 
     //Firestore -> doesn't support OR operator
     public void searchDataTitleDescription(String searchText){
-        CollectionReference ref = FirebaseFirestore.getInstance().collection("problems");
-        List<Problem> searchedList = new ArrayList<>();
-
-        Task<QuerySnapshot> titleQuery = ref.whereGreaterThanOrEqualTo("title", searchText)
-                .whereLessThanOrEqualTo("title", searchText + "\uf8ff")
-                .get();
-
-        Task<QuerySnapshot> descriptionQuery = ref.whereGreaterThanOrEqualTo("description", searchText)
-                .whereLessThanOrEqualTo("description", searchText + "\uf8ff")
-                .get();
-
-        Tasks.whenAllComplete(titleQuery, descriptionQuery).addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                for (Task<?> individualTask : task.getResult()) {
-                    if (individualTask.isSuccessful()) {
-                        QuerySnapshot result = (QuerySnapshot) individualTask.getResult();
-                        for (DocumentSnapshot doc : result.getDocuments()) {
-                            Problem problem = doc.toObject(Problem.class);
-                            problem.setId(doc.getId());
-                            if (!searchedList.contains(problem)) {
-                                searchedList.add(problem);
-                            }
-                        }
-                    }
-                }
-                setProblems(searchedList);
-
-            } else {
-                Log.e("FirestoreSearch", "Error retrieving search results", task.getException());
-            }
-        });
+        problemRepository.searchDataTitleDescription(searchText, this);
     }
 
     public void fetchAllProblems() {

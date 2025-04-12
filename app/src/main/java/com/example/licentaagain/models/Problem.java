@@ -2,9 +2,10 @@ package com.example.licentaagain.models;
 
 import com.google.firebase.Timestamp;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class Problem {
+public class Problem implements Serializable {
     private String id; //ma ajuta cu contains (cu setterul)
     private String title;
     private String description;

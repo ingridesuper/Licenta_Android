@@ -1,5 +1,7 @@
 package com.example.licentaagain.custom_adapters;
 
+import android.content.Context;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -7,11 +9,15 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.licentaagain.HomePageActivity;
 import com.example.licentaagain.R;
 import com.example.licentaagain.models.Problem;
 import com.example.licentaagain.models.ProblemSignature;
+import com.example.licentaagain.problem.ProblemDetailsFragment;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -43,6 +49,30 @@ public class ProblemCardAdapter extends RecyclerView.Adapter<ProblemCardAdapter.
         Problem problem = problemList.get(position);
         fillUiWithData(holder, problem);
         setButtonListeners(holder, problem);
+        setOnProblemClickListener(holder, problem);
+    }
+
+    private void setOnProblemClickListener(@NonNull ProblemViewHolder holder, Problem problem) {
+        holder.itemView.setOnClickListener(v->{
+            Context context = v.getContext(); //activitatea curenta practic
+
+            if (context instanceof HomePageActivity) {
+                HomePageActivity activity = (HomePageActivity) context;
+
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("problem", problem);
+
+                ProblemDetailsFragment problemDetailsFragment = new ProblemDetailsFragment();
+                problemDetailsFragment.setArguments(bundle);
+
+                activity.getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.fragment_container_view, problemDetailsFragment)
+                        .addToBackStack(null)
+                        .commit();
+            }
+
+        });
     }
 
     private void setButtonListeners(ProblemViewHolder holder, Problem problem) {

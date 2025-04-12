@@ -8,9 +8,14 @@ import com.example.licentaagain.enums.CategorieProblema;
 import com.example.licentaagain.enums.Sector;
 import com.example.licentaagain.models.Problem;
 import com.example.licentaagain.utils.ProblemFilterState;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -248,6 +253,45 @@ public class ProblemRepository {
             }
             else {
                 Log.e("getByCategorySectorOrderByAge", "Error fetching problems", task.getException());
+            }
+        });
+    }
+
+    //!!!
+    // aici va tb implementat cu Algolia, pt ca asa nu
+    //gaseste cuvinte din INTERIORUL unui String
+
+    //Firestore -> doesn't support OR operator
+    public void searchDataTitleDescription(String searchText, ProblemFetchCallback callback){
+        CollectionReference ref = FirebaseFirestore.getInstance().collection("problems");
+        List<Problem> searchedList = new ArrayList<>();
+
+        Task<QuerySnapshot> titleQuery = ref.whereGreaterThanOrEqualTo("title", searchText)
+                .whereLessThanOrEqualTo("title", searchText + "\uf8ff")
+                .get();
+
+        Task<QuerySnapshot> descriptionQuery = ref.whereGreaterThanOrEqualTo("description", searchText)
+                .whereLessThanOrEqualTo("description", searchText + "\uf8ff")
+                .get();
+
+        Tasks.whenAllComplete(titleQuery, descriptionQuery).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                for (Task<?> individualTask : task.getResult()) {
+                    if (individualTask.isSuccessful()) {
+                        QuerySnapshot result = (QuerySnapshot) individualTask.getResult();
+                        for (DocumentSnapshot doc : result.getDocuments()) {
+                            Problem problem = doc.toObject(Problem.class);
+                            problem.setId(doc.getId());
+                            if (!searchedList.contains(problem)) { //based on id
+                                searchedList.add(problem);
+                            }
+                        }
+                    }
+                }
+                callback.onFetchComplete(searchedList);
+
+            } else {
+                Log.e("FirestoreSearch", "Error retrieving search results", task.getException());
             }
         });
     }
