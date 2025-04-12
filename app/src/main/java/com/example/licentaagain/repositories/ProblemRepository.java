@@ -153,4 +153,102 @@ public class ProblemRepository {
             }
         });
     }
+
+    public void getByCategoryOrderByAge(List<CategorieProblema> selectedCategories, ProblemFilterState.SortOrder sortOrder, ProblemFetchCallback callback){
+        List<String> categorieProblemaString=new ArrayList<>();
+        for(CategorieProblema categorieProblema:selectedCategories){
+            categorieProblemaString.add(categorieProblema.getCategorie());
+        }
+
+        Query query=db.collection("problems").whereIn("categorieProblema", categorieProblemaString);
+
+        if (sortOrder == ProblemFilterState.SortOrder.NEWEST) {
+            query = query.orderBy("createDate", Query.Direction.DESCENDING);
+        } else if (sortOrder == ProblemFilterState.SortOrder.OLDEST) {
+            query = query.orderBy("createDate", Query.Direction.ASCENDING);
+        }
+
+        query.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                List<Problem> fetchedProblems = new ArrayList<>();
+                for (QueryDocumentSnapshot doc : task.getResult()) {
+                    Problem problem = doc.toObject(Problem.class);
+                    problem.setId(doc.getId());
+                    fetchedProblems.add(problem);
+                }
+                callback.onFetchComplete(fetchedProblems);
+            } else {
+                Log.e("getByCategoryOrderByAge", "Error fetching problems", task.getException());
+            }
+        });
+
+    }
+
+    public void getByCategorySectorUnsorted(List<CategorieProblema> selectedCategories, List<Sector> selectedSectors, ProblemFetchCallback callback){
+        List<String> categorieProblemaString=new ArrayList<>();
+        for(CategorieProblema categorieProblema:selectedCategories){
+            categorieProblemaString.add(categorieProblema.getCategorie());
+        }
+
+        List<Integer> sectorNumbers = new ArrayList<>();
+        for (Sector sector : selectedSectors) {
+            sectorNumbers.add(sector.getNumar());
+        }
+
+        db.collection("problems")
+                .whereIn("categorieProblema", categorieProblemaString)
+                .whereIn("sector", sectorNumbers)
+                .get()
+                .addOnCompleteListener(task->{
+                    if(task.isSuccessful()){
+                        List<Problem> fetchedProblems = new ArrayList<>();
+                        for (QueryDocumentSnapshot doc : task.getResult()) {
+                            Problem problem = doc.toObject(Problem.class);
+                            problem.setId(doc.getId());
+                            fetchedProblems.add(problem);
+                        }
+                        callback.onFetchComplete(fetchedProblems);
+                    }
+                    else {
+                        Log.e("getByCategorySector", "Error fetching problems", task.getException());
+                    }
+                });
+    }
+
+    public void getByCategorySectorOrderByAge(List<CategorieProblema> selectedCategories, List<Sector> selectedSectors, ProblemFilterState.SortOrder sortOrder,ProblemFetchCallback callback){
+        List<String> categorieProblemaString=new ArrayList<>();
+        for(CategorieProblema categorieProblema:selectedCategories){
+            categorieProblemaString.add(categorieProblema.getCategorie());
+        }
+
+        List<Integer> sectorNumbers = new ArrayList<>();
+        for (Sector sector : selectedSectors) {
+            sectorNumbers.add(sector.getNumar());
+        }
+
+        Query query=db.collection("problems")
+                .whereIn("categorieProblema", categorieProblemaString)
+                .whereIn("sector", sectorNumbers);
+
+        if(sortOrder.equals(ProblemFilterState.SortOrder.NEWEST)){
+            query = query.orderBy("createDate", Query.Direction.DESCENDING);
+        }
+        else if(sortOrder.equals(ProblemFilterState.SortOrder.OLDEST)){
+            query = query.orderBy("createDate", Query.Direction.ASCENDING);
+        }
+        query.get().addOnCompleteListener(task -> {
+            if(task.isSuccessful()){
+                List<Problem> fetchedProblems = new ArrayList<>();
+                for (QueryDocumentSnapshot doc : task.getResult()) {
+                    Problem problem = doc.toObject(Problem.class);
+                    problem.setId(doc.getId());
+                    fetchedProblems.add(problem);
+                }
+                callback.onFetchComplete(fetchedProblems);
+            }
+            else {
+                Log.e("getByCategorySectorOrderByAge", "Error fetching problems", task.getException());
+            }
+        });
+    }
 }

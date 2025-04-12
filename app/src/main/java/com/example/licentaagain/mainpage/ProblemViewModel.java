@@ -79,33 +79,34 @@ public class ProblemViewModel extends ViewModel implements ProblemRepository.Pro
                 && filterState.getValue().getSelectedCategories().isEmpty()) {
             problemRepository.orderByAge(filterState.getValue().getSortOrder() == ProblemFilterState.SortOrder.NEWEST, this);
         }
-        //sector si ordine
-        else if (filterState.getValue().getSelectedCategories().isEmpty() && !filterState.getValue().getSelectedSectors().isEmpty()) {
-            problemRepository.getBySectorOrderByAge(filterState.getValue().getSelectedSectors(), filterState.getValue().getSortOrder(), this);
-        }
         // doar categorii
         else if (filterState.getValue().getSelectedSectors().isEmpty()
                 && !filterState.getValue().getSelectedCategories().isEmpty()
                 && filterState.getValue().getSortOrder() == ProblemFilterState.SortOrder.NONE) {
             problemRepository.getByCategory(filterState.getValue().getSelectedCategories(), this);
         }
-        //categorie + sort order -> de aici de editat
-        else if (filterState.getValue().getSortOrder() == ProblemFilterState.SortOrder.NONE
-                && !filterState.getValue().getSelectedSectors().isEmpty()
-                && !filterState.getValue().getSelectedCategories().isEmpty()) {
-            //getBySectorAndCategory(filterState.getValue().getSelectedSectors(), filterState.getValue().getSelectedCategories());
+        //sector si ordine
+        else if (filterState.getValue().getSelectedCategories().isEmpty() && !filterState.getValue().getSelectedSectors().isEmpty()) {
+            problemRepository.getBySectorOrderByAge(filterState.getValue().getSelectedSectors(), filterState.getValue().getSortOrder(), this);
         }
-        //categorie + sector fara ordine
+        //categorie + sort order
+        else if (filterState.getValue().getSortOrder() != ProblemFilterState.SortOrder.NONE
+                && filterState.getValue().getSelectedSectors().isEmpty()
+                && !filterState.getValue().getSelectedCategories().isEmpty()) {
+            problemRepository.getByCategoryOrderByAge(filterState.getValue().getSelectedCategories(), filterState.getValue().getSortOrder(), this);
+        }
+        //categorie + sector
         else if (filterState.getValue().getSortOrder() == ProblemFilterState.SortOrder.NONE
                 && !filterState.getValue().getSelectedCategories().isEmpty()
                 && !filterState.getValue().getSelectedSectors().isEmpty()){
+            problemRepository.getByCategorySectorUnsorted(filterState.getValue().getSelectedCategories(), filterState.getValue().getSelectedSectors(), this);
 
         }
         // categorie, sector, ordine
         else if (!filterState.getValue().getSelectedSectors().isEmpty()
                 && !filterState.getValue().getSelectedCategories().isEmpty()
                 && filterState.getValue().getSortOrder() != ProblemFilterState.SortOrder.NONE) {
-            //getBySectorCategoryOrderByAge(filterState.getValue().getSelectedSectors(),
+            problemRepository.getByCategorySectorOrderByAge(filterState.getValue().getSelectedCategories(), filterState.getValue().getSelectedSectors(), filterState.getValue().getSortOrder(), this);
         }
     }
 
