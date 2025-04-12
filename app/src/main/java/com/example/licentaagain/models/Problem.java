@@ -2,8 +2,10 @@ package com.example.licentaagain.models;
 
 import com.google.firebase.Timestamp;
 
+import java.util.Objects;
+
 public class Problem {
-    private String id; //cred ca tb sa stergi atributul asta
+    private String id; //ma ajuta cu contains (cu setterul)
     private String title;
     private String description;
     private String authorUid;
@@ -124,4 +126,18 @@ public class Problem {
                 ", createDate=" + createDate +
                 '}';
     }
+
+    @Override
+    public boolean equals(Object o) { //pt contains
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Problem problem = (Problem) o;
+        return id != null && id.equals(problem.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
 }

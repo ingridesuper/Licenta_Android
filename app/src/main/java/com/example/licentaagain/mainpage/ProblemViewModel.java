@@ -134,6 +134,7 @@ public class ProblemViewModel extends ViewModel implements ProblemRepository.Pro
                         QuerySnapshot result = (QuerySnapshot) individualTask.getResult();
                         for (DocumentSnapshot doc : result.getDocuments()) {
                             Problem problem = doc.toObject(Problem.class);
+                            problem.setId(doc.getId());
                             if (!searchedList.contains(problem)) {
                                 searchedList.add(problem);
                             }
