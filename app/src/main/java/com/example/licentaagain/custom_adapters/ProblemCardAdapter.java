@@ -1,18 +1,15 @@
-package com.example.licentaagain.custom_array_adapters;
+package com.example.licentaagain.custom_adapters;
 
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.SearchView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.transition.Visibility;
 
 import com.example.licentaagain.R;
-import com.example.licentaagain.enums.Sector;
 import com.example.licentaagain.models.Problem;
 import com.example.licentaagain.models.ProblemSignature;
 import com.google.android.material.button.MaterialButton;

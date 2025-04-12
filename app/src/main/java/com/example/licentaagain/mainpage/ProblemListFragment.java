@@ -14,7 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.licentaagain.R;
-import com.example.licentaagain.custom_array_adapters.ProblemCardAdapter;
+import com.example.licentaagain.custom_adapters.ProblemCardAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 

@@ -1,9 +1,6 @@
 package com.example.licentaagain.views;
 
-import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,10 +9,10 @@ import android.widget.RadioGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.content.res.AppCompatResources;
 
 import com.example.licentaagain.R;
-import com.example.licentaagain.custom_array_adapters.SectorChipAdapter;
+import com.example.licentaagain.custom_adapters.ChipAdapter;
+import com.example.licentaagain.enums.CategorieProblema;
 import com.example.licentaagain.enums.Sector;
 import com.example.licentaagain.utils.ProblemFilterState;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
@@ -25,7 +22,6 @@ import com.google.android.material.chip.ChipGroup;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 public class FilterBottomSheet extends BottomSheetDialogFragment {
     private ProblemFilterState currentState;
@@ -54,43 +50,73 @@ public class FilterBottomSheet extends BottomSheetDialogFragment {
         applyFilterButton.setOnClickListener(v -> {
             ProblemFilterState newState = new ProblemFilterState();
 
-            if(((RadioGroup)view.findViewById(R.id.rgSort)).getCheckedRadioButtonId()==R.id.rbNewest){
+            RadioGroup radioGroup = view.findViewById(R.id.rgSort);
+            int selectedRadioId = radioGroup.getCheckedRadioButtonId();
+            if (selectedRadioId == R.id.rbNewest) {
                 newState.setSortOrder(ProblemFilterState.SortOrder.NEWEST);
-            }
-            else if(((RadioGroup)view.findViewById(R.id.rgSort)).getCheckedRadioButtonId()==R.id.rbOldest){
+            } else if (selectedRadioId == R.id.rbOldest) {
                 newState.setSortOrder(ProblemFilterState.SortOrder.OLDEST);
             }
 
-            ChipGroup chipGroup = view.findViewById(R.id.chipGroupSector);
-            List<Sector> selectedSectors = new ArrayList<>();
-
-            for (int i = 0; i < chipGroup.getChildCount(); i++) {
-                View chipView = chipGroup.getChildAt(i);
-                if (chipView instanceof Chip) {
-                    Chip chip = (Chip) chipView;
-                    if (chip.isChecked()) {
-                        Sector sector = (Sector) chip.getTag(); // we stored it in tag earlier
-                        selectedSectors.add(sector);
-                    }
-                }
-            }
+            List<Sector> selectedSectors = getSelectedItemsFromChipGroup(view, R.id.chipGroupSector);
+            List<CategorieProblema> selectedCategories = getSelectedItemsFromChipGroup(view, R.id.chipGroupCategory);
 
             newState.setSelectedSectors(selectedSectors);
-            listener.onFilterApplied(newState); //this updates the state in the viewModel
+            newState.setSelectedCategories(selectedCategories);
+
+            listener.onFilterApplied(newState);
             dismiss();
         });
     }
 
+
+    //Helper method to get selected items from a ChipGroup.
+    //view - parent view containing the ChipGroup.
+    //chipGroupId The ID of the ChipGroup to process.
+    // returns the list of selected items from the ChipGroup.
+    private <T> List<T> getSelectedItemsFromChipGroup(View view, int chipGroupId) {
+        ChipGroup chipGroup = view.findViewById(chipGroupId);
+        List<T> selectedItems = new ArrayList<>();
+        for (int i = 0; i < chipGroup.getChildCount(); i++) {
+            View chipView = chipGroup.getChildAt(i);
+            if (chipView instanceof Chip) {
+                Chip chip = (Chip) chipView;
+                if (chip.isChecked()) {
+                    selectedItems.add((T) chip.getTag()); // Retrieves the tagged item! (Sector or CategorieProblema)
+                }
+            }
+        }
+        return selectedItems;
+    }
     private void makeUIMirrorCurrentState(View view) {
         RadioGroup radioGroup = view.findViewById(R.id.rgSort);
-        ChipGroup sectorChipGroup=view.findViewById(R.id.chipGroupSector);
-        if(currentState.getSortOrder() == ProblemFilterState.SortOrder.NEWEST || currentState.getSortOrder() == ProblemFilterState.SortOrder.OLDEST){
+        ChipGroup sectorChipGroup = view.findViewById(R.id.chipGroupSector);
+        ChipGroup categoryChipGroup = view.findViewById(R.id.chipGroupCategory);
+
+        if (currentState.getSortOrder() == ProblemFilterState.SortOrder.NEWEST || currentState.getSortOrder() == ProblemFilterState.SortOrder.OLDEST) {
             radioGroup.check(currentState.getSortOrder() == ProblemFilterState.SortOrder.NEWEST ? R.id.rbNewest : R.id.rbOldest);
         }
 
-        List<Sector> selectedSectors = currentState.getSelectedSectors();
-        SectorChipAdapter sectorChipAdapter = new SectorChipAdapter(getContext(), sectorChipGroup, Arrays.asList(Sector.values()), selectedSectors);
-        sectorChipAdapter.bindChips();
+        //pt sector
+        bindChips(sectorChipGroup, Arrays.asList(Sector.values()), currentState.getSelectedSectors(), new ChipAdapter.ChipTextProvider<Sector>() {
+            @Override
+            public String getChipText(Sector item) {
+                return "Sectorul " + item.getNumar();
+            }
+        });
+
+        //pt categorie
+        bindChips(categoryChipGroup, Arrays.asList(CategorieProblema.values()), currentState.getSelectedCategories(), new ChipAdapter.ChipTextProvider<CategorieProblema>() {
+            @Override
+            public String getChipText(CategorieProblema item) {
+                return item.getCategorie();
+            }
+        });
+    }
+
+    private <T> void bindChips(ChipGroup chipGroup, List<T> items, List<T> selectedItems, ChipAdapter.ChipTextProvider<T> chipTextProvider) {
+        ChipAdapter<T> chipAdapter = new ChipAdapter<>(getContext(), chipGroup, items, selectedItems, chipTextProvider);
+        chipAdapter.bindChips();
     }
 
 }

@@ -1,5 +1,6 @@
 package com.example.licentaagain.utils;
 
+import com.example.licentaagain.enums.CategorieProblema;
 import com.example.licentaagain.enums.Sector;
 
 import java.util.ArrayList;
@@ -14,12 +15,14 @@ public class ProblemFilterState { //practic doar o clasa care ma ajuta sa tin mi
 
     private SortOrder sortOrder;
     private List<Sector> selectedSectors;
+    private List<CategorieProblema> selectedCategories;
     //and more here
 
 
     public ProblemFilterState() {
         this.sortOrder = SortOrder.NONE;
         selectedSectors =new ArrayList<>();
+        selectedCategories=new ArrayList<>();
     }
 
     public SortOrder getSortOrder() {
@@ -42,11 +45,20 @@ public class ProblemFilterState { //practic doar o clasa care ma ajuta sa tin mi
         this.selectedSectors.add(sector);
     }
 
+    public List<CategorieProblema> getSelectedCategories() {
+        return selectedCategories;
+    }
+
+    public void setSelectedCategories(List<CategorieProblema> selectedCategories) {
+        this.selectedCategories = selectedCategories;
+    }
+
     @Override
     public String toString() {
         return "ProblemFilterState{" +
-                "selectedSectors=" + selectedSectors +
+                "selectedCategories=" + selectedCategories +
                 ", sortOrder=" + sortOrder +
+                ", selectedSectors=" + selectedSectors +
                 '}';
     }
 }
