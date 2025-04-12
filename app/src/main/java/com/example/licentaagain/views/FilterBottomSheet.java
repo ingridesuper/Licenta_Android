@@ -46,6 +46,33 @@ public class FilterBottomSheet extends BottomSheetDialogFragment {
     }
 
     private void subscribeToEvents(View view) {
+        subscribeToApplyFiltersEvent(view);
+        subscribeToClearFiltersEvents(view);
+    }
+
+    private void subscribeToClearFiltersEvents(View view) {
+        Button btnClearFilters=view.findViewById(R.id.btnClearFilters);
+        btnClearFilters.setOnClickListener(v->{
+            RadioGroup radioGroup = view.findViewById(R.id.rgSort);
+            radioGroup.clearCheck();
+
+            clearChipGroupSelection(view, R.id.chipGroupSector);
+            clearChipGroupSelection(view, R.id.chipGroupCategory);
+        });
+    }
+
+    private void clearChipGroupSelection(View view, int chipGroupId) {
+        ChipGroup chipGroup = view.findViewById(chipGroupId);
+        for (int i = 0; i < chipGroup.getChildCount(); i++) {
+            View chipView = chipGroup.getChildAt(i);
+            if (chipView instanceof Chip) {
+                Chip chip = (Chip) chipView;
+                chip.setChecked(false);
+            }
+        }
+    }
+
+    private void subscribeToApplyFiltersEvent(View view) {
         Button applyFilterButton = view.findViewById(R.id.btnApply);
         applyFilterButton.setOnClickListener(v -> {
             ProblemFilterState newState = new ProblemFilterState();

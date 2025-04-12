@@ -2,7 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="50dp"
+    android:padding="30dp"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <TextView
@@ -13,7 +13,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         android:fontFamily="@font/manrope_bold"
-        android:textSize="23dp"
+        android:textSize="21dp"
     />
 
     <RadioGroup
@@ -45,7 +45,7 @@
         android:id="@+id/tvFilterHeading"
         android:text="Filter by"
         android:fontFamily="@font/manrope_bold"
-        android:textSize="23dp"
+        android:textSize="21dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@+id/rgSort"
@@ -60,7 +60,7 @@
         app:layout_constraintStart_toStartOf="parent"
         android:text="Sector"
         android:fontFamily="@font/manrope_bold"
-        android:textSize="18dp"
+        android:textSize="17dp"
         android:layout_marginTop="8dp"/>
 
     <com.google.android.material.chip.ChipGroup
@@ -78,7 +78,7 @@
         app:layout_constraintStart_toStartOf="parent"
         android:text="Categorie"
         android:fontFamily="@font/manrope_bold"
-        android:textSize="18dp"
+        android:textSize="17dp"
         android:layout_marginTop="8dp"/>
 
     <com.google.android.material.chip.ChipGroup
@@ -98,16 +98,36 @@
     - dupa categorie
     - dupa zona -> buton gen: near you
     -->
-
-
-    <Button
-        android:layout_marginTop="15dp"
-        android:id="@+id/btnApply"
-        android:textSize="15dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/chipGroupCategory"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Apply"/>
+        app:layout_constraintTop_toBottomOf="@+id/chipGroupCategory"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="15dp">
+
+        <Button
+            android:id="@+id/btnClearFilters"
+            style="@style/Widget.Material3.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="15dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/chipGroupCategory"
+            android:text="Clear"/>
+
+        <Button
+            style="@style/Widget.Material3.Button"
+            android:layout_marginStart="30dp"
+            android:id="@+id/btnApply"
+            android:textSize="15dp"
+            app:layout_constraintStart_toEndOf="@+id/btnClearFilters"
+            app:layout_constraintTop_toBottomOf="@+id/chipGroupCategory"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Apply"/>
+
+    </LinearLayout>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
