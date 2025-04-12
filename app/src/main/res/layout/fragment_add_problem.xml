@@ -21,6 +21,8 @@
             android:layout_width="match_parent"
             android:layout_margin="20dp"
             android:layout_height="wrap_content"
+            android:fontFamily="@font/manrope_bold"
+            android:textSize="18dp"
             android:text="@string/add_problem" />
 
         <com.google.android.material.textfield.TextInputLayout

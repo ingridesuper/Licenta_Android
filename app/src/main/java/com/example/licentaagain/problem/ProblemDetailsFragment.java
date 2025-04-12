@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.example.licentaagain.R;
 import com.example.licentaagain.models.Problem;
+import com.example.licentaagain.repositories.UserRepository;
 
 
 public class ProblemDetailsFragment extends Fragment {
@@ -43,7 +44,22 @@ public class ProblemDetailsFragment extends Fragment {
             problem = (Problem) getArguments().getSerializable("problem");
         }
 
-        TextView tvHelloProblem=view.findViewById(R.id.tvHelloProblem);
+        fillUiWithProblemData(view);
+    }
+
+    private void fillUiWithProblemData(@NonNull View view) {
+        TextView tvHelloProblem= view.findViewById(R.id.tvProblemTitle);
+        TextView tvProblemAuthor=view.findViewById(R.id.tvProblemAuthor);
+        TextView tvProblemDescription=view.findViewById(R.id.tvProblemDescription);
+        TextView tvProblemCategory=view.findViewById(R.id.tvProblemCategory);
+        TextView tvProblemAddressSector=view.findViewById(R.id.tvProblemAddressSector);
+
         tvHelloProblem.setText(problem.getTitle());
+        new UserRepository().getUserNameSurnameBasedOnId(problem.getAuthorUid(), fullName->{
+            tvProblemAuthor.setText("Reported by: "+fullName);
+        });
+        tvProblemDescription.setText(problem.getDescription());
+        tvProblemCategory.setText(problem.getCategorieProblema());
+        tvProblemAddressSector.setText(problem.getAddress()+", Sectorul "+problem.getSector());
     }
 }
