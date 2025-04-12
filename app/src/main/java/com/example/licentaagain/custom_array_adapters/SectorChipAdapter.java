@@ -33,15 +33,6 @@ public class SectorChipAdapter {
             chip.setTag(sector); // for later reference!
 
             chip.setChecked(selectedSectors.contains(sector));
-
-            chip.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                if (isChecked) {
-                    selectedSectors.add(sector);
-                } else {
-                    selectedSectors.remove(sector);
-                }
-            });
-
             chipGroup.addView(chip);
         }
     }

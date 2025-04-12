@@ -180,8 +180,8 @@ public class MainPageFragment extends Fragment implements OnMapReadyCallback, Fi
                 for (Problem problem : problems) {
                     LatLng location = new LatLng(problem.getLatitude(), problem.getLongitude());
                     myMap.addMarker(new MarkerOptions().position(location).title(problem.getTitle()));
-                    updateMap();
                 }
+                updateMap();
             }
         });
     }

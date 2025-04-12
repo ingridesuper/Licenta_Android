@@ -41,4 +41,12 @@ public class ProblemFilterState { //practic doar o clasa care ma ajuta sa tin mi
     public void addSector(Sector sector){
         this.selectedSectors.add(sector);
     }
+
+    @Override
+    public String toString() {
+        return "ProblemFilterState{" +
+                "selectedSectors=" + selectedSectors +
+                ", sortOrder=" + sortOrder +
+                '}';
+    }
 }

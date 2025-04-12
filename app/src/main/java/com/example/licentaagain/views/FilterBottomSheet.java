@@ -61,9 +61,22 @@ public class FilterBottomSheet extends BottomSheetDialogFragment {
                 newState.setSortOrder(ProblemFilterState.SortOrder.OLDEST);
             }
 
-            newState.setSelectedSectors(currentState.getSelectedSectors());
+            ChipGroup chipGroup = view.findViewById(R.id.chipGroupSector);
+            List<Sector> selectedSectors = new ArrayList<>();
 
-            listener.onFilterApplied(newState);
+            for (int i = 0; i < chipGroup.getChildCount(); i++) {
+                View chipView = chipGroup.getChildAt(i);
+                if (chipView instanceof Chip) {
+                    Chip chip = (Chip) chipView;
+                    if (chip.isChecked()) {
+                        Sector sector = (Sector) chip.getTag(); // we stored it in tag earlier
+                        selectedSectors.add(sector);
+                    }
+                }
+            }
+
+            newState.setSelectedSectors(selectedSectors);
+            listener.onFilterApplied(newState); //this updates the state in the viewModel
             dismiss();
         });
     }

@@ -34,9 +34,11 @@ public class ProblemViewModel extends ViewModel {
         return filterState;
     }
 
+
+    //dupa ce facem update we apply the filter!
     public void updateFilterState(ProblemFilterState state) {
         filterState.setValue(state);
-        applyFilter(state);
+        applyFilter();
     }
 
     public LiveData<List<Problem>> getProblems() {
@@ -47,9 +49,53 @@ public class ProblemViewModel extends ViewModel {
         problemsLiveData.setValue(problems);
     }
 
-    private void applyFilter(ProblemFilterState state) {
-        //orderByAge(state.getSortOrder()==ProblemFilterState.SortOrder.NEWEST);
-        getBySector(filterState.getValue().getSelectedSectors());
+    private void applyFilter() {
+        Log.d("FilterCheck", "applyFilter() called with: " + filterState.getValue());
+
+        if(filterState.getValue().getSortOrder()== ProblemFilterState.SortOrder.NONE && filterState.getValue().getSelectedSectors().isEmpty()){
+            fetchAllProblems();
+        }
+        else if (filterState.getValue().getSortOrder()==ProblemFilterState.SortOrder.NONE && !filterState.getValue().getSelectedSectors().isEmpty()){
+            getBySector(filterState.getValue().getSelectedSectors());
+        }
+        else if(filterState.getValue().getSelectedSectors().isEmpty()){ //doar ordine
+            orderByAge(filterState.getValue().getSortOrder()==ProblemFilterState.SortOrder.NEWEST);
+        }
+        else { //both
+            getBySectorOrderByAge(filterState.getValue().getSelectedSectors(), filterState.getValue().getSortOrder());
+            Log.d("FilterCheck", "aici");
+        }
+    }
+
+    private void getBySectorOrderByAge(List<Sector> selectedSectors, ProblemFilterState.SortOrder sortOrder) {
+        List<Integer> sectorNumbers = new ArrayList<>();
+        for (Sector sector : selectedSectors) {
+            sectorNumbers.add(sector.getNumar());
+        }
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        Query query = db.collection("problems").whereIn("sector", sectorNumbers);
+
+        if (sortOrder == ProblemFilterState.SortOrder.NEWEST) {
+            query = query.orderBy("createDate", Query.Direction.DESCENDING);
+        } else if (sortOrder == ProblemFilterState.SortOrder.OLDEST) {
+            query = query.orderBy("createDate", Query.Direction.ASCENDING);
+        }
+
+        query.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                List<Problem> fetchedProblems = new ArrayList<>();
+                for (QueryDocumentSnapshot doc : task.getResult()) {
+                    Problem problem = doc.toObject(Problem.class);
+                    problem.setId(doc.getId());
+                    fetchedProblems.add(problem);
+                }
+                setProblems(fetchedProblems);
+                Log.i("getBySectorOrderByAge", fetchedProblems.toString());
+            } else {
+                Log.e("getBySectorOrderByAge", "Error fetching problems", task.getException());
+            }
+        });
     }
 
     //aici va tb implementat cu Algolia, pt ca asa nu
@@ -82,7 +128,6 @@ public class ProblemViewModel extends ViewModel {
                     }
                 }
                 setProblems(searchedList);
-                resetProblemFilterState();
 
             } else {
                 Log.e("FirestoreSearch", "Error retrieving search results", task.getException());
@@ -90,10 +135,6 @@ public class ProblemViewModel extends ViewModel {
         });
     }
 
-    private void resetProblemFilterState() { //resetam si asta! ca sa nu arate ce A FOST selectat, nu ce e selectat in prezent
-        ProblemFilterState state=new ProblemFilterState();
-        updateFilterState(state);
-    }
 
     public void fetchAllProblems() {
         FirebaseFirestore.getInstance().collection("problems").get()
@@ -115,7 +156,6 @@ public class ProblemViewModel extends ViewModel {
                             fetchedProblems.add(newProblem);
                         }
                         setProblems(fetchedProblems);
-                        resetProblemFilterState();
                     }
                 });
     }
