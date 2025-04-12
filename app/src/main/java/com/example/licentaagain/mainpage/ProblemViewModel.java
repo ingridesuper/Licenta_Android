@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModel;
 import com.example.licentaagain.enums.CategorieProblema;
 import com.example.licentaagain.enums.Sector;
 import com.example.licentaagain.models.Problem;
+import com.example.licentaagain.repositories.ProblemRepository;
 import com.example.licentaagain.utils.ProblemFilterState;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -27,17 +28,25 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class ProblemViewModel extends ViewModel {
+public class ProblemViewModel extends ViewModel implements ProblemRepository.ProblemFetchCallback{
     private MutableLiveData<List<Problem>> problemsLiveData=new MutableLiveData<>();
     private final MutableLiveData<ProblemFilterState> filterState = new MutableLiveData<>(new ProblemFilterState());
+
+    private final ProblemRepository problemRepository;
+
+    public ProblemRepository getProblemRepository() {
+        return problemRepository;
+    }
+
+    public ProblemViewModel() {
+        problemRepository = new ProblemRepository();
+    }
 
     //getters and setters
     public LiveData<ProblemFilterState> getFilterState() {
         return filterState;
     }
 
-
-    //dupa ce facem update we apply the filter!
     public void updateFilterState(ProblemFilterState state) {
         filterState.setValue(state);
         applyFilter();
@@ -52,36 +61,35 @@ public class ProblemViewModel extends ViewModel {
     }
 
     private void applyFilter() {
-        //vreau sa am: tot, doar ordine, sector, categorie. si combinatii de cate 2 si toate 3
         Log.d("FilterCheck", "applyFilter() called with: " + filterState.getValue());
 
         if (filterState.getValue().getSortOrder() == ProblemFilterState.SortOrder.NONE
                 && filterState.getValue().getSelectedSectors().isEmpty()
                 && filterState.getValue().getSelectedCategories().isEmpty()) {
-            fetchAllProblems();
+            problemRepository.fetchAllProblems(this);
         }
         //doar sector
         else if (filterState.getValue().getSortOrder() == ProblemFilterState.SortOrder.NONE
                 && !filterState.getValue().getSelectedSectors().isEmpty()
                 && filterState.getValue().getSelectedCategories().isEmpty()) {
-            getBySector(filterState.getValue().getSelectedSectors());
+            problemRepository.getBySector(filterState.getValue().getSelectedSectors(), this);
         }
         //doar ordine
         else if (filterState.getValue().getSelectedSectors().isEmpty()
                 && filterState.getValue().getSelectedCategories().isEmpty()) {
-            orderByAge(filterState.getValue().getSortOrder() == ProblemFilterState.SortOrder.NEWEST);
+            problemRepository.orderByAge(filterState.getValue().getSortOrder() == ProblemFilterState.SortOrder.NEWEST, this);
         }
         //sector si ordine
         else if (filterState.getValue().getSelectedCategories().isEmpty() && !filterState.getValue().getSelectedSectors().isEmpty()) {
-            getBySectorOrderByAge(filterState.getValue().getSelectedSectors(), filterState.getValue().getSortOrder());
+            problemRepository.getBySectorOrderByAge(filterState.getValue().getSelectedSectors(), filterState.getValue().getSortOrder(), this);
         }
         // doar categorii
         else if (filterState.getValue().getSelectedSectors().isEmpty()
                 && !filterState.getValue().getSelectedCategories().isEmpty()
                 && filterState.getValue().getSortOrder() == ProblemFilterState.SortOrder.NONE) {
-            getByCategory(filterState.getValue().getSelectedCategories());
+            problemRepository.getByCategory(filterState.getValue().getSelectedCategories(), this);
         }
-        //categorie + sort order
+        //categorie + sort order -> de aici de editat
         else if (filterState.getValue().getSortOrder() == ProblemFilterState.SortOrder.NONE
                 && !filterState.getValue().getSelectedSectors().isEmpty()
                 && !filterState.getValue().getSelectedCategories().isEmpty()) {
@@ -101,60 +109,6 @@ public class ProblemViewModel extends ViewModel {
         }
     }
 
-    private void getByCategory(List<CategorieProblema> selectedCategories) {
-        List<String> categorieProblemaString=new ArrayList<>();
-        for(CategorieProblema categorieProblema:selectedCategories){
-            categorieProblemaString.add(categorieProblema.getCategorie());
-        }
-
-        FirebaseFirestore.getInstance().collection("problems")
-                .whereIn("categorieProblema", categorieProblemaString)
-                .get()
-                .addOnCompleteListener(task->{
-                    if (task.isSuccessful()){
-                        List<Problem> fetchedProblems = new ArrayList<>();
-                        for (QueryDocumentSnapshot doc : task.getResult()) {
-                            Problem problem = doc.toObject(Problem.class);
-                            problem.setId(doc.getId());
-                            fetchedProblems.add(problem);
-                        }
-                        setProblems(fetchedProblems);
-                    }
-                    else {
-                        Log.i("fetch categorie", "error");
-                    }
-                });
-    }
-
-    private void getBySectorOrderByAge(List<Sector> selectedSectors, ProblemFilterState.SortOrder sortOrder) {
-        List<Integer> sectorNumbers = new ArrayList<>();
-        for (Sector sector : selectedSectors) {
-            sectorNumbers.add(sector.getNumar());
-        }
-
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        Query query = db.collection("problems").whereIn("sector", sectorNumbers);
-
-        if (sortOrder == ProblemFilterState.SortOrder.NEWEST) {
-            query = query.orderBy("createDate", Query.Direction.DESCENDING);
-        } else if (sortOrder == ProblemFilterState.SortOrder.OLDEST) {
-            query = query.orderBy("createDate", Query.Direction.ASCENDING);
-        }
-
-        query.get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                List<Problem> fetchedProblems = new ArrayList<>();
-                for (QueryDocumentSnapshot doc : task.getResult()) {
-                    Problem problem = doc.toObject(Problem.class);
-                    problem.setId(doc.getId());
-                    fetchedProblems.add(problem);
-                }
-                setProblems(fetchedProblems);
-            } else {
-                Log.e("getBySectorOrderByAge", "Error fetching problems", task.getException());
-            }
-        });
-    }
 
     //aici va tb implementat cu Algolia, pt ca asa nu
     //gaseste cuvinte din INTERIORUL unui String
@@ -194,77 +148,11 @@ public class ProblemViewModel extends ViewModel {
     }
 
     public void fetchAllProblems() {
-        FirebaseFirestore.getInstance().collection("problems").get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        List<Problem> fetchedProblems = new ArrayList<>();
-                        for (QueryDocumentSnapshot problem : task.getResult()) {
-                            Problem newProblem=new Problem(
-                                    problem.getString("address"),
-                                    problem.getString("authorUid"),
-                                    problem.getString("description"),
-                                    problem.getDouble("latitude"),
-                                    problem.getDouble("longitude"),
-                                    problem.getDouble("sector").intValue(),
-                                    problem.getString("title"),
-                                    problem.getString("categorieProblema")
-                            );
-                            newProblem.setId(problem.getId());
-                            fetchedProblems.add(newProblem);
-                        }
-                        setProblems(fetchedProblems);
-                    }
-                });
+        problemRepository.fetchAllProblems(this);
     }
 
-    public void orderByAge(boolean byNewest){
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        Query query;
-
-        if (byNewest) {
-            query = db.collection("problems").orderBy("createDate", Query.Direction.DESCENDING);
-        } else {
-            query = db.collection("problems").orderBy("createDate", Query.Direction.ASCENDING);
-        }
-
-        query.get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                List<Problem> orderedProblems = new ArrayList<>();
-                for (QueryDocumentSnapshot doc : task.getResult()) {
-                    Problem problem = doc.toObject(Problem.class);
-                    problem.setId(doc.getId());
-                    orderedProblems.add(problem);
-                }
-                setProblems(orderedProblems);
-            } else {
-                Log.e("FirestoreOrder", "Error ordering by createDate", task.getException());
-            }
-        });
+    @Override
+    public void onFetchComplete(List<Problem> problems) {
+        problemsLiveData.setValue(problems);
     }
-
-    public void getBySector(List<Sector> selectedSectors){
-        List<Integer> sectorNumbers = new ArrayList<>();
-        for (Sector sector : selectedSectors) {
-            sectorNumbers.add(sector.getNumar());
-        }
-
-        FirebaseFirestore.getInstance().collection("problems")
-                .whereIn("sector", sectorNumbers)
-                .get()
-                .addOnCompleteListener(task->{
-                    if (task.isSuccessful()){
-                        List<Problem> fetchedProblems = new ArrayList<>();
-                        for (QueryDocumentSnapshot doc : task.getResult()) {
-                            Problem problem = doc.toObject(Problem.class);
-                            problem.setId(doc.getId());
-                            fetchedProblems.add(problem);
-                        }
-                        setProblems(fetchedProblems);
-                    }
-                    else {
-                        Log.i("fetch sector", "error");
-                    }
-                });
-    }
-
 }

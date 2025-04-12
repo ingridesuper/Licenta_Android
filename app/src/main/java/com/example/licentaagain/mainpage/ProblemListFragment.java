@@ -55,7 +55,6 @@ public class ProblemListFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(adapter);
         problemViewModel.getProblems().observe(getViewLifecycleOwner(), problems -> adapter.updateData(problems));
-
         problemViewModel.fetchAllProblems();
     }
 
