@@ -8,6 +8,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.example.licentaagain.enums.CategorieProblema;
 import com.example.licentaagain.enums.Sector;
 import com.example.licentaagain.models.Problem;
 import com.example.licentaagain.utils.ProblemFilterState;
@@ -22,6 +23,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -50,21 +52,78 @@ public class ProblemViewModel extends ViewModel {
     }
 
     private void applyFilter() {
+        //vreau sa am: tot, doar ordine, sector, categorie. si combinatii de cate 2 si toate 3
         Log.d("FilterCheck", "applyFilter() called with: " + filterState.getValue());
 
-        if(filterState.getValue().getSortOrder()== ProblemFilterState.SortOrder.NONE && filterState.getValue().getSelectedSectors().isEmpty()){
+        if (filterState.getValue().getSortOrder() == ProblemFilterState.SortOrder.NONE
+                && filterState.getValue().getSelectedSectors().isEmpty()
+                && filterState.getValue().getSelectedCategories().isEmpty()) {
             fetchAllProblems();
         }
-        else if (filterState.getValue().getSortOrder()==ProblemFilterState.SortOrder.NONE && !filterState.getValue().getSelectedSectors().isEmpty()){
+        //doar sector
+        else if (filterState.getValue().getSortOrder() == ProblemFilterState.SortOrder.NONE
+                && !filterState.getValue().getSelectedSectors().isEmpty()
+                && filterState.getValue().getSelectedCategories().isEmpty()) {
             getBySector(filterState.getValue().getSelectedSectors());
         }
-        else if(filterState.getValue().getSelectedSectors().isEmpty()){ //doar ordine
-            orderByAge(filterState.getValue().getSortOrder()==ProblemFilterState.SortOrder.NEWEST);
+        //doar ordine
+        else if (filterState.getValue().getSelectedSectors().isEmpty()
+                && filterState.getValue().getSelectedCategories().isEmpty()) {
+            orderByAge(filterState.getValue().getSortOrder() == ProblemFilterState.SortOrder.NEWEST);
         }
-        else { //both
+        //sector si ordine
+        else if (filterState.getValue().getSelectedCategories().isEmpty() && !filterState.getValue().getSelectedSectors().isEmpty()) {
             getBySectorOrderByAge(filterState.getValue().getSelectedSectors(), filterState.getValue().getSortOrder());
-            Log.d("FilterCheck", "aici");
         }
+        // doar categorii
+        else if (filterState.getValue().getSelectedSectors().isEmpty()
+                && !filterState.getValue().getSelectedCategories().isEmpty()
+                && filterState.getValue().getSortOrder() == ProblemFilterState.SortOrder.NONE) {
+            getByCategory(filterState.getValue().getSelectedCategories());
+        }
+        //categorie + sort order
+        else if (filterState.getValue().getSortOrder() == ProblemFilterState.SortOrder.NONE
+                && !filterState.getValue().getSelectedSectors().isEmpty()
+                && !filterState.getValue().getSelectedCategories().isEmpty()) {
+            //getBySectorAndCategory(filterState.getValue().getSelectedSectors(), filterState.getValue().getSelectedCategories());
+        }
+        //categorie + sector fara ordine
+        else if (filterState.getValue().getSortOrder() == ProblemFilterState.SortOrder.NONE
+                && !filterState.getValue().getSelectedCategories().isEmpty()
+                && !filterState.getValue().getSelectedSectors().isEmpty()){
+
+        }
+        // categorie, sector, ordine
+        else if (!filterState.getValue().getSelectedSectors().isEmpty()
+                && !filterState.getValue().getSelectedCategories().isEmpty()
+                && filterState.getValue().getSortOrder() != ProblemFilterState.SortOrder.NONE) {
+            //getBySectorCategoryOrderByAge(filterState.getValue().getSelectedSectors(),
+        }
+    }
+
+    private void getByCategory(List<CategorieProblema> selectedCategories) {
+        List<String> categorieProblemaString=new ArrayList<>();
+        for(CategorieProblema categorieProblema:selectedCategories){
+            categorieProblemaString.add(categorieProblema.getCategorie());
+        }
+
+        FirebaseFirestore.getInstance().collection("problems")
+                .whereIn("categorieProblema", categorieProblemaString)
+                .get()
+                .addOnCompleteListener(task->{
+                    if (task.isSuccessful()){
+                        List<Problem> fetchedProblems = new ArrayList<>();
+                        for (QueryDocumentSnapshot doc : task.getResult()) {
+                            Problem problem = doc.toObject(Problem.class);
+                            problem.setId(doc.getId());
+                            fetchedProblems.add(problem);
+                        }
+                        setProblems(fetchedProblems);
+                    }
+                    else {
+                        Log.i("fetch categorie", "error");
+                    }
+                });
     }
 
     private void getBySectorOrderByAge(List<Sector> selectedSectors, ProblemFilterState.SortOrder sortOrder) {
@@ -134,7 +193,6 @@ public class ProblemViewModel extends ViewModel {
         });
     }
 
-
     public void fetchAllProblems() {
         FirebaseFirestore.getInstance().collection("problems").get()
                 .addOnCompleteListener(task -> {
@@ -184,11 +242,7 @@ public class ProblemViewModel extends ViewModel {
         });
     }
 
-
     public void getBySector(List<Sector> selectedSectors){
-        if(selectedSectors.isEmpty()){
-            return;
-        }
         List<Integer> sectorNumbers = new ArrayList<>();
         for (Sector sector : selectedSectors) {
             sectorNumbers.add(sector.getNumar());
