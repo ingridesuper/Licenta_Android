@@ -237,4 +237,12 @@ public class MainPageFragment extends Fragment implements OnMapReadyCallback, Fi
     public void onFilterApplied(ProblemFilterState newState) { //metoda def in interfata FilterBottomSheet.FilterListener
         problemViewModel.updateFilterState(newState);
     }
+
+    @Override
+    public void onPause() { //after i reenter the page the state reflects (and this is mirrored in the UI!)
+        super.onPause();
+        ProblemFilterState defaultState = new ProblemFilterState();
+        problemViewModel.updateFilterState(defaultState);
+    }
+
 }

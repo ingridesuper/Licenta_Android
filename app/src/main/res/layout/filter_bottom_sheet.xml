@@ -24,10 +24,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
+
         <RadioButton
             android:id="@+id/rbNewest"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="20dp"
             android:text="Newest" />
 
         <RadioButton
@@ -39,7 +41,7 @@
     </RadioGroup>
 
     <TextView
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="18dp"
         android:id="@+id/tvFilterHeading"
         android:text="Filter by"
         android:fontFamily="@font/manrope_bold"
@@ -68,6 +70,24 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvSectorSubheading"/>
 
+    <TextView
+        android:id="@+id/tvCategorySubheading"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/chipGroupSector"
+        app:layout_constraintStart_toStartOf="parent"
+        android:text="Categorie"
+        android:fontFamily="@font/manrope_bold"
+        android:textSize="18dp"
+        android:layout_marginTop="8dp"/>
+
+    <com.google.android.material.chip.ChipGroup
+        android:id="@+id/chipGroupCategory"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvCategorySubheading"/>
+
 
     <!--
     sort idei:
@@ -85,7 +105,7 @@
         android:id="@+id/btnApply"
         android:textSize="15dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/chipGroupSector"
+        app:layout_constraintTop_toBottomOf="@+id/chipGroupCategory"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Apply"/>

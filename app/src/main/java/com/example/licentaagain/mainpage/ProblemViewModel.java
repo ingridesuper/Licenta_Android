@@ -91,7 +91,6 @@ public class ProblemViewModel extends ViewModel {
                     fetchedProblems.add(problem);
                 }
                 setProblems(fetchedProblems);
-                Log.i("getBySectorOrderByAge", fetchedProblems.toString());
             } else {
                 Log.e("getBySectorOrderByAge", "Error fetching problems", task.getException());
             }
