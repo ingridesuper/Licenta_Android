@@ -12,6 +12,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -24,6 +26,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.example.licentaagain.R;
+import com.example.licentaagain.custom_adapters.SelectedImagesAdapter;
 import com.example.licentaagain.enums.CategorieProblema;
 import com.example.licentaagain.enums.Sector;
 import com.example.licentaagain.mainpage.MainPageFragment;
@@ -66,6 +69,9 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
     private TextInputEditText etTitle, etDescription;
     private Spinner spnSector, spnCategorie;
     private ActivityResultLauncher<Intent> imagePickerLauncher;
+    private RecyclerView rvSelectedImages;
+    private SelectedImagesAdapter selectedImagesAdapter;
+
     private List<Uri> selectedImageUris = new ArrayList<>();
     private final int MAX_IMAGES = 5;
     private String currentProblemId; // Make sure you set this somewhere
@@ -103,6 +109,8 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
                         } else {
                             selectedImageUris.add(result.getData().getData());
                         }
+                        selectedImagesAdapter.notifyDataSetChanged();
+                        rvSelectedImages.setVisibility(View.VISIBLE);
 
                         Toast.makeText(getContext(), selectedImageUris.size() + " image(s) selected", Toast.LENGTH_SHORT).show();
                     }
@@ -192,6 +200,11 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
         spnSector=view.findViewById(R.id.spnSector);
         etDescription=view.findViewById(R.id.etDescription);
         etTitle=view.findViewById(R.id.etTitle);
+        rvSelectedImages = view.findViewById(R.id.rvSelectedImages);
+        rvSelectedImages.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+        selectedImagesAdapter = new SelectedImagesAdapter(getContext(), selectedImageUris);
+        rvSelectedImages.setAdapter(selectedImagesAdapter);
+
     }
 
     private void setupSpinners() {
