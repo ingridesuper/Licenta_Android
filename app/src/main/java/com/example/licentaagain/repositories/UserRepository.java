@@ -30,4 +30,26 @@ public class UserRepository {
                     }
                 });
     }
+
+    public void checkIfUserHasNameSurnameSectorData(String uid, Consumer<Boolean> callback){
+        db.collection("users")
+                .whereEqualTo("uid", uid)
+                .get()
+                .addOnCompleteListener(task->{
+                    if(task.isSuccessful()){
+                        for (QueryDocumentSnapshot doc : task.getResult()){
+                            User user=doc.toObject(User.class);
+                            if(user.getSurname()!=null && user.getName()!=null && user.getSector()!=0){
+                                callback.accept(true);
+                            }
+                            else {
+                                callback.accept(false);
+                            }
+                        }
+                    }
+                    else {
+                        Log.e("checkIfUserHasNameSurnameSectorData", "User complete data check failed: "+task.getException());
+                    }
+                });
+    }
 }

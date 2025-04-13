@@ -22,7 +22,7 @@
             android:layout_margin="20dp"
             android:layout_height="wrap_content"
             android:fontFamily="@font/manrope_bold"
-            android:textSize="18dp"
+            android:textSize="18sp"
             android:text="@string/add_problem" />
 
         <com.google.android.material.textfield.TextInputLayout
@@ -96,14 +96,25 @@
             app:layout_constraintTop_toBottomOf="@+id/map"/>
 
         <Button
+            style="@style/Widget.Material3.Button.TextButton"
+            android:id="@+id/btnAddPictures"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add pictures"
+            android:layout_marginStart="50dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/spnCategorie"/>
+
+        <Button
             android:id="@+id/btnSave"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/save"
-            android:layout_margin="50dp"
+            android:layout_marginStart="50dp"
+            android:layout_marginBottom="50dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/spnCategorie"/>
+            app:layout_constraintTop_toBottomOf="@id/btnAddPictures"/>
 
     </LinearLayout>
 </ScrollView>

@@ -1,6 +1,13 @@
 package com.example.licentaagain.problem;
 
+import android.app.Activity;
+import android.content.ClipData;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -40,10 +47,15 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import org.checkerframework.checker.units.qual.A;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
 
 public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
 
@@ -53,6 +65,11 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
 
     private TextInputEditText etTitle, etDescription;
     private Spinner spnSector, spnCategorie;
+    private ActivityResultLauncher<Intent> imagePickerLauncher;
+    private List<Uri> selectedImageUris = new ArrayList<>();
+    private final int MAX_IMAGES = 5;
+    private String currentProblemId; // Make sure you set this somewhere
+
 
     public AddProblemFragment() {
         // Required empty public constructor
@@ -66,6 +83,32 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
         if (!Places.isInitialized()) {
             Places.initialize(requireContext(), "AIzaSyBbOOjwR9Eq3CGJnGZhg9fMssUBRFlMDpc");
         }
+
+        addImageUploadSupport();
+    }
+
+    private void addImageUploadSupport() {
+        imagePickerLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+                        ClipData clipData = result.getData().getClipData();
+                        selectedImageUris.clear();
+
+                        if (clipData != null) {
+                            int count = Math.min(clipData.getItemCount(), MAX_IMAGES);
+                            for (int i = 0; i < count; i++) {
+                                selectedImageUris.add(clipData.getItemAt(i).getUri());
+                            }
+                        } else {
+                            selectedImageUris.add(result.getData().getData());
+                        }
+
+                        Toast.makeText(getContext(), selectedImageUris.size() + " image(s) selected", Toast.LENGTH_SHORT).show();
+                    }
+                }
+        );
+
     }
 
     @Nullable
@@ -83,6 +126,17 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
         setUpMapFragment(view);
         setUpAutocompleteFragment();
         btnSaveSubscribeToEvent(view);
+        btnAddPicturesSubscribeToEvent(view);
+    }
+
+    private void btnAddPicturesSubscribeToEvent(View view) {
+        Button btnAddPictures=view.findViewById(R.id.btnAddPictures);
+        btnAddPictures.setOnClickListener(v->{
+            Intent intent = new Intent(Intent.ACTION_PICK);
+            intent.setType("image/*");
+            intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+            imagePickerLauncher.launch(intent);
+        });
     }
 
     private void btnSaveSubscribeToEvent(@NonNull View view) {
@@ -177,15 +231,40 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
 
         db.collection("problems").add(problem)
                 .addOnSuccessListener(documentReference -> {
+                    currentProblemId = documentReference.getId(); // Save the new ID
+
                     documentReference.update("createDate", FieldValue.serverTimestamp());
+
+                    if (!selectedImageUris.isEmpty()) {
+                        uploadSelectedImages(currentProblemId); // Upload images after saving
+                    }
+
                     Toast.makeText(getActivity(), "Problem added", Toast.LENGTH_SHORT).show();
                     navigateBackToMainPage();
-                })
-                .addOnFailureListener(e -> {
-                    Log.e("FirestoreError", "Error adding document", e);
-                    Toast.makeText(getActivity(), "Failed to save problem.", Toast.LENGTH_SHORT).show();
                 });
+
     }
+
+    private void uploadSelectedImages(String problemId) {
+        for (Uri imageUri : selectedImageUris) {
+            String filename = UUID.randomUUID().toString() + ".jpg";
+            StorageReference imgRef = FirebaseStorage.getInstance()
+                    .getReference("problems/" + problemId + "/images/" + filename);
+
+            imgRef.putFile(imageUri)
+                    .addOnSuccessListener(taskSnapshot -> imgRef.getDownloadUrl()
+                            .addOnSuccessListener(downloadUri -> {
+                                db.collection("problems")
+                                        .document(problemId)
+                                        .update("imageUrls", FieldValue.arrayUnion(downloadUri.toString()));
+                            }))
+                    .addOnFailureListener(e -> {
+                        Log.e("UPLOAD_ERROR", "Failed to upload image: " + e.getMessage());
+                        Toast.makeText(getContext(), "Image upload failed", Toast.LENGTH_SHORT).show();
+                    });
+        }
+    }
+
 
     private void navigateBackToMainPage() {
         FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
@@ -201,7 +280,6 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
         BottomNavigationView bottomNavigationView = requireActivity().findViewById(R.id.bottom_navigation);
         bottomNavigationView.setSelectedItemId(R.id.bmHome);
     }
-
 
     private boolean checkUserInput(String description, String title, int sector, String category, Place selectedPlace) {
         if (title.isEmpty()) {

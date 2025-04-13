@@ -50,7 +50,7 @@ public class ProblemListFragment extends Fragment {
 
         RecyclerView recyclerView = view.findViewById(R.id.rvProblems);
         recyclerView.setNestedScrollingEnabled(false);
-        adapter = new ProblemCardAdapter(new ArrayList<>());
+        adapter = new ProblemCardAdapter(getContext(), new ArrayList<>());
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(adapter);
         problemViewModel.getProblems().observe(getViewLifecycleOwner(), problems -> adapter.updateData(problems));

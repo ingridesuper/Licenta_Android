@@ -3,6 +3,8 @@ package com.example.licentaagain.models;
 import com.google.firebase.Timestamp;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class Problem implements Serializable {
@@ -16,6 +18,7 @@ public class Problem implements Serializable {
     private double longitude;
     private String categorieProblema;
     private Timestamp createDate;
+    private List<String> imageUrls;
 
     private Problem(){
         //for Firebase
@@ -30,6 +33,7 @@ public class Problem implements Serializable {
         this.sector = sector;
         this.title = title;
         this.categorieProblema=categorieProblema;
+        this.imageUrls=new ArrayList<>();
     }
 
     public String getId() {

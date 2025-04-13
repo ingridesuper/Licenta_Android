@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentManager;
@@ -17,7 +18,9 @@ import com.example.licentaagain.HomePageActivity;
 import com.example.licentaagain.R;
 import com.example.licentaagain.models.Problem;
 import com.example.licentaagain.models.ProblemSignature;
+import com.example.licentaagain.models.User;
 import com.example.licentaagain.problem.ProblemDetailsFragment;
+import com.example.licentaagain.repositories.UserRepository;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -27,10 +30,12 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public class ProblemCardAdapter extends RecyclerView.Adapter<ProblemCardAdapter.ProblemViewHolder> {
+    private Context context;
 
     private List<Problem> problemList;
 
-    public ProblemCardAdapter(List<Problem> problemList) {
+    public ProblemCardAdapter(Context context, List<Problem> problemList) {
+        this.context=context;
         this.problemList = problemList;
     }
 
@@ -101,20 +106,29 @@ public class ProblemCardAdapter extends RecyclerView.Adapter<ProblemCardAdapter.
 
     private void addSignature(Problem problem, Consumer<Boolean> callback) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        ProblemSignature newSignature=new ProblemSignature(problem.getId(), FirebaseAuth.getInstance().getCurrentUser().getUid());
+        new UserRepository().checkIfUserHasNameSurnameSectorData(FirebaseAuth.getInstance().getCurrentUser().getUid(), result->{
+            if(result){
+                ProblemSignature newSignature=new ProblemSignature(problem.getId(), FirebaseAuth.getInstance().getCurrentUser().getUid());
 
-        db.collection("problem_signatures")
-                .add(newSignature)
-                .addOnSuccessListener(documentReference -> {
-                    Log.i("Firestore", "Semnatura adaugata: " + documentReference.getId());
-                    callback.accept(true);
-                })
-                .addOnFailureListener(e -> {
-                    Log.e("Firestore", "Eroare la adaugarea semnaturii", e);
-                    callback.accept(false);
-                });
+                db.collection("problem_signatures")
+                        .add(newSignature)
+                        .addOnSuccessListener(documentReference -> {
+                            Log.i("Firestore", "Semnatura adaugata: " + documentReference.getId());
+                            callback.accept(true);
+                        })
+                        .addOnFailureListener(e -> {
+                            Log.e("Firestore", "Eroare la adaugarea semnaturii", e);
+                            callback.accept(false);
+                        });
+            }
+            else{
+                Toast.makeText(context, "Completati-va profilul pentru a putea semna!", Toast.LENGTH_SHORT).show();
+            }
+        });
+
     }
 
+    //astea trebuie mutate intr-un repository!
     private void removeSignature(Problem problem, Consumer<Boolean> callback){
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("problem_signatures")
