@@ -64,4 +64,5 @@ public class SelectedImagesAdapter extends RecyclerView.Adapter<SelectedImagesAd
             btnRemove = itemView.findViewById(R.id.btnRemoveImage);
         }
     }
+
 }
