@@ -10,4 +10,16 @@
         android:layout_height="match_parent"
         android:scaleType="centerCrop"
         android:background="@android:color/darker_gray"/>
+
+    <ImageButton
+        android:id="@+id/btnRemoveImage"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_margin="5dp"
+        android:layout_gravity="top|end"
+        android:background="@android:color/transparent"
+        android:src="@android:drawable/ic_menu_close_clear_cancel"
+        android:contentDescription="Remove"
+        android:padding="6dp"/>
 </FrameLayout>
+

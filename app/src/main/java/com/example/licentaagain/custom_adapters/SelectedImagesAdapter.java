@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
@@ -38,6 +39,14 @@ public class SelectedImagesAdapter extends RecyclerView.Adapter<SelectedImagesAd
         Glide.with(context)
                 .load(imageUri)
                 .into(holder.imgSelected);
+
+        holder.btnRemove.setOnClickListener(v -> {
+            int adapterPosition = holder.getBindingAdapterPosition();
+            if (adapterPosition != RecyclerView.NO_POSITION) {
+                imageUris.remove(adapterPosition);
+                notifyItemRemoved(adapterPosition);
+            }
+        });
     }
 
     @Override
@@ -47,10 +56,12 @@ public class SelectedImagesAdapter extends RecyclerView.Adapter<SelectedImagesAd
 
     static class ImageViewHolder extends RecyclerView.ViewHolder {
         ImageView imgSelected;
+        ImageButton btnRemove;
 
         public ImageViewHolder(@NonNull View itemView) {
             super(itemView);
             imgSelected = itemView.findViewById(R.id.imgSelected);
+            btnRemove = itemView.findViewById(R.id.btnRemoveImage);
         }
     }
 }
