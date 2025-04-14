@@ -22,8 +22,10 @@
             app:shapeAppearance="@style/customrounded"
             android:layout_width="0dp"
             android:layout_weight=".40"
+            android:scaleType="centerCrop"
             android:layout_height="match_parent"
-            android:layout_margin="15dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="15dp"
             android:layout_marginBottom="10dp"
             android:src="@drawable/ic_add" />
 
