@@ -22,6 +22,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -41,6 +42,8 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
@@ -65,8 +68,10 @@ import java.util.UUID;
 public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
 
     private GoogleMap myMap;
+    private ProgressBar progressBar;
     private Place selectedPlace;
-    FirebaseFirestore db;
+    private FirebaseFirestore db;
+    private Button btnSave;
 
     private TextInputEditText etTitle, etDescription;
     private Spinner spnSector, spnCategorie;
@@ -151,7 +156,7 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
     }
 
     private void btnSaveSubscribeToEvent(@NonNull View view) {
-        Button btnSave= view.findViewById(R.id.btnSave);
+        btnSave= view.findViewById(R.id.btnSave);
         btnSave.setOnClickListener(v->{
             addProblemToFirebase();
         });
@@ -207,6 +212,7 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
         rvSelectedImages.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         selectedImagesAdapter = new SelectedImagesAdapter(getContext(), selectedImageUris);
         rvSelectedImages.setAdapter(selectedImagesAdapter);
+        progressBar=view.findViewById(R.id.progressBar);
     }
 
     private void enableDragAndDropPictures() {
@@ -244,66 +250,103 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
         spinner.setAdapter(adapter);
     }
 
-    private void addProblemToFirebase(){
-        FirebaseAuth mAuth= FirebaseAuth.getInstance();
-        FirebaseUser currentUser=mAuth.getCurrentUser();
-        if(currentUser==null){
+    private void addProblemToFirebase() {
+        progressBar.setVisibility(View.VISIBLE);
+        btnSave.setEnabled(false);
+
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser == null) {
             return;
         }
-
-        //aici !verifica daca totul e selectat!
 
         String authorUid = currentUser.getUid();
-        String description=etDescription.getText().toString();
-        String title=etTitle.getText().toString();
-        int sector=((Sector) spnSector.getSelectedItem()).getNumar();
-        String category=String.valueOf((CategorieProblema) spnCategorie.getSelectedItem());
-        LatLng latLng=null;
-        if (selectedPlace!=null){
-            latLng=selectedPlace.getLocation();
-        }
+        String description = etDescription.getText().toString();
+        String title = etTitle.getText().toString();
+        int sector = ((Sector) spnSector.getSelectedItem()).getNumar();
+        String category = String.valueOf((CategorieProblema) spnCategorie.getSelectedItem());
 
-        if(!checkUserInput(description, title, sector, category, selectedPlace)){
+        if (!checkUserInput(description, title, sector, category, selectedPlace)) {
             return;
         }
 
-        Problem problem=new Problem(selectedPlace.getDisplayName(), authorUid, description, latLng.latitude, latLng.longitude, sector, title, category);
+        LatLng latLng = selectedPlace.getLocation();
+        Problem problem = new Problem(
+                selectedPlace.getDisplayName(),
+                authorUid,
+                description,
+                latLng.latitude,
+                latLng.longitude,
+                sector,
+                title,
+                category
+        );
 
         db.collection("problems").add(problem)
                 .addOnSuccessListener(documentReference -> {
-                    currentProblemId = documentReference.getId(); // Save the new ID
-
+                    currentProblemId = documentReference.getId();
                     documentReference.update("createDate", FieldValue.serverTimestamp());
 
                     if (!selectedImageUris.isEmpty()) {
-                        uploadSelectedImages(currentProblemId); // Upload images after saving
+                        uploadSelectedImages(currentProblemId, () -> {
+                            Activity activity = getActivity();
+                            if (activity != null) {
+                                Toast.makeText(activity, "Problem added", Toast.LENGTH_SHORT).show();
+                            }
+                            navigateBackToMainPage();
+                        });
+                    } else {
+                        Activity activity = getActivity();
+                        if (activity != null) {
+                            Toast.makeText(activity, "Problem added", Toast.LENGTH_SHORT).show();
+                        }
+                        navigateBackToMainPage();
                     }
-
-                    Toast.makeText(getActivity(), "Problem added", Toast.LENGTH_SHORT).show();
-                    navigateBackToMainPage();
                 });
-
     }
 
-    private void uploadSelectedImages(String problemId) {
+    private void uploadSelectedImages(String problemId, Runnable onComplete) {
+        List<Task<?>> uploadTasks = new ArrayList<>();
+
         for (Uri imageUri : selectedImageUris) {
             String filename = UUID.randomUUID().toString() + ".jpg";
             StorageReference imgRef = FirebaseStorage.getInstance()
                     .getReference("problems/" + problemId + "/images/" + filename);
 
-            imgRef.putFile(imageUri)
-                    .addOnSuccessListener(taskSnapshot -> imgRef.getDownloadUrl()
-                            .addOnSuccessListener(downloadUri -> {
-                                db.collection("problems")
-                                        .document(problemId)
-                                        .update("imageUrls", FieldValue.arrayUnion(downloadUri.toString()));
-                            }))
-                    .addOnFailureListener(e -> {
-                        Log.e("UPLOAD_ERROR", "Failed to upload image: " + e.getMessage());
-                        Toast.makeText(getContext(), "Image upload failed", Toast.LENGTH_SHORT).show();
+            Task<Uri> uploadTask = imgRef.putFile(imageUri)
+                    .continueWithTask(task -> {
+                        if (!task.isSuccessful()) {
+                            throw task.getException();
+                        }
+                        return imgRef.getDownloadUrl();
+                    })
+                    .addOnSuccessListener(downloadUri -> {
+                        db.collection("problems")
+                                .document(problemId)
+                                .update("imageUrls", FieldValue.arrayUnion(downloadUri.toString()));
                     });
+
+            uploadTasks.add(uploadTask);
+        }
+
+        Tasks.whenAllSuccess(uploadTasks)
+                .addOnSuccessListener(results -> onComplete.run())
+                .addOnFailureListener(e -> {
+                    Activity activity = getActivity();
+                    if (activity != null) {
+                        Toast.makeText(activity, "Problem upload failed", Toast.LENGTH_SHORT).show();
+                    }
+                    onComplete.run();
+                });
+    }
+
+    private void showToast(String message) {
+        Activity activity = getActivity();
+        if (activity != null) {
+            Toast.makeText(activity, message, Toast.LENGTH_SHORT).show();
         }
     }
+
 
 
     private void navigateBackToMainPage() {
