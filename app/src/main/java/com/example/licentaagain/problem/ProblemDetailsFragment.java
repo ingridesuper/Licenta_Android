@@ -58,7 +58,7 @@ public class ProblemDetailsFragment extends Fragment {
         TextView tvProblemDescription=view.findViewById(R.id.tvProblemDescription);
         TextView tvProblemCategory=view.findViewById(R.id.tvProblemCategory);
         TextView tvProblemAddressSector=view.findViewById(R.id.tvProblemAddressSector);
-        ViewPager2 viewPager=view.findViewById(R.id.viewPager);
+        RecyclerView recyclerViewPictures=view.findViewById(R.id.recyclerViewPictures);
 
         tvHelloProblem.setText(problem.getTitle());
         new UserRepository().getUserNameSurnameBasedOnId(problem.getAuthorUid(), fullName->{
@@ -70,6 +70,6 @@ public class ProblemDetailsFragment extends Fragment {
 
         List<String> problemImageUrls=problem.getImageUrls();
         ImageAdapterProblemDetails adapter=new ImageAdapterProblemDetails(getContext(), problemImageUrls);
-        viewPager.setAdapter(adapter);
+        recyclerViewPictures.setAdapter(adapter);
     }
 }

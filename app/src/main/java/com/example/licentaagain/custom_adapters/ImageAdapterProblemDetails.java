@@ -17,7 +17,7 @@ import java.util.List;
 
 public class ImageAdapterProblemDetails extends androidx.recyclerview.widget.RecyclerView.Adapter<ImageAdapterProblemDetails.ImageViewHolder> {
     private Context context;
-    private List<String> problemUris;  // List of image URLs
+    private List<String> problemUris;
 
     public ImageAdapterProblemDetails(Context context, List<String> problemUris) {
         this.context = context;
@@ -52,7 +52,7 @@ public class ImageAdapterProblemDetails extends androidx.recyclerview.widget.Rec
 
         public ImageViewHolder(View itemView) {
             super(itemView);
-            imageView = itemView.findViewById(R.id.imageView);
+            imageView = itemView.findViewById(R.id.list_item_image);
         }
     }
 }
