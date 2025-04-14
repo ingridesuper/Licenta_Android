@@ -26,6 +26,7 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.licentaagain.R;
@@ -67,15 +68,12 @@ import java.util.List;
 import java.util.UUID;
 
 public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
-
     private GoogleMap myMap;
-    private ProgressBar progressBar;
     private Place selectedPlace;
+    private ScrollView scrollView;
     private FirebaseFirestore db;
     private Button btnSave;
     private RelativeLayout loadingOverlay;
-
-
     private TextInputEditText etTitle, etDescription;
     private Spinner spnSector, spnCategorie;
     private ActivityResultLauncher<Intent> imagePickerLauncher;
@@ -84,7 +82,7 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
 
     private List<Uri> selectedImageUris = new ArrayList<>();
     private final int MAX_IMAGES = 5;
-    private String currentProblemId; // Make sure you set this somewhere
+    private String currentProblemId;
 
 
     public AddProblemFragment() {
@@ -121,8 +119,6 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
                         }
                         selectedImagesAdapter.notifyDataSetChanged();
                         rvSelectedImages.setVisibility(View.VISIBLE);
-
-                        Toast.makeText(getContext(), selectedImageUris.size() + " image(s) selected", Toast.LENGTH_SHORT).show();
                     }
                 }
         );
@@ -160,9 +156,7 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
 
     private void btnSaveSubscribeToEvent(@NonNull View view) {
         btnSave= view.findViewById(R.id.btnSave);
-        btnSave.setOnClickListener(v->{
-            addProblemToFirebase();
-        });
+        btnSave.setOnClickListener(v-> addProblemToFirebase());
     }
 
     private void setUpAutocompleteFragment() {
@@ -208,6 +202,16 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
         loadingOverlay.setVisibility(show ? View.VISIBLE : View.GONE);
     }
 
+    public void disableAllViews(ViewGroup group) {
+        for (int i = 0; i < group.getChildCount(); i++) {
+            View child = group.getChildAt(i);
+            if (child instanceof ViewGroup) {
+                disableAllViews((ViewGroup) child);
+            } else if (child instanceof Button || child instanceof TextView || child instanceof Spinner) {
+                child.setEnabled(false);
+            }
+        }
+    }
 
     private void initializeVariables(@NonNull View view) {
         db=FirebaseFirestore.getInstance();
@@ -219,8 +223,8 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
         rvSelectedImages.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         selectedImagesAdapter = new SelectedImagesAdapter(getContext(), selectedImageUris);
         rvSelectedImages.setAdapter(selectedImagesAdapter);
-        progressBar=view.findViewById(R.id.progressBar);
         loadingOverlay = view.findViewById(R.id.loadingOverlay);
+        scrollView=view.findViewById(R.id.scrollView);
     }
 
     private void enableDragAndDropPictures() {
@@ -260,7 +264,7 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
 
     private void addProblemToFirebase() {
         showLoadingOverlay(true);
-        btnSave.setEnabled(false);
+        disableAllViews((ViewGroup) scrollView);
 
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();
