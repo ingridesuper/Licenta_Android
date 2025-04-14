@@ -23,6 +23,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -72,6 +73,8 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
     private Place selectedPlace;
     private FirebaseFirestore db;
     private Button btnSave;
+    private RelativeLayout loadingOverlay;
+
 
     private TextInputEditText etTitle, etDescription;
     private Spinner spnSector, spnCategorie;
@@ -201,6 +204,10 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
             Log.e("map not found", "Map fragment not found");
         }
     }
+    private void showLoadingOverlay(boolean show) {
+        loadingOverlay.setVisibility(show ? View.VISIBLE : View.GONE);
+    }
+
 
     private void initializeVariables(@NonNull View view) {
         db=FirebaseFirestore.getInstance();
@@ -213,6 +220,7 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
         selectedImagesAdapter = new SelectedImagesAdapter(getContext(), selectedImageUris);
         rvSelectedImages.setAdapter(selectedImagesAdapter);
         progressBar=view.findViewById(R.id.progressBar);
+        loadingOverlay = view.findViewById(R.id.loadingOverlay);
     }
 
     private void enableDragAndDropPictures() {
@@ -251,7 +259,7 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
     }
 
     private void addProblemToFirebase() {
-        progressBar.setVisibility(View.VISIBLE);
+        showLoadingOverlay(true);
         btnSave.setEnabled(false);
 
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
@@ -264,7 +272,7 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
         String description = etDescription.getText().toString();
         String title = etTitle.getText().toString();
         int sector = ((Sector) spnSector.getSelectedItem()).getNumar();
-        String category = String.valueOf((CategorieProblema) spnCategorie.getSelectedItem());
+        String category = String.valueOf(spnCategorie.getSelectedItem());
 
         if (!checkUserInput(description, title, sector, category, selectedPlace)) {
             return;
@@ -289,10 +297,7 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
 
                     if (!selectedImageUris.isEmpty()) {
                         uploadSelectedImages(currentProblemId, () -> {
-                            Activity activity = getActivity();
-                            if (activity != null) {
-                                Toast.makeText(activity, "Problem added", Toast.LENGTH_SHORT).show();
-                            }
+                            showToast("Problem added");
                             navigateBackToMainPage();
                         });
                     } else {
@@ -332,10 +337,7 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
         Tasks.whenAllSuccess(uploadTasks)
                 .addOnSuccessListener(results -> onComplete.run())
                 .addOnFailureListener(e -> {
-                    Activity activity = getActivity();
-                    if (activity != null) {
-                        Toast.makeText(activity, "Problem upload failed", Toast.LENGTH_SHORT).show();
-                    }
+                    showToast("Problem upload failed");
                     onComplete.run();
                 });
     }
