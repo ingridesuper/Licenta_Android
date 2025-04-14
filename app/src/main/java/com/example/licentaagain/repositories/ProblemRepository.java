@@ -45,7 +45,8 @@ public class ProblemRepository {
                                     problem.getDouble("longitude"),
                                     problem.getDouble("sector").intValue(),
                                     problem.getString("title"),
-                                    problem.getString("categorieProblema")
+                                    problem.getString("categorieProblema"),
+                                    (List<String>) problem.get("imageUrls")
                             );
                             newProblem.setId(problem.getId());
                             fetchedProblems.add(newProblem);

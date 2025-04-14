@@ -18,6 +18,7 @@
         android:orientation="horizontal">
 
         <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/ivProblem"
             app:shapeAppearance="@style/customrounded"
             android:layout_width="0dp"
             android:layout_weight=".40"

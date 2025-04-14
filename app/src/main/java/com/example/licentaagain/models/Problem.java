@@ -36,6 +36,18 @@ public class Problem implements Serializable {
         this.imageUrls=new ArrayList<>();
     }
 
+    public Problem(String address, String authorUid, String description, double latitude, double longitude, int sector, String title, String categorieProblema, List<String> imageUrls) {
+        this.address = address;
+        this.authorUid = authorUid;
+        this.description = description;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.sector = sector;
+        this.title = title;
+        this.categorieProblema = categorieProblema;
+        this.imageUrls = imageUrls;
+    }
+
     public String getId() {
         return id;
     }
@@ -46,6 +58,14 @@ public class Problem implements Serializable {
 
     public String getCategorieProblema() {
         return categorieProblema;
+    }
+
+    public List<String> getImageUrls() {
+        return imageUrls;
+    }
+
+    public void setImageUrls(List<String> imageUrls) {
+        this.imageUrls = imageUrls;
     }
 
     public void setCategorieProblema(String categorieProblema) {

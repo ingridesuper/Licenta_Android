@@ -1,6 +1,7 @@
 package com.example.licentaagain.custom_adapters;
 
 import android.content.Context;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,6 +15,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.licentaagain.HomePageActivity;
 import com.example.licentaagain.R;
 import com.example.licentaagain.models.Problem;
@@ -22,6 +24,7 @@ import com.example.licentaagain.models.User;
 import com.example.licentaagain.problem.ProblemDetailsFragment;
 import com.example.licentaagain.repositories.UserRepository;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.imageview.ShapeableImageView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -99,6 +102,16 @@ public class ProblemCardAdapter extends RecyclerView.Adapter<ProblemCardAdapter.
     holder.titleTextView.setText(problem.getTitle());
     holder.addressTextView.setText(problem.getAddress()+", Sector "+problem.getSector());
     holder.categoryTextView.setText("Categorie: "+problem.getCategorieProblema());
+    if(!problem.getImageUrls().isEmpty()){
+        String imageUrl = problem.getImageUrls().get(0);
+        Glide.with(holder.itemView.getContext())
+                .load(imageUrl)
+                .into(holder.imageView);
+        Log.i("image",problem.getImageUrls().get(0));
+    }
+    else {
+        Log.i("image","empty");
+    }
     problemSignedByUser(problem, isSigned -> {
         updateButtonVisibility(holder, isSigned);
     });
@@ -197,6 +210,7 @@ public class ProblemCardAdapter extends RecyclerView.Adapter<ProblemCardAdapter.
         //e practic doar o cutie cu referintele astea, ca sa nu apelam la fiecare binding
         //legat de onBindViewHolder de mai sus!
         TextView titleTextView, addressTextView, categoryTextView;
+        ShapeableImageView imageView;
         MaterialButton btnSign, btnSigned;
 
         public ProblemViewHolder(@NonNull View itemView) {
@@ -206,6 +220,7 @@ public class ProblemCardAdapter extends RecyclerView.Adapter<ProblemCardAdapter.
             categoryTextView=itemView.findViewById(R.id.tvCategory);
             btnSign=itemView.findViewById(R.id.btnSign);
             btnSigned=itemView.findViewById(R.id.btnSigned);
+            imageView=itemView.findViewById(R.id.ivProblem);
         }
     }
 
