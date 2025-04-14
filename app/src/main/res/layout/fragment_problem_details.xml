@@ -59,17 +59,65 @@
             android:text="Adresa, Sector sector"/>
 
         <!--map fragment here-->
-        <LinearLayout
-            android:orientation="horizontal"
+
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <Button
+                android:id="@+id/btnClose"
                 style="@style/Widget.Material3.Button.TextButton"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Close"/>
 
-        </LinearLayout>
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSign"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="12dp"
+                android:backgroundTint="@color/primaryPurple"
+                android:checkable="true"
+                android:text="@string/sign_problem"
+                android:textAlignment="viewEnd"
+                android:textSize="11sp"
+                android:paddingRight="12dp"
+                android:paddingLeft="12dp"
+                app:iconTint="@color/white"
+                app:strokeColor="@color/primaryPurple"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/btnClose"
+                app:strokeWidth="2dp"
+                app:iconSize="18dp"
+                app:iconPadding="8dp"
+                app:icon="@drawable/ic_sign"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSigned"
+                style="@style/ThemeOverlay.Material3.Button.ElevatedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/white"
+                android:layout_marginEnd="12dp"
+                android:checkable="true"
+                android:paddingRight="13dp"
+                android:paddingLeft="18dp"
+                android:text="@string/signed"
+                android:textAlignment="viewEnd"
+                android:textColor="@color/primaryPurple"
+                android:textSize="12sp"
+                app:icon="@drawable/ic_signed"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/btnClose"
+                app:iconGravity="end"
+                app:iconPadding="15dp"
+                app:iconSize="18dp"
+                app:iconTint="@color/primaryPurple"
+                app:strokeColor="@color/white"
+                app:strokeWidth="2dp" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
 
     </LinearLayout>
