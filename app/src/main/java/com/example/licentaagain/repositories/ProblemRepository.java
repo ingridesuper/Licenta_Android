@@ -1,5 +1,6 @@
 package com.example.licentaagain.repositories;
 
+import android.app.Activity;
 import android.util.Log;
 
 import androidx.lifecycle.MutableLiveData;
@@ -12,6 +13,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -296,4 +298,5 @@ public class ProblemRepository {
             }
         });
     }
+
 }

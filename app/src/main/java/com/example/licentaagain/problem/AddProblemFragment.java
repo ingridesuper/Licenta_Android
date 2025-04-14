@@ -22,7 +22,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.Spinner;
@@ -40,7 +39,6 @@ import com.google.android.gms.common.api.Status;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -58,8 +56,6 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-
-import org.checkerframework.checker.units.qual.A;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -264,7 +260,7 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
 
     private void addProblemToFirebase() {
         showLoadingOverlay(true);
-        disableAllViews((ViewGroup) scrollView);
+        disableAllViews(scrollView);
 
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();
@@ -307,7 +303,7 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
                     } else {
                         Activity activity = getActivity();
                         if (activity != null) {
-                            Toast.makeText(activity, "Problem added", Toast.LENGTH_SHORT).show();
+                            showToast("Problem added");
                         }
                         navigateBackToMainPage();
                     }
@@ -352,8 +348,6 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
             Toast.makeText(activity, message, Toast.LENGTH_SHORT).show();
         }
     }
-
-
 
     private void navigateBackToMainPage() {
         FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
