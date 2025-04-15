@@ -1,5 +1,7 @@
 package com.example.licentaagain.problem;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -39,6 +41,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.function.Consumer;
 
 
@@ -48,6 +51,7 @@ public class ProblemDetailsFragment extends Fragment implements OnMapReadyCallba
     private Button btnClose;
     private Button btnSign;
     private Button btnSigned;
+    private Button btnOpenInGoogleMaps;
     private ProblemSignatureRepository problemSignatureRepository;
 
 
@@ -96,6 +100,21 @@ public class ProblemDetailsFragment extends Fragment implements OnMapReadyCallba
     private void subscribeButtonsToEvents() {
         subscribeBtnCloseToEvent();
         subscribeSigningButtonsToEvents();
+        subscribeOpenInGoogleMaps();
+    }
+
+    private void subscribeOpenInGoogleMaps() {
+        btnOpenInGoogleMaps.setOnClickListener(v->{
+            String uri = String.format(Locale.ENGLISH, "geo:%f,%f?q=%f,%f(%s)", problem.getLatitude(), problem.getLongitude(), problem.getLatitude(), problem.getLongitude(), problem.getTitle());
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+            intent.setPackage("com.google.android.apps.maps");
+
+            if (intent.resolveActivity(requireContext().getPackageManager()) != null) {
+                startActivity(intent);
+            } else {
+                Toast.makeText(getContext(), "Google Maps nu este instalat", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void subscribeSigningButtonsToEvents() {
@@ -166,6 +185,7 @@ public class ProblemDetailsFragment extends Fragment implements OnMapReadyCallba
         btnClose=view.findViewById(R.id.btnClose);
         btnSign=view.findViewById(R.id.btnSign);
         btnSigned=view.findViewById(R.id.btnSigned);
+        btnOpenInGoogleMaps=view.findViewById(R.id.btnOpenInGoogleMaps);
 
         problemSignedByUser(problem, isSigned -> {
             updateButtonVisibility(isSigned);

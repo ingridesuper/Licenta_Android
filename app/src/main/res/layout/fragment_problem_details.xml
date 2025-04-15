@@ -71,6 +71,17 @@
             android:name="com.example.licentaagain.views.WorkaroundMapFragment"
             android:layout_width="match_parent"
             android:layout_height="400dp" />
+        <Button
+            android:id="@+id/btnOpenInGoogleMaps"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Open in Google Maps"
+            android:textColor="@color/black"
+            android:textSize="11sp"
+            app:iconSize="14dp"
+            app:iconTint="@null"
+            style="@style/Widget.Material3.Button.TextButton.Icon"
+            app:icon="@drawable/ic_google_maps"/>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
