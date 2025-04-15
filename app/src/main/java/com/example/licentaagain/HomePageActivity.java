@@ -14,6 +14,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.example.licentaagain.account.AccountFragment;
+import com.example.licentaagain.account.TopProfileFragment;
 import com.example.licentaagain.auth.LoginActivity;
 import com.example.licentaagain.mainpage.MainPageFragment;
 import com.example.licentaagain.problem.AddProblemFragment;
@@ -69,8 +70,8 @@ public class HomePageActivity extends AppCompatActivity {
         bottomNavigationView.setOnItemSelectedListener(item->{
             FragmentTransaction fragmentTransaction=fragmentManager.beginTransaction();
             if(item.getItemId()==R.id.bmAccount){
-                AccountFragment accountFragment=new AccountFragment();
-                fragmentTransaction.replace(R.id.fragment_container_view, accountFragment);
+                TopProfileFragment topProfileFragment=new TopProfileFragment();
+                fragmentTransaction.replace(R.id.fragment_container_view, topProfileFragment);
 
             }
             else if (item.getItemId()==R.id.bmHome){
