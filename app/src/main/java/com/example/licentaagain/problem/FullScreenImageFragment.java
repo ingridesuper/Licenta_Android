@@ -5,10 +5,12 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
@@ -43,5 +45,13 @@ public class FullScreenImageFragment extends Fragment {
         Glide.with(getContext())
                 .load(imageUrl)  // Load the image URL from Firebase Storage
                 .into(imageView);
+
+        Button btnClose=view.findViewById(R.id.btnClose);
+        btnClose.setOnClickListener(v->{
+            FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+            if (fragmentManager.getBackStackEntryCount() > 0) {
+                fragmentManager.popBackStack();
+            }
+        });
     }
 }
