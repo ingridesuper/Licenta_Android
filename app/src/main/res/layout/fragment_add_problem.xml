@@ -32,7 +32,7 @@
                 android:id="@+id/tfTitle"
                 android:layout_width="300dp"
                 android:layout_height="wrap_content"
-                android:layout_margin="20dp"
+                android:layout_marginStart="20dp"
                 app:layout_constraintTop_toBottomOf="@+id/tvHeading"
                 app:layout_constraintStart_toStartOf="parent"
                 android:hint="@string/title"
@@ -50,7 +50,7 @@
             android:id="@+id/tfDescription"
             android:layout_width="300dp"
             android:layout_height="wrap_content"
-            android:layout_margin="20dp"
+            android:layout_marginStart="20dp"
             app:layout_constraintTop_toBottomOf="@+id/tfTitle"
             app:layout_constraintStart_toStartOf="parent"
             android:hint="@string/description"
@@ -64,18 +64,30 @@
                 android:layout_height="wrap_content" />
         </com.google.android.material.textfield.TextInputLayout>
 
+        <TextView
+            android:text="În ce sector se află problema?"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="15dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/TextAppearance.MaterialComponents.Body1"
+            />
+
         <Spinner
             android:id="@+id/spnSector"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tfDescription"
-            android:layout_margin="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="20dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
         <fragment
             android:id="@+id/autocomplete_fragment"
             app:layout_constraintTop_toBottomOf="@+id/spnSector"
-            android:layout_margin="20dp"
+            android:layout_marginTop="30dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
             app:layout_constraintStart_toStartOf="parent"
             android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
             android:layout_width="match_parent"
@@ -84,11 +96,21 @@
         <fragment
             android:id="@+id/map"
             app:layout_constraintStart_toStartOf="parent"
-            android:layout_margin="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
             app:layout_constraintTop_toBottomOf="@+id/autocomplete_fragment"
             android:name="com.example.licentaagain.views.WorkaroundMapFragment"
             android:layout_width="match_parent"
             android:layout_height="400dp" />
+
+        <TextView
+            android:text="Selectați o categorie:"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="30dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/TextAppearance.MaterialComponents.Body1" />
 
         <Spinner
             android:id="@+id/spnCategorie"
@@ -103,7 +125,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_margin="20dp">
+                android:layout_marginTop="30dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp">
 
                 <Button
                     android:id="@+id/btnTakePhoto"
@@ -143,7 +167,7 @@
             android:text="@string/save"
             android:layout_marginBottom="50dp"
             android:layout_gravity="center"
-            android:layout_marginTop="20dp"/>
+            android:layout_marginTop="30dp"/>
 
     </LinearLayout>
 
