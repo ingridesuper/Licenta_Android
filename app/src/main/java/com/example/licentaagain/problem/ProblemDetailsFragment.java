@@ -22,6 +22,7 @@ import com.example.licentaagain.custom_adapters.ImageAdapterProblemDetails;
 import com.example.licentaagain.mainpage.MainPageFragment;
 import com.example.licentaagain.models.Problem;
 import com.example.licentaagain.models.ProblemSignature;
+import com.example.licentaagain.repositories.ProblemSignatureRepository;
 import com.example.licentaagain.repositories.UserRepository;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -37,6 +38,7 @@ public class ProblemDetailsFragment extends Fragment {
     private Button btnClose;
     private Button btnSign;
     private Button btnSigned;
+    private ProblemSignatureRepository problemSignatureRepository;
 
 
     public ProblemDetailsFragment() {
@@ -47,7 +49,7 @@ public class ProblemDetailsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        problemSignatureRepository=new ProblemSignatureRepository();
     }
 
     @Override
@@ -83,55 +85,34 @@ public class ProblemDetailsFragment extends Fragment {
     }
 
     private void addSignature(Problem problem, Consumer<Boolean> callback) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
         new UserRepository().checkIfUserHasNameSurnameSectorData(FirebaseAuth.getInstance().getCurrentUser().getUid(), result->{
             if(result){
                 ProblemSignature newSignature=new ProblemSignature(problem.getId(), FirebaseAuth.getInstance().getCurrentUser().getUid());
 
-                db.collection("problem_signatures")
-                        .add(newSignature)
-                        .addOnSuccessListener(documentReference -> {
-                            Log.i("Firestore", "Semnatura adaugata: " + documentReference.getId());
-                            callback.accept(true);
-                        })
-                        .addOnFailureListener(e -> {
-                            Log.e("Firestore", "Eroare la adaugarea semnaturii", e);
-                            callback.accept(false);
-                        });
+                problemSignatureRepository.addProblemSignature(newSignature, addingResult->{
+                    if(addingResult){
+                        callback.accept(true);
+                    }
+                    else {
+                        callback.accept(false);
+                    }
+                });
             }
             else{
                 Toast.makeText(getContext(), "Completati-va profilul pentru a putea semna!", Toast.LENGTH_SHORT).show();
             }
         });
-
     }
+
     private void removeSignature(Problem problem, Consumer<Boolean> callback){
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("problem_signatures")
-                .whereEqualTo("userId", FirebaseAuth.getInstance().getCurrentUser().getUid())
-                .whereEqualTo("problemId", problem.getId())
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    if (!queryDocumentSnapshots.isEmpty()) {
-                        for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
-                            db.collection("problem_signatures").document(doc.getId()).delete()
-                                    .addOnSuccessListener(aVoid -> {
-                                        Log.i("Firestore", "Semnatura eliminata");
-                                        callback.accept(true);
-                                    })
-                                    .addOnFailureListener(e -> {
-                                        Log.e("Firestore", "Eroare la stergerea semnaturii", e);
-                                        callback.accept(false);
-                                    });
-                        }
-                    } else {
-                        callback.accept(false);
-                    }
-                })
-                .addOnFailureListener(e -> {
-                    Log.e("Firestore", "Eroare la cautarea semnaturii", e);
-                    callback.accept(false);
-                });
+        problemSignatureRepository.removeSignature(problem.getId(), FirebaseAuth.getInstance().getCurrentUser().getUid(), result->{
+            if(result){
+                callback.accept(true);
+            }
+            else {
+                callback.accept(false);
+            }
+        });
     }
 
     private void subscribeBtnCloseToEvent() {
@@ -185,25 +166,13 @@ public class ProblemDetailsFragment extends Fragment {
     }
 
     private void problemSignedByUser(Problem problem, Consumer<Boolean> callback) {
-        String currentUid= FirebaseAuth.getInstance().getCurrentUser().getUid();
-        FirebaseFirestore db=FirebaseFirestore.getInstance();
-        db.collection("problem_signatures")
-                .whereEqualTo("userId", currentUid)
-                .whereEqualTo("problemId", problem.getId())
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        if(task.getResult().isEmpty()){
-                            callback.accept(false);
-                        }
-                        else {
-                            callback.accept(true);
-                        }
-                    }
-                    else {
-                        Log.e("semnaturi", "eroare");
-                        callback.accept(false);
-                    }
-                });
+        problemSignatureRepository.problemSignedByUser(problem.getId(), FirebaseAuth.getInstance().getCurrentUser().getUid(), result->{
+            if(result){
+                callback.accept(true);
+            }
+            else {
+                callback.accept(false);
+            }
+        });
     }
 }
