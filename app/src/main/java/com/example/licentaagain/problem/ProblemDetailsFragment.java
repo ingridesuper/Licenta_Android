@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,6 +25,14 @@ import com.example.licentaagain.models.Problem;
 import com.example.licentaagain.models.ProblemSignature;
 import com.example.licentaagain.repositories.ProblemSignatureRepository;
 import com.example.licentaagain.repositories.UserRepository;
+import com.example.licentaagain.views.WorkaroundMapFragment;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -33,8 +42,9 @@ import java.util.List;
 import java.util.function.Consumer;
 
 
-public class ProblemDetailsFragment extends Fragment {
+public class ProblemDetailsFragment extends Fragment implements OnMapReadyCallback {
     private Problem problem;
+    private GoogleMap myMap;
     private Button btnClose;
     private Button btnSign;
     private Button btnSigned;
@@ -67,6 +77,20 @@ public class ProblemDetailsFragment extends Fragment {
 
         fillUiWithProblemData(view);
         subscribeButtonsToEvents();
+        setUpMapFragment(view);
+    }
+
+    private void setUpMapFragment(View view) {
+        ScrollView mScrollView = view.findViewById(R.id.scrollView);
+        WorkaroundMapFragment mapFragment = (WorkaroundMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+
+        if (mapFragment != null) {
+            mapFragment.getMapAsync(this);
+            Log.i("map found", "Map found and initialized");
+            mapFragment.setListener(() -> mScrollView.requestDisallowInterceptTouchEvent(true));
+        } else {
+            Log.e("map not found", "Map fragment not found");
+        }
     }
 
     private void subscribeButtonsToEvents() {
@@ -152,7 +176,7 @@ public class ProblemDetailsFragment extends Fragment {
             tvProblemAuthor.setText("Reported by: "+fullName);
         });
         tvProblemDescription.setText(problem.getDescription());
-        tvProblemCategory.setText(problem.getCategorieProblema());
+        tvProblemCategory.setText("Categorie: "+problem.getCategorieProblema());
         tvProblemAddressSector.setText(problem.getAddress()+", Sectorul "+problem.getSector());
 
         List<String> problemImageUrls=problem.getImageUrls();
@@ -174,5 +198,19 @@ public class ProblemDetailsFragment extends Fragment {
                 callback.accept(false);
             }
         });
+    }
+
+    @Override
+    public void onMapReady(@NonNull GoogleMap googleMap) {
+        myMap = googleMap;
+        LatLng location = new LatLng(problem.getLatitude(), problem.getLongitude());
+        myMap.addMarker(new MarkerOptions().position(location).title(problem.getTitle()));
+        myMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 15));
+
+        UiSettings uiSettings= myMap.getUiSettings();
+        uiSettings.setZoomGesturesEnabled(true);
+        uiSettings.setScrollGesturesEnabled(true);
+        uiSettings.setZoomControlsEnabled(true);
+        Log.i("ProblemDetailsFragment", "Map is ready");
     }
 }

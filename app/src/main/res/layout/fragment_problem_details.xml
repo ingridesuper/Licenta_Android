@@ -9,7 +9,6 @@
 
     <LinearLayout
         android:padding="20dp"
-        android:paddingBottom="90dp"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -21,7 +20,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fontFamily="@font/manrope_bold"
-            android:textSize="21dp"
+            android:textSize="21sp"
             android:text="This is the problem's title" />
 
         <TextView
@@ -29,7 +28,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Reported by: Nume Autor"
-            android:textSize="12dp" />
+            android:textSize="12sp" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:layout_width="match_parent"
@@ -42,6 +41,8 @@
         <TextView
             android:layout_marginTop="30dp"
             android:id="@+id/tvProblemDescription"
+            android:layout_marginBottom="8dp"
+            android:textSize="12sp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="This is the description of the problem." />
@@ -50,19 +51,32 @@
             android:id="@+id/tvProblemCategory"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Category: category"/>
+            android:textStyle="bold"
+            android:layout_marginBottom="15dp"
+            android:textSize="11sp"
+            android:text="Category: category" />
 
         <TextView
             android:id="@+id/tvProblemAddressSector"
             android:layout_width="match_parent"
+            android:layout_marginBottom="10dp"
+            android:textStyle="bold"
+            android:textSize="11sp"
             android:layout_height="wrap_content"
-            android:text="Adresa, Sector sector"/>
+            android:text="Adresa, Sector sector" />
 
-        <!--map fragment here-->
+        <fragment
+            android:id="@+id/map"
+            app:layout_constraintStart_toStartOf="parent"
+            android:name="com.example.licentaagain.views.WorkaroundMapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="400dp" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="120dp"
+            android:layout_marginTop="20dp">
             <Button
                 android:id="@+id/btnClose"
                 style="@style/Widget.Material3.Button.TextButton"
@@ -121,7 +135,5 @@
 
 
     </LinearLayout>
-
-
 
 </ScrollView>
