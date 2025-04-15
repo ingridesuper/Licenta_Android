@@ -105,10 +105,9 @@ public class ProblemDetailsFragment extends Fragment implements OnMapReadyCallba
 
     private void subscribeOpenInGoogleMaps() {
         btnOpenInGoogleMaps.setOnClickListener(v->{
-            String uri = String.format(Locale.ENGLISH, "geo:%f,%f?q=%f,%f(%s)", problem.getLatitude(), problem.getLongitude(), problem.getLatitude(), problem.getLongitude(), problem.getTitle());
+            String uri = String.format(Locale.ENGLISH, "geo:%f,%f?q=%f,%f(%s)", problem.getLatitude(), problem.getLongitude(), problem.getLatitude(), problem.getLongitude(), problem.getTitle()+" - "+problem.getAddress());
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
             intent.setPackage("com.google.android.apps.maps");
-
             if (intent.resolveActivity(requireContext().getPackageManager()) != null) {
                 startActivity(intent);
             } else {
