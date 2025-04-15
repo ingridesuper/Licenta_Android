@@ -1,17 +1,19 @@
 package com.example.licentaagain.custom_adapters;
 
 import android.content.Context;
-import android.content.Intent;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.licentaagain.HomePageActivity;
 import com.example.licentaagain.R;
+import com.example.licentaagain.problem.FullScreenImageFragment;
+import com.example.licentaagain.problem.ProblemDetailsFragment;
 
 import java.util.List;
 
@@ -40,6 +42,26 @@ public class ImageAdapterProblemDetails extends androidx.recyclerview.widget.Rec
                 .load(imageUrl)  // Load the image URL from Firebase Storage
                 .centerCrop()  // Crop the image to fill the ImageView
                 .into(holder.imageView);
+
+        holder.imageView.setOnClickListener(v->{
+            Context context = v.getContext();
+
+            if (context instanceof HomePageActivity) {
+                HomePageActivity activity = (HomePageActivity) context;
+
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("imageUrl", imageUrl);
+
+                FullScreenImageFragment fullScreenImageFragment = new FullScreenImageFragment();
+                fullScreenImageFragment.setArguments(bundle);
+
+                activity.getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.fragment_container_view, fullScreenImageFragment)
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
     }
 
     @Override
