@@ -13,7 +13,6 @@ import com.bumptech.glide.Glide;
 import com.example.licentaagain.HomePageActivity;
 import com.example.licentaagain.R;
 import com.example.licentaagain.problem.FullScreenImageFragment;
-import com.example.licentaagain.problem.ProblemDetailsFragment;
 
 import java.util.List;
 
