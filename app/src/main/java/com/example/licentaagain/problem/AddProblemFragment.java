@@ -10,6 +10,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -57,6 +58,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -75,6 +78,8 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
     private ActivityResultLauncher<Intent> imagePickerLauncher;
     private RecyclerView rvSelectedImages;
     private SelectedImagesAdapter selectedImagesAdapter;
+    private Uri cameraImageUri;
+    private ActivityResultLauncher<Uri> takePictureLauncher;
 
     private List<Uri> selectedImageUris = new ArrayList<>();
     private final int MAX_IMAGES = 5;
@@ -95,6 +100,25 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
         }
 
         addImageUploadSupport();
+        registerCameraLauncher();
+    }
+
+    private void registerCameraLauncher() {
+        takePictureLauncher = registerForActivityResult(
+                new ActivityResultContracts.TakePicture(),
+                result -> {
+                    if (result && cameraImageUri != null) {
+                        if (selectedImageUris.size() < MAX_IMAGES) {
+                            selectedImageUris.add(cameraImageUri);
+                            selectedImagesAdapter.notifyDataSetChanged();
+                            rvSelectedImages.setVisibility(View.VISIBLE);
+                        } else {
+                            showToast("Maximum number of images reached");
+                        }
+                    }
+                }
+        );
+
     }
 
     private void addImageUploadSupport() {
@@ -138,6 +162,34 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
         setUpAutocompleteFragment();
         btnSaveSubscribeToEvent(view);
         btnAddPicturesSubscribeToEvent(view);
+        btnOpenCameraSubscribeToEvent(view);
+    }
+
+    private void btnOpenCameraSubscribeToEvent(View view) {
+        Button btnTakePhoto=view.findViewById(R.id.btnTakePhoto);
+        btnTakePhoto.setOnClickListener(v -> {
+            if (selectedImageUris.size() >= MAX_IMAGES) {
+                showToast("Maximum number of images reached");
+                return;
+            }
+
+            File imageFile;
+            try {
+                imageFile = File.createTempFile("IMG_", ".jpg", requireContext().getCacheDir());
+            } catch (IOException e) {
+                e.printStackTrace();
+                showToast("Could not create image file");
+                return;
+            }
+
+            cameraImageUri = FileProvider.getUriForFile(
+                    requireContext(),
+                    requireContext().getPackageName() + ".provider",
+                    imageFile
+            );
+
+            takePictureLauncher.launch(cameraImageUri);
+        });
     }
 
     private void btnAddPicturesSubscribeToEvent(View view) {
@@ -149,6 +201,38 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
             imagePickerLauncher.launch(intent);
         });
     }
+    private void uploadSelectedImages(String problemId, Runnable onComplete) {
+        List<Task<?>> uploadTasks = new ArrayList<>();
+
+        for (Uri imageUri : selectedImageUris) {
+            String filename = UUID.randomUUID().toString() + ".jpg";
+            StorageReference imgRef = FirebaseStorage.getInstance()
+                    .getReference("problems/" + problemId + "/images/" + filename);
+
+            Task<Uri> uploadTask = imgRef.putFile(imageUri)
+                    .continueWithTask(task -> {
+                        if (!task.isSuccessful()) {
+                            throw task.getException();
+                        }
+                        return imgRef.getDownloadUrl();
+                    })
+                    .addOnSuccessListener(downloadUri -> {
+                        db.collection("problems")
+                                .document(problemId)
+                                .update("imageUrls", FieldValue.arrayUnion(downloadUri.toString()));
+                    });
+
+            uploadTasks.add(uploadTask);
+        }
+
+        Tasks.whenAllSuccess(uploadTasks)
+                .addOnSuccessListener(results -> onComplete.run())
+                .addOnFailureListener(e -> {
+                    showToast("Problem upload failed");
+                    onComplete.run();
+                });
+    }
+
 
     private void btnSaveSubscribeToEvent(@NonNull View view) {
         btnSave= view.findViewById(R.id.btnSave);
@@ -310,37 +394,6 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
                 });
     }
 
-    private void uploadSelectedImages(String problemId, Runnable onComplete) {
-        List<Task<?>> uploadTasks = new ArrayList<>();
-
-        for (Uri imageUri : selectedImageUris) {
-            String filename = UUID.randomUUID().toString() + ".jpg";
-            StorageReference imgRef = FirebaseStorage.getInstance()
-                    .getReference("problems/" + problemId + "/images/" + filename);
-
-            Task<Uri> uploadTask = imgRef.putFile(imageUri)
-                    .continueWithTask(task -> {
-                        if (!task.isSuccessful()) {
-                            throw task.getException();
-                        }
-                        return imgRef.getDownloadUrl();
-                    })
-                    .addOnSuccessListener(downloadUri -> {
-                        db.collection("problems")
-                                .document(problemId)
-                                .update("imageUrls", FieldValue.arrayUnion(downloadUri.toString()));
-                    });
-
-            uploadTasks.add(uploadTask);
-        }
-
-        Tasks.whenAllSuccess(uploadTasks)
-                .addOnSuccessListener(results -> onComplete.run())
-                .addOnFailureListener(e -> {
-                    showToast("Problem upload failed");
-                    onComplete.run();
-                });
-    }
 
     private void showToast(String message) {
         Activity activity = getActivity();
