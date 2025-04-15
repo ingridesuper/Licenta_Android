@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".account.TopProfileFragment">
+
+    <ImageView
+        android:id="@+id/ivProfile"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginTop="80dp"
+        android:layout_marginBottom="50dp"
+        android:background="@drawable/circle_background"
+        android:padding="10dp"
+        android:src="@drawable/ic_profile"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/indicatorLayout"
+        android:layout_width="match_parent"
+        android:layout_marginTop="40dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ivProfile"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_height="4dp"
+        android:orientation="horizontal">
+
+        <View
+            android:id="@+id/indicator1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@color/darkGray" />
+
+        <View
+            android:id="@+id/indicator2"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@android:color/transparent" />
+
+        <View
+            android:id="@+id/indicator3"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@android:color/transparent" />
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/profileTabBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/indicatorLayout" >
+
+        <Button
+            android:id="@+id/btnMyProblems"
+            style="@style/Widget.Material3.Button.TextButton.Icon"
+            android:layout_width="wrap_content"
+            android:text="Your reports"
+            android:layout_height="wrap_content"
+            app:iconTint="@color/darkGray"
+            android:textColor="@color/darkGray"
+            android:layout_marginHorizontal="12dp"
+            app:icon="@drawable/ic_settings" />
+
+        <Button
+            android:id="@+id/btnMyIdeas"
+            style="@style/Widget.Material3.Button.TextButton.Icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Your ideas"
+            app:iconTint="@color/darkGray"
+            android:textColor="@color/darkGray"
+            android:layout_marginHorizontal="12dp"
+            app:icon="@drawable/ic_settings" />
+
+        <Button
+            android:id="@+id/btnMyAccountSettings"
+            style="@style/Widget.Material3.Button.TextButton.Icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:iconTint="@color/darkGray"
+            android:text="Account"
+            android:textColor="@color/darkGray"
+            android:layout_marginHorizontal="12dp"
+            app:icon="@drawable/ic_settings" />
+
+    </LinearLayout>
+
+    <fragment
+        android:id="@+id/fragmentContainer"
+        android:layout_marginTop="30dp"
+        app:layout_constraintTop_toBottomOf="@+id/profileTabBar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
