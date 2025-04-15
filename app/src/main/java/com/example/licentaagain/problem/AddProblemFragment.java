@@ -343,15 +343,11 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
     }
 
     private void addProblemToFirebase() {
-        showLoadingOverlay(true);
-        disableAllViews(scrollView);
-
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser == null) {
             return;
         }
-
         String authorUid = currentUser.getUid();
         String description = etDescription.getText().toString();
         String title = etTitle.getText().toString();
@@ -359,8 +355,15 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
         String category = String.valueOf(spnCategorie.getSelectedItem());
 
         if (!checkUserInput(description, title, sector, category, selectedPlace)) {
+            Toast.makeText(getContext(), "Nu ati completat tot ce este necesar", Toast.LENGTH_SHORT).show();
             return;
         }
+        if(selectedImageUris.isEmpty()){
+            Toast.makeText(getContext(), "Va rugam atasati cel putin o imagine", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        showLoadingOverlay(true);
+        disableAllViews(scrollView);
 
         LatLng latLng = selectedPlace.getLocation();
         Problem problem = new Problem(
