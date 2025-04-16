@@ -299,4 +299,28 @@ public class ProblemRepository {
         });
     }
 
+    public void fetchAllProblemsByUser(String uid, ProblemFetchCallback callback){
+        db.collection("problems").whereEqualTo("authorUid", uid).get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        List<Problem> fetchedProblems = new ArrayList<>();
+                        for (QueryDocumentSnapshot problem : task.getResult()) {
+                            Problem newProblem=new Problem(
+                                    problem.getString("address"),
+                                    problem.getString("authorUid"),
+                                    problem.getString("description"),
+                                    problem.getDouble("latitude"),
+                                    problem.getDouble("longitude"),
+                                    problem.getDouble("sector").intValue(),
+                                    problem.getString("title"),
+                                    problem.getString("categorieProblema"),
+                                    (List<String>) problem.get("imageUrls")
+                            );
+                            newProblem.setId(problem.getId());
+                            fetchedProblems.add(newProblem);
+                        }
+                        callback.onFetchComplete(fetchedProblems);
+                    }
+                });
+    }
 }
