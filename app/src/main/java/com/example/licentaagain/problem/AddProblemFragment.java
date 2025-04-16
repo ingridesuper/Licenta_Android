@@ -29,6 +29,7 @@ import com.example.licentaagain.enums.CategorieProblema;
 import com.example.licentaagain.enums.Sector;
 import com.example.licentaagain.mainpage.MainPageFragment;
 import com.example.licentaagain.models.Problem;
+import com.example.licentaagain.repositories.ProblemRepository;
 import com.example.licentaagain.utils.ImagePickerHelper;
 import com.example.licentaagain.views.WorkaroundMapFragment;
 import com.google.android.gms.common.api.Status;
@@ -72,6 +73,7 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
     private SelectedImagesAdapter selectedImagesAdapter;
 
     private List<Uri> selectedImageUris = new ArrayList<>();
+    private ProblemRepository problemRepository;
     private String currentProblemId;
 
 
@@ -168,69 +170,22 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
                 category
         );
 
-        db.collection("problems").add(problem)
-                .addOnSuccessListener(documentReference -> {
-                    currentProblemId = documentReference.getId();
-                    documentReference.update("createDate", FieldValue.serverTimestamp());
+        problemRepository.addProblem(problem, selectedImageUris, new ProblemRepository.ProblemCreationCallback() {
+            @Override
+            public void onSuccess() {
+                showToast("Problem added");
+                navigateBackToMainPage();
+            }
 
-                    if (!selectedImageUris.isEmpty()) {
-                        uploadSelectedImages(currentProblemId, () -> {
-                            showToast("Problem added");
-                            navigateBackToMainPage();
-                        });
-                    } else {
-                        Activity activity = getActivity();
-                        if (activity != null) {
-                            showToast("Problem added");
-                        }
-                        navigateBackToMainPage();
-                    }
-                });
+            @Override
+            public void onFailure(Exception e) {
+                Log.e("Firestore", "Failed to add problem", e);
+                showToast("Error adding problem");
+                showLoadingOverlay(false);
+            }
+        });
+
     }
-    private void uploadSelectedImages(String problemId, Runnable onComplete) {
-        List<Task<Uri>> uploadTasks = new ArrayList<>();
-        List<String> downloadUrls = new ArrayList<>();
-
-        for (Uri imageUri : selectedImageUris) {
-            String filename = UUID.randomUUID().toString() + ".jpg";
-            StorageReference imgRef = FirebaseStorage.getInstance()
-                    .getReference("problems/" + problemId + "/images/" + filename);
-
-            Task<Uri> uploadTask = imgRef.putFile(imageUri)
-                    .continueWithTask(task -> {
-                        if (!task.isSuccessful()) {
-                            throw task.getException();
-                        }
-                        return imgRef.getDownloadUrl();
-                    });
-
-            uploadTasks.add(uploadTask);
-        }
-
-        Tasks.whenAllSuccess(uploadTasks)
-                .addOnSuccessListener(results -> {
-                    for (Object result : results) {
-                        if (result instanceof Uri) {
-                            downloadUrls.add(result.toString());
-                        }
-                    }
-
-                    // Upload all image URLs at once, preserving order
-                    db.collection("problems")
-                            .document(problemId)
-                            .update("imageUrls", downloadUrls)
-                            .addOnSuccessListener(aVoid -> onComplete.run())
-                            .addOnFailureListener(e -> {
-                                Log.e("Firestore", "Failed to update image URLs", e);
-                                onComplete.run();
-                            });
-                })
-                .addOnFailureListener(e -> {
-                    Log.e("Upload", "Image upload failed", e);
-                    onComplete.run();
-                });
-    }
-
     private void btnSaveSubscribeToEvent(@NonNull View view) {
         btnSave= view.findViewById(R.id.btnSave);
         btnSave.setOnClickListener(v-> addProblemToFirebase());
@@ -291,6 +246,7 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
 
     private void initializeVariables(@NonNull View view) {
         db=FirebaseFirestore.getInstance();
+        problemRepository=new ProblemRepository();
         spnCategorie=view.findViewById(R.id.spnCategorie);
         spnSector=view.findViewById(R.id.spnSector);
         etDescription=view.findViewById(R.id.etDescription);

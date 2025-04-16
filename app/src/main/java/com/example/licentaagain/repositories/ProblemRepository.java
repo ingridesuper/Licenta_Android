@@ -1,5 +1,6 @@
 package com.example.licentaagain.repositories;
 
+import android.net.Uri;
 import android.util.Log;
 
 import com.example.licentaagain.enums.CategorieProblema;
@@ -10,6 +11,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -21,42 +23,29 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 public class ProblemRepository {
     private final FirebaseFirestore db;
-
-    public void updateProblemWithoutPictureChange(String problemId, Problem newProblem, Consumer<Boolean> callback) {
-        Map<String, Object> updatedFields = new HashMap<>();
-        updatedFields.put("title", newProblem.getTitle());
-        updatedFields.put("description", newProblem.getDescription());
-        updatedFields.put("sector", newProblem.getSector());
-        updatedFields.put("categorieProblema", newProblem.getCategorieProblema());
-        updatedFields.put("latitude", newProblem.getLatitude());
-        updatedFields.put("longitude", newProblem.getLongitude());
-        updatedFields.put("address", newProblem.getAddress());
-        db.collection("problems")
-                .document(problemId)
-                .update(updatedFields)
-                .addOnCompleteListener(task->{
-                    if(task.isSuccessful()){
-                        callback.accept(true);
-                    }
-                    else {
-                        callback.accept(false);
-                    }
-                });
-    }
+    private final FirebaseStorage storage;
 
     public interface ProblemFetchCallback {
         void onFetchComplete(List<Problem> problems);
     }
 
+    public interface ProblemCreationCallback {
+        void onSuccess();
+
+        void onFailure(Exception e);
+    }
+
 
     public ProblemRepository() {
         this.db = FirebaseFirestore.getInstance();
+        storage = FirebaseStorage.getInstance();
     }
 
     public void fetchAllProblems(ProblemFetchCallback callback) {
@@ -65,7 +54,7 @@ public class ProblemRepository {
                     if (task.isSuccessful()) {
                         List<Problem> fetchedProblems = new ArrayList<>();
                         for (QueryDocumentSnapshot problem : task.getResult()) {
-                            Problem newProblem=new Problem(
+                            Problem newProblem = new Problem(
                                     problem.getString("address"),
                                     problem.getString("authorUid"),
                                     problem.getString("description"),
@@ -84,7 +73,7 @@ public class ProblemRepository {
                 });
     }
 
-    public void orderByAge(boolean byNewest, ProblemFetchCallback callback){
+    public void orderByAge(boolean byNewest, ProblemFetchCallback callback) {
         Query query;
 
         if (byNewest) {
@@ -108,7 +97,7 @@ public class ProblemRepository {
         });
     }
 
-    public void getBySector(List<Sector> selectedSectors, ProblemFetchCallback callback){
+    public void getBySector(List<Sector> selectedSectors, ProblemFetchCallback callback) {
         List<Integer> sectorNumbers = new ArrayList<>();
         for (Sector sector : selectedSectors) {
             sectorNumbers.add(sector.getNumar());
@@ -117,8 +106,8 @@ public class ProblemRepository {
         db.collection("problems")
                 .whereIn("sector", sectorNumbers)
                 .get()
-                .addOnCompleteListener(task->{
-                    if (task.isSuccessful()){
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
                         List<Problem> fetchedProblems = new ArrayList<>();
                         for (QueryDocumentSnapshot doc : task.getResult()) {
                             Problem problem = doc.toObject(Problem.class);
@@ -126,24 +115,23 @@ public class ProblemRepository {
                             fetchedProblems.add(problem);
                         }
                         callback.onFetchComplete(fetchedProblems);
-                    }
-                    else {
+                    } else {
                         Log.i("fetch sector", "error");
                     }
                 });
     }
 
     public void getByCategory(List<CategorieProblema> selectedCategories, ProblemFetchCallback callback) {
-        List<String> categorieProblemaString=new ArrayList<>();
-        for(CategorieProblema categorieProblema:selectedCategories){
+        List<String> categorieProblemaString = new ArrayList<>();
+        for (CategorieProblema categorieProblema : selectedCategories) {
             categorieProblemaString.add(categorieProblema.getCategorie());
         }
 
         FirebaseFirestore.getInstance().collection("problems")
                 .whereIn("categorieProblema", categorieProblemaString)
                 .get()
-                .addOnCompleteListener(task->{
-                    if (task.isSuccessful()){
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
                         List<Problem> fetchedProblems = new ArrayList<>();
                         for (QueryDocumentSnapshot doc : task.getResult()) {
                             Problem problem = doc.toObject(Problem.class);
@@ -151,14 +139,13 @@ public class ProblemRepository {
                             fetchedProblems.add(problem);
                         }
                         callback.onFetchComplete(fetchedProblems);
-                    }
-                    else {
+                    } else {
                         Log.i("fetch categorie", "error");
                     }
                 });
     }
 
-    public void getBySectorOrderByAge(List<Sector> selectedSectors, ProblemFilterState.SortOrder sortOrder,  ProblemFetchCallback callback) {
+    public void getBySectorOrderByAge(List<Sector> selectedSectors, ProblemFilterState.SortOrder sortOrder, ProblemFetchCallback callback) {
         List<Integer> sectorNumbers = new ArrayList<>();
         for (Sector sector : selectedSectors) {
             sectorNumbers.add(sector.getNumar());
@@ -188,13 +175,13 @@ public class ProblemRepository {
         });
     }
 
-    public void getByCategoryOrderByAge(List<CategorieProblema> selectedCategories, ProblemFilterState.SortOrder sortOrder, ProblemFetchCallback callback){
-        List<String> categorieProblemaString=new ArrayList<>();
-        for(CategorieProblema categorieProblema:selectedCategories){
+    public void getByCategoryOrderByAge(List<CategorieProblema> selectedCategories, ProblemFilterState.SortOrder sortOrder, ProblemFetchCallback callback) {
+        List<String> categorieProblemaString = new ArrayList<>();
+        for (CategorieProblema categorieProblema : selectedCategories) {
             categorieProblemaString.add(categorieProblema.getCategorie());
         }
 
-        Query query=db.collection("problems").whereIn("categorieProblema", categorieProblemaString);
+        Query query = db.collection("problems").whereIn("categorieProblema", categorieProblemaString);
 
         if (sortOrder == ProblemFilterState.SortOrder.NEWEST) {
             query = query.orderBy("createDate", Query.Direction.DESCENDING);
@@ -218,9 +205,9 @@ public class ProblemRepository {
 
     }
 
-    public void getByCategorySectorUnsorted(List<CategorieProblema> selectedCategories, List<Sector> selectedSectors, ProblemFetchCallback callback){
-        List<String> categorieProblemaString=new ArrayList<>();
-        for(CategorieProblema categorieProblema:selectedCategories){
+    public void getByCategorySectorUnsorted(List<CategorieProblema> selectedCategories, List<Sector> selectedSectors, ProblemFetchCallback callback) {
+        List<String> categorieProblemaString = new ArrayList<>();
+        for (CategorieProblema categorieProblema : selectedCategories) {
             categorieProblemaString.add(categorieProblema.getCategorie());
         }
 
@@ -233,8 +220,8 @@ public class ProblemRepository {
                 .whereIn("categorieProblema", categorieProblemaString)
                 .whereIn("sector", sectorNumbers)
                 .get()
-                .addOnCompleteListener(task->{
-                    if(task.isSuccessful()){
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
                         List<Problem> fetchedProblems = new ArrayList<>();
                         for (QueryDocumentSnapshot doc : task.getResult()) {
                             Problem problem = doc.toObject(Problem.class);
@@ -242,16 +229,15 @@ public class ProblemRepository {
                             fetchedProblems.add(problem);
                         }
                         callback.onFetchComplete(fetchedProblems);
-                    }
-                    else {
+                    } else {
                         Log.e("getByCategorySector", "Error fetching problems", task.getException());
                     }
                 });
     }
 
-    public void getByCategorySectorOrderByAge(List<CategorieProblema> selectedCategories, List<Sector> selectedSectors, ProblemFilterState.SortOrder sortOrder,ProblemFetchCallback callback){
-        List<String> categorieProblemaString=new ArrayList<>();
-        for(CategorieProblema categorieProblema:selectedCategories){
+    public void getByCategorySectorOrderByAge(List<CategorieProblema> selectedCategories, List<Sector> selectedSectors, ProblemFilterState.SortOrder sortOrder, ProblemFetchCallback callback) {
+        List<String> categorieProblemaString = new ArrayList<>();
+        for (CategorieProblema categorieProblema : selectedCategories) {
             categorieProblemaString.add(categorieProblema.getCategorie());
         }
 
@@ -260,18 +246,17 @@ public class ProblemRepository {
             sectorNumbers.add(sector.getNumar());
         }
 
-        Query query=db.collection("problems")
+        Query query = db.collection("problems")
                 .whereIn("categorieProblema", categorieProblemaString)
                 .whereIn("sector", sectorNumbers);
 
-        if(sortOrder.equals(ProblemFilterState.SortOrder.NEWEST)){
+        if (sortOrder.equals(ProblemFilterState.SortOrder.NEWEST)) {
             query = query.orderBy("createDate", Query.Direction.DESCENDING);
-        }
-        else if(sortOrder.equals(ProblemFilterState.SortOrder.OLDEST)){
+        } else if (sortOrder.equals(ProblemFilterState.SortOrder.OLDEST)) {
             query = query.orderBy("createDate", Query.Direction.ASCENDING);
         }
         query.get().addOnCompleteListener(task -> {
-            if(task.isSuccessful()){
+            if (task.isSuccessful()) {
                 List<Problem> fetchedProblems = new ArrayList<>();
                 for (QueryDocumentSnapshot doc : task.getResult()) {
                     Problem problem = doc.toObject(Problem.class);
@@ -279,8 +264,7 @@ public class ProblemRepository {
                     fetchedProblems.add(problem);
                 }
                 callback.onFetchComplete(fetchedProblems);
-            }
-            else {
+            } else {
                 Log.e("getByCategorySectorOrderByAge", "Error fetching problems", task.getException());
             }
         });
@@ -291,7 +275,7 @@ public class ProblemRepository {
     //gaseste cuvinte din INTERIORUL unui String
 
     //Firestore -> doesn't support OR operator
-    public void searchDataTitleDescription(String searchText, ProblemFetchCallback callback){
+    public void searchDataTitleDescription(String searchText, ProblemFetchCallback callback) {
         CollectionReference ref = FirebaseFirestore.getInstance().collection("problems");
         List<Problem> searchedList = new ArrayList<>();
 
@@ -325,13 +309,13 @@ public class ProblemRepository {
         });
     }
 
-    public void fetchAllProblemsByUser(String uid, ProblemFetchCallback callback){
+    public void fetchAllProblemsByUser(String uid, ProblemFetchCallback callback) {
         db.collection("problems").whereEqualTo("authorUid", uid).get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         List<Problem> fetchedProblems = new ArrayList<>();
                         for (QueryDocumentSnapshot problem : task.getResult()) {
-                            Problem newProblem=new Problem(
+                            Problem newProblem = new Problem(
                                     problem.getString("address"),
                                     problem.getString("authorUid"),
                                     problem.getString("description"),
@@ -350,16 +334,15 @@ public class ProblemRepository {
                 });
     }
 
-    public void deleteProblem(Problem problem, Consumer<Boolean> callback){
+    public void deleteProblem(Problem problem, Consumer<Boolean> callback) {
         db.collection("problems")
                 .document(problem.getId())
                 .delete()
                 .addOnCompleteListener(task -> {
-                    if(task.isSuccessful()){
+                    if (task.isSuccessful()) {
                         deletePicturesOfProblemFromStorage(problem, callback);
                         deleteSignaturesOfProblem(problem, callback);
-                    }
-                    else {
+                    } else {
                         callback.accept(false);
                     }
                 });
@@ -428,4 +411,95 @@ public class ProblemRepository {
                     });
         }
     }
+
+    public void updateProblemWithoutPictureChange(String problemId, Problem newProblem, Consumer<Boolean> callback) {
+        Map<String, Object> updatedFields = new HashMap<>();
+        updatedFields.put("title", newProblem.getTitle());
+        updatedFields.put("description", newProblem.getDescription());
+        updatedFields.put("sector", newProblem.getSector());
+        updatedFields.put("categorieProblema", newProblem.getCategorieProblema());
+        updatedFields.put("latitude", newProblem.getLatitude());
+        updatedFields.put("longitude", newProblem.getLongitude());
+        updatedFields.put("address", newProblem.getAddress());
+        db.collection("problems")
+                .document(problemId)
+                .update(updatedFields)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        callback.accept(true);
+                    } else {
+                        callback.accept(false);
+                    }
+                });
+    }
+
+    public void addProblem(Problem problem, List<Uri> imageUris, ProblemCreationCallback callback) {
+        db.collection("problems")
+                .add(problem)
+                .addOnSuccessListener(documentReference -> {
+                    String problemId = documentReference.getId();
+                    documentReference.update("createDate", FieldValue.serverTimestamp());
+
+                    if (imageUris.isEmpty()) {
+                        callback.onSuccess();
+                        return;
+                    }
+
+                    uploadImages(problemId, imageUris, newImages -> {
+                        db.collection("problems")
+                                .document(problemId)
+                                .update("imageUrls", newImages)
+                                .addOnSuccessListener(aVoid -> callback.onSuccess())
+                                .addOnFailureListener(e -> {
+                                    callback.onFailure(e);
+                                });
+                    }, e -> {
+                        callback.onFailure(e);
+                    });
+
+                })
+                .addOnFailureListener(e -> {
+                    callback.onFailure(e);
+                });
+    }
+
+    private void uploadImages(String problemId, List<Uri> imageUris, OnImagesUploadedListener onSuccess, OnFailureListener onFailure) {
+        List<Task<Uri>> uploadTasks = new ArrayList<>();
+        List<String> downloadUrls = new ArrayList<>();
+
+        for (Uri uri : imageUris) {
+            String filename = UUID.randomUUID().toString() + ".jpg";
+            StorageReference ref = storage.getReference("problems/" + problemId + "/images/" + filename);
+
+            Task<Uri> task = ref.putFile(uri)
+                    .continueWithTask(t -> {
+                        if (!t.isSuccessful()) throw t.getException();
+                        return ref.getDownloadUrl();
+                    });
+
+            uploadTasks.add(task);
+        }
+
+        Tasks.whenAllSuccess(uploadTasks)
+                .addOnSuccessListener(results -> {
+                    for (Object result : results) {
+                        if (result instanceof Uri) {
+                            downloadUrls.add(result.toString());
+                        }
+                    }
+                    onSuccess.onUploaded(downloadUrls);
+                })
+                .addOnFailureListener(e -> {
+                    onFailure.onFailure(e);
+                });
+    }
+
+    private interface OnImagesUploadedListener {
+        void onUploaded(List<String> imageUrls);
+    }
+
+    private interface OnFailureListener {
+        void onFailure(Exception e);
+    }
+
 }
