@@ -35,6 +35,7 @@ import com.example.licentaagain.enums.CategorieProblema;
 import com.example.licentaagain.enums.Sector;
 import com.example.licentaagain.mainpage.MainPageFragment;
 import com.example.licentaagain.models.Problem;
+import com.example.licentaagain.utils.ImagePickerHelper;
 import com.example.licentaagain.views.WorkaroundMapFragment;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -68,6 +69,7 @@ import java.util.UUID;
 
 public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
     private GoogleMap myMap;
+    private ImagePickerHelper imagePickerHelper;
     private Place selectedPlace;
     private ScrollView scrollView;
     private FirebaseFirestore db;
@@ -75,14 +77,10 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
     private RelativeLayout loadingOverlay;
     private TextInputEditText etTitle, etDescription;
     private Spinner spnSector, spnCategorie;
-    private ActivityResultLauncher<Intent> imagePickerLauncher;
     private RecyclerView rvSelectedImages;
     private SelectedImagesAdapter selectedImagesAdapter;
-    private Uri cameraImageUri;
-    private ActivityResultLauncher<Uri> takePictureLauncher;
 
     private List<Uri> selectedImageUris = new ArrayList<>();
-    private final int MAX_IMAGES = 5;
     private String currentProblemId;
 
 
@@ -99,50 +97,20 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
             Places.initialize(requireContext(), "AIzaSyBbOOjwR9Eq3CGJnGZhg9fMssUBRFlMDpc");
         }
 
-        addImageUploadSupport();
-        registerCameraLauncher();
-    }
-
-    private void registerCameraLauncher() {
-        takePictureLauncher = registerForActivityResult(
-                new ActivityResultContracts.TakePicture(),
-                result -> {
-                    if (result && cameraImageUri != null) {
-                        if (selectedImageUris.size() < MAX_IMAGES) {
-                            selectedImageUris.add(cameraImageUri);
-                            selectedImagesAdapter.notifyDataSetChanged();
-                            rvSelectedImages.setVisibility(View.VISIBLE);
-                        } else {
-                            showToast("Maximum number of images reached");
-                        }
-                    }
+        imagePickerHelper = new ImagePickerHelper(this, selectedImageUris, new ImagePickerHelper.ImagePickerCallback() {
+            @Override
+            public void onImagesSelected(List<Uri> imageUris) {
+                if (selectedImagesAdapter != null) {
+                    selectedImagesAdapter.notifyDataSetChanged();
+                    rvSelectedImages.setVisibility(View.VISIBLE);
                 }
-        );
+            }
 
-    }
-
-    private void addImageUploadSupport() {
-        imagePickerLauncher = registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(),
-                result -> {
-                    if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
-                        ClipData clipData = result.getData().getClipData();
-                        selectedImageUris.clear();
-
-                        if (clipData != null) {
-                            int count = Math.min(clipData.getItemCount(), MAX_IMAGES);
-                            for (int i = 0; i < count; i++) {
-                                selectedImageUris.add(clipData.getItemAt(i).getUri());
-                            }
-                        } else {
-                            selectedImageUris.add(result.getData().getData());
-                        }
-                        selectedImagesAdapter.notifyDataSetChanged();
-                        rvSelectedImages.setVisibility(View.VISIBLE);
-                    }
-                }
-        );
-
+            @Override
+            public void onImageCaptureFailed(String error) {
+                Toast.makeText(requireContext(), error, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Nullable
@@ -167,39 +135,11 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
 
     private void btnOpenCameraSubscribeToEvent(View view) {
         Button btnTakePhoto=view.findViewById(R.id.btnTakePhoto);
-        btnTakePhoto.setOnClickListener(v -> {
-            if (selectedImageUris.size() >= MAX_IMAGES) {
-                showToast("Maximum number of images reached");
-                return;
-            }
-
-            File imageFile;
-            try {
-                imageFile = File.createTempFile("IMG_", ".jpg", requireContext().getCacheDir());
-            } catch (IOException e) {
-                e.printStackTrace();
-                showToast("Could not create image file");
-                return;
-            }
-
-            cameraImageUri = FileProvider.getUriForFile(
-                    requireContext(),
-                    requireContext().getPackageName() + ".provider",
-                    imageFile
-            );
-
-            takePictureLauncher.launch(cameraImageUri);
-        });
+        btnTakePhoto.setOnClickListener(v -> imagePickerHelper.openCamera());
     }
-
     private void btnAddPicturesSubscribeToEvent(View view) {
         Button btnAddPictures=view.findViewById(R.id.btnAddPictures);
-        btnAddPictures.setOnClickListener(v->{
-            Intent intent = new Intent(Intent.ACTION_PICK);
-            intent.setType("image/*");
-            intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-            imagePickerLauncher.launch(intent);
-        });
+        btnAddPictures.setOnClickListener(v->imagePickerHelper.openGallery());
     }
 
     private void addProblemToFirebase() {
@@ -288,7 +228,6 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
                 });
     }
 
-
     private void btnSaveSubscribeToEvent(@NonNull View view) {
         btnSave= view.findViewById(R.id.btnSave);
         btnSave.setOnClickListener(v-> addProblemToFirebase());
@@ -320,7 +259,6 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
             }
         });
     }
-
     private void setUpMapFragment(View view) {
         ScrollView mScrollView = view.findViewById(R.id.scrollView);
         WorkaroundMapFragment mapFragment = (WorkaroundMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
@@ -397,7 +335,6 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
         spinner.setAdapter(adapter);
     }
 
-
     private void showToast(String message) {
         Activity activity = getActivity();
         if (activity != null) {
@@ -448,7 +385,6 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
 
         return true;
     }
-
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         myMap = googleMap;

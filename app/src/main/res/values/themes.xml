@@ -8,7 +8,7 @@
     <style name="ThemeWithoutActionBar" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="colorPrimary">@color/primaryPurple</item>
         <item name="colorOnPrimary">@color/white</item>
-        <item name="colorSurface">@color/lightYellow</item> <!-- surfaces of components, such as cards, sheets, and menus  -->
+        <item name="colorSurface">@color/dustyPink</item> <!-- surfaces of components, such as cards, sheets, and menus  -->
     </style>
 
     <style name="customrounded">
