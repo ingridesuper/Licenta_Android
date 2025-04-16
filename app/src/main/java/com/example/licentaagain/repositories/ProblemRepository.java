@@ -18,9 +18,13 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 public class ProblemRepository {
@@ -334,12 +338,40 @@ public class ProblemRepository {
                         //eventual aici voi adauga un Toast si logica de stergere de semnaturi asociate (cascade)
                         //acum nu e cazul
                         //si also notificari catre semnatari
-                        //SI STERSE SI POZELE DIN STORAGE
-                        callback.accept(true);
+                        //stergem pozele din storage
+                        deletePicturesOfProblemFromStorage(problem, callback);
                     }
                     else {
                         callback.accept(false);
                     }
                 });
+    }
+
+    private void deletePicturesOfProblemFromStorage(Problem problem, Consumer<Boolean> callback) {
+        List<String> imageUrls = problem.getImageUrls();
+        if (imageUrls == null || imageUrls.isEmpty()) {
+            callback.accept(true);
+            return;
+        }
+
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        AtomicInteger remaining = new AtomicInteger(imageUrls.size());
+        AtomicBoolean hadError = new AtomicBoolean(false);
+
+        for (String url : imageUrls) {
+            StorageReference photoRef = storage.getReferenceFromUrl(url);
+            photoRef.delete()
+                    .addOnSuccessListener(unused -> {
+                        if (remaining.decrementAndGet() == 0) {
+                            callback.accept(!hadError.get());
+                        }
+                    })
+                    .addOnFailureListener(e -> {
+                        hadError.set(true);
+                        if (remaining.decrementAndGet() == 0) {
+                            callback.accept(false);
+                        }
+                    });
+        }
     }
 }

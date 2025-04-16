@@ -1,6 +1,7 @@
 package com.example.licentaagain.problem;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ClipData;
 import android.content.Intent;
 import android.net.Uri;
@@ -163,8 +164,15 @@ public class EditProblemFragment extends Fragment implements OnMapReadyCallback 
     private void btnDeleteProblemSubscribeToEvent(View view) {
         MaterialButton btnDeleteProblem=view.findViewById(R.id.btnDeleteProblem);
         btnDeleteProblem.setOnClickListener(v->{
-            viewModel.deleteProblem(problem);
-            navigateBackToProblemList();
+            new AlertDialog.Builder(requireContext())
+                    .setTitle("Confirmare ștergere")
+                    .setMessage("Sunteți sigur că vrei să ștergeți această problemă?")
+                    .setPositiveButton("Șterge", (dialog, which) -> {
+                        viewModel.deleteProblem(problem);
+                        navigateBackToProblemList();
+                    })
+                    .setNegativeButton("Anulează", null)
+                    .show();
         });
     }
 

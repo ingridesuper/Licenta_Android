@@ -45,7 +45,6 @@ public class ProblemByUserViewModel extends ViewModel implements ProblemReposito
     public void deleteProblem(Problem problem){
         problemRepository.deleteProblem(problem, result->{
             if(result){
-
                 Log.i("deleteProblem", "Success");
             }
             else {
