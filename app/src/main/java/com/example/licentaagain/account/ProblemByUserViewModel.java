@@ -10,6 +10,7 @@ import com.example.licentaagain.models.Problem;
 import com.example.licentaagain.repositories.ProblemRepository;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 public class ProblemByUserViewModel extends ViewModel implements ProblemRepository.ProblemFetchCallback {
     private MutableLiveData<List<Problem>> problemsLiveData=new MutableLiveData<>();
@@ -39,5 +40,17 @@ public class ProblemByUserViewModel extends ViewModel implements ProblemReposito
     public void onFetchComplete(List<Problem> problems) {
         problemsLiveData.setValue(problems);
         Log.i("problemsByUser", String.valueOf(problems.size()));
+    }
+
+    public void deleteProblem(Problem problem){
+        problemRepository.deleteProblem(problem, result->{
+            if(result){
+
+                Log.i("deleteProblem", "Success");
+            }
+            else {
+                Log.e("deleteProblem", "Fail");
+            }
+        });
     }
 }

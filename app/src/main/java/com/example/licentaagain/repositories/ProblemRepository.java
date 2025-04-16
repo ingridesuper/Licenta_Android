@@ -21,6 +21,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class ProblemRepository {
     private final FirebaseFirestore db;
@@ -320,6 +321,24 @@ public class ProblemRepository {
                             fetchedProblems.add(newProblem);
                         }
                         callback.onFetchComplete(fetchedProblems);
+                    }
+                });
+    }
+
+    public void deleteProblem(Problem problem, Consumer<Boolean> callback){
+        db.collection("problems")
+                .document(problem.getId())
+                .delete()
+                .addOnCompleteListener(task -> {
+                    if(task.isSuccessful()){
+                        //eventual aici voi adauga un Toast si logica de stergere de semnaturi asociate (cascade)
+                        //acum nu e cazul
+                        //si also notificari catre semnatari
+                        //SI STERSE SI POZELE DIN STORAGE
+                        callback.accept(true);
+                    }
+                    else {
+                        callback.accept(false);
                     }
                 });
     }

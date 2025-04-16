@@ -10,7 +10,10 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -20,12 +23,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.example.licentaagain.R;
+import com.example.licentaagain.account.ProblemByUserViewModel;
 import com.example.licentaagain.custom_adapters.SelectedImagesAdapter;
 import com.example.licentaagain.enums.CategorieProblema;
 import com.example.licentaagain.enums.Sector;
@@ -42,9 +47,12 @@ import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -56,6 +64,7 @@ public class EditProblemFragment extends Fragment implements OnMapReadyCallback 
     private Uri cameraImageUri;
     private Place selectedPlace;
     private AutocompleteSupportFragment autocompleteFragment;
+    private ProblemByUserViewModel viewModel;
 
     private Problem problem;
     private RecyclerView rvSelectedImages;
@@ -90,6 +99,7 @@ public class EditProblemFragment extends Fragment implements OnMapReadyCallback 
 
         addImageUploadSupport();
         registerCameraLauncher();
+        viewModel = new ViewModelProvider(requireActivity()).get(ProblemByUserViewModel.class);
     }
 
     private void initializeVariables(@NonNull View view) {
@@ -144,12 +154,69 @@ public class EditProblemFragment extends Fragment implements OnMapReadyCallback 
         setupSpinners();
         setUpMapFragment(view);
         fillUiWithProblemData(view);
-
-
-        //btnAddPicturesSubscribeToEvent(view);
-        //btnOpenCameraSubscribeToEvent(view);
-
+        btnAddPicturesSubscribeToEvent(view);
+        btnOpenCameraSubscribeToEvent(view);
+        btnCancelSubscribeToEvent(view);
+        btnDeleteProblemSubscribeToEvent(view);
     }
+
+    private void btnDeleteProblemSubscribeToEvent(View view) {
+        MaterialButton btnDeleteProblem=view.findViewById(R.id.btnDeleteProblem);
+        btnDeleteProblem.setOnClickListener(v->{
+            viewModel.deleteProblem(problem);
+            navigateBackToProblemList();
+        });
+    }
+
+    private void btnCancelSubscribeToEvent(View view) {
+        MaterialButton btnCancel=view.findViewById(R.id.btnCancel);
+        btnCancel.setOnClickListener(v-> navigateBackToProblemList());
+    }
+
+    private void navigateBackToProblemList() {
+        FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+        if (fragmentManager.getBackStackEntryCount() > 0) {
+            fragmentManager.popBackStack();
+        }
+    }
+
+    private void btnAddPicturesSubscribeToEvent(View view) {
+        Button btnAddPictures=view.findViewById(R.id.btnAddPictures);
+        btnAddPictures.setOnClickListener(v->{
+            Intent intent = new Intent(Intent.ACTION_PICK);
+            intent.setType("image/*");
+            intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+            imagePickerLauncher.launch(intent);
+        });
+    }
+
+    private void btnOpenCameraSubscribeToEvent(View view) {
+        Button btnTakePhoto=view.findViewById(R.id.btnTakePhoto);
+        btnTakePhoto.setOnClickListener(v -> {
+            if (selectedImageUris.size() >= MAX_IMAGES) {
+                showToast("Maximum number of images reached");
+                return;
+            }
+
+            File imageFile;
+            try {
+                imageFile = File.createTempFile("IMG_", ".jpg", requireContext().getCacheDir());
+            } catch (IOException e) {
+                e.printStackTrace();
+                showToast("Could not create image file");
+                return;
+            }
+
+            cameraImageUri = FileProvider.getUriForFile(
+                    requireContext(),
+                    requireContext().getPackageName() + ".provider",
+                    imageFile
+            );
+
+            takePictureLauncher.launch(cameraImageUri);
+        });
+    }
+
     private void enableDragAndDropPictures() {
         ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(
                 ItemTouchHelper.UP | ItemTouchHelper.DOWN | ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT,
