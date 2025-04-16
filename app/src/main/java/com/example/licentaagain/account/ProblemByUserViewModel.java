@@ -52,4 +52,10 @@ public class ProblemByUserViewModel extends ViewModel implements ProblemReposito
             }
         });
     }
+
+    public void updateProblemWithoutPictureChange(String problemId, Problem newProblem){
+        problemRepository.updateProblemWithoutPictureChange(problemId, newProblem, result->{
+
+        });
+    }
 }

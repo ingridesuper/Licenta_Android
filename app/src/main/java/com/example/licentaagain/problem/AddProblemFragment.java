@@ -201,6 +201,61 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
             imagePickerLauncher.launch(intent);
         });
     }
+
+    private void addProblemToFirebase() {
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser == null) {
+            return;
+        }
+        String authorUid = currentUser.getUid();
+        String description = etDescription.getText().toString();
+        String title = etTitle.getText().toString();
+        int sector = ((Sector) spnSector.getSelectedItem()).getNumar();
+        String category = String.valueOf(spnCategorie.getSelectedItem());
+
+        if (!checkUserInput(description, title, sector, category, selectedPlace)) {
+            Toast.makeText(getContext(), "Nu ati completat tot ce este necesar", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if(selectedImageUris.isEmpty()){
+            Toast.makeText(getContext(), "Va rugam atasati cel putin o imagine", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        showLoadingOverlay(true);
+        disableAllViews(scrollView);
+
+        LatLng latLng = selectedPlace.getLocation();
+        Problem problem = new Problem(
+                selectedPlace.getDisplayName(),
+                authorUid,
+                description,
+                latLng.latitude,
+                latLng.longitude,
+                sector,
+                title,
+                category
+        );
+
+        db.collection("problems").add(problem)
+                .addOnSuccessListener(documentReference -> {
+                    currentProblemId = documentReference.getId();
+                    documentReference.update("createDate", FieldValue.serverTimestamp());
+
+                    if (!selectedImageUris.isEmpty()) {
+                        uploadSelectedImages(currentProblemId, () -> {
+                            showToast("Problem added");
+                            navigateBackToMainPage();
+                        });
+                    } else {
+                        Activity activity = getActivity();
+                        if (activity != null) {
+                            showToast("Problem added");
+                        }
+                        navigateBackToMainPage();
+                    }
+                });
+    }
     private void uploadSelectedImages(String problemId, Runnable onComplete) {
         List<Task<?>> uploadTasks = new ArrayList<>();
 
@@ -340,61 +395,6 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
     private <T> void setupSpinner(Spinner spinner, T[] items) {
         ArrayAdapter<T> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, items);
         spinner.setAdapter(adapter);
-    }
-
-    private void addProblemToFirebase() {
-        FirebaseAuth mAuth = FirebaseAuth.getInstance();
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        if (currentUser == null) {
-            return;
-        }
-        String authorUid = currentUser.getUid();
-        String description = etDescription.getText().toString();
-        String title = etTitle.getText().toString();
-        int sector = ((Sector) spnSector.getSelectedItem()).getNumar();
-        String category = String.valueOf(spnCategorie.getSelectedItem());
-
-        if (!checkUserInput(description, title, sector, category, selectedPlace)) {
-            Toast.makeText(getContext(), "Nu ati completat tot ce este necesar", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if(selectedImageUris.isEmpty()){
-            Toast.makeText(getContext(), "Va rugam atasati cel putin o imagine", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        showLoadingOverlay(true);
-        disableAllViews(scrollView);
-
-        LatLng latLng = selectedPlace.getLocation();
-        Problem problem = new Problem(
-                selectedPlace.getDisplayName(),
-                authorUid,
-                description,
-                latLng.latitude,
-                latLng.longitude,
-                sector,
-                title,
-                category
-        );
-
-        db.collection("problems").add(problem)
-                .addOnSuccessListener(documentReference -> {
-                    currentProblemId = documentReference.getId();
-                    documentReference.update("createDate", FieldValue.serverTimestamp());
-
-                    if (!selectedImageUris.isEmpty()) {
-                        uploadSelectedImages(currentProblemId, () -> {
-                            showToast("Problem added");
-                            navigateBackToMainPage();
-                        });
-                    } else {
-                        Activity activity = getActivity();
-                        if (activity != null) {
-                            showToast("Problem added");
-                        }
-                        navigateBackToMainPage();
-                    }
-                });
     }
 
 

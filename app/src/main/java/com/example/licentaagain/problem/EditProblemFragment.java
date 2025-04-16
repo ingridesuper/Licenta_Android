@@ -28,6 +28,7 @@ import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.licentaagain.R;
@@ -50,6 +51,7 @@ import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.File;
@@ -60,6 +62,8 @@ import java.util.Collections;
 import java.util.List;
 
 public class EditProblemFragment extends Fragment implements OnMapReadyCallback {
+
+    //DEOCAMDATA NU VOI ADAUGA POSIBILITATEA DE A SCHIMBA POZELE
 
     private GoogleMap myMap;
     private Uri cameraImageUri;
@@ -74,7 +78,6 @@ public class EditProblemFragment extends Fragment implements OnMapReadyCallback 
     private ActivityResultLauncher<Intent> imagePickerLauncher;
     private List<Uri> selectedImageUris = new ArrayList<>();
     private final int MAX_IMAGES = 5;
-    private FirebaseFirestore db;
     private TextInputEditText etTitle, etDescription;
     private Spinner spnSector, spnCategorie;
     private RelativeLayout loadingOverlay;
@@ -96,6 +99,16 @@ public class EditProblemFragment extends Fragment implements OnMapReadyCallback 
 
         if (getArguments() != null) {
             problem = (Problem) getArguments().getSerializable("problem");
+            selectedPlace=Place.builder()
+                    .setDisplayName(problem.getAddress())
+                    .setLocation(new LatLng(problem.getLatitude(), problem.getLongitude()))
+                    .build();
+
+//            selectedImageUris = new ArrayList<>();
+//            for (String imageUrl : problem.getImageUrls()) {
+//                Uri imageUri = Uri.parse(imageUrl); // Convert string URL to Uri
+//                selectedImageUris.add(imageUri);
+//            }
         }
 
         addImageUploadSupport();
@@ -104,7 +117,6 @@ public class EditProblemFragment extends Fragment implements OnMapReadyCallback 
     }
 
     private void initializeVariables(@NonNull View view) {
-        db= FirebaseFirestore.getInstance();
         spnCategorie=view.findViewById(R.id.spnCategorie);
         spnSector=view.findViewById(R.id.spnSector);
         etDescription=view.findViewById(R.id.etDescription);
@@ -155,11 +167,98 @@ public class EditProblemFragment extends Fragment implements OnMapReadyCallback 
         setupSpinners();
         setUpMapFragment(view);
         fillUiWithProblemData(view);
-        btnAddPicturesSubscribeToEvent(view);
-        btnOpenCameraSubscribeToEvent(view);
+//        btnAddPicturesSubscribeToEvent(view);
+//        btnOpenCameraSubscribeToEvent(view);
         btnCancelSubscribeToEvent(view);
         btnDeleteProblemSubscribeToEvent(view);
+        btnEditProblemSubscribeToEvent(view);
     }
+
+    private void btnEditProblemSubscribeToEvent(View view) {
+        Button btnSaveEdits=view.findViewById(R.id.btnSaveEdits);
+        btnSaveEdits.setOnClickListener(v->{
+            new AlertDialog.Builder(requireContext())
+                    .setTitle("Confirmare ștergere")
+                    .setMessage("Sunteți sigur că vrei să editați această problemă?")
+                    .setPositiveButton("Editează", (dialog, which) -> {
+                        String authorUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                        String description = etDescription.getText().toString();
+                        String title = etTitle.getText().toString();
+                        int sector = ((Sector) spnSector.getSelectedItem()).getNumar();
+                        String category = String.valueOf(spnCategorie.getSelectedItem());
+                        if (!checkUserInput(description, title, sector, category, selectedPlace)) {
+                            Toast.makeText(getContext(), "Nu ati completat tot ce este necesar", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                        if(selectedImageUris.isEmpty()){
+                            Toast.makeText(getContext(), "Va rugam atasati cel putin o imagine", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                        LatLng latLng = selectedPlace.getLocation();
+                        Problem newProblem = new Problem(
+                                selectedPlace.getDisplayName(),
+                                authorUid,
+                                description,
+                                latLng.latitude,
+                                latLng.longitude,
+                                sector,
+                                title,
+                                category
+                        );
+
+                        viewModel.updateProblemWithoutPictureChange(problem.getId(), newProblem);
+                        navigateBackToProblemList();
+                    })
+                    .setNegativeButton("Anulează", null)
+                    .show();
+
+        });
+    }
+
+    private void showLoadingOverlay(boolean show) {
+        loadingOverlay.setVisibility(show ? View.VISIBLE : View.GONE);
+    }
+
+    public void disableAllViews(ViewGroup group) {
+        for (int i = 0; i < group.getChildCount(); i++) {
+            View child = group.getChildAt(i);
+            if (child instanceof ViewGroup) {
+                disableAllViews((ViewGroup) child);
+            } else if (child instanceof Button || child instanceof TextView || child instanceof Spinner) {
+                child.setEnabled(false);
+            }
+        }
+    }
+
+    private boolean checkUserInput(String description, String title, int sector, String category, Place selectedPlace) {
+        if (title.isEmpty()) {
+            etTitle.setError(String.valueOf(R.string.required_title_error_message));
+            return false;
+        }
+
+        if (description.isEmpty()) {
+            etDescription.setError(String.valueOf(R.string.required_description_error_message));
+            return false;
+        }
+
+        if (sector <= 0) {
+            Toast.makeText(getActivity(), String.valueOf(R.string.required_sector_error_message), Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        if (category == null || category.isEmpty()) {
+            Toast.makeText(getActivity(), String.valueOf(R.string.required_category_error_message), Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        if (selectedPlace == null) {
+            Toast.makeText(getActivity(), String.valueOf(R.string.required_location_error_message), Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        return true;
+    }
+
 
     private void btnDeleteProblemSubscribeToEvent(View view) {
         MaterialButton btnDeleteProblem=view.findViewById(R.id.btnDeleteProblem);

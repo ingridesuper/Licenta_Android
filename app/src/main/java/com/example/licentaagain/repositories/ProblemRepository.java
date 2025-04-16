@@ -22,13 +22,38 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 public class ProblemRepository {
     private final FirebaseFirestore db;
+
+    public void updateProblemWithoutPictureChange(String problemId, Problem newProblem, Consumer<Boolean> callback) {
+        Map<String, Object> updatedFields = new HashMap<>();
+        updatedFields.put("title", newProblem.getTitle());
+        updatedFields.put("description", newProblem.getDescription());
+        updatedFields.put("sector", newProblem.getSector());
+        updatedFields.put("categorieProblema", newProblem.getCategorieProblema());
+        updatedFields.put("latitude", newProblem.getLatitude());
+        updatedFields.put("longitude", newProblem.getLongitude());
+        updatedFields.put("address", newProblem.getAddress());
+        db.collection("problems")
+                .document(problemId)
+                .update(updatedFields)
+                .addOnCompleteListener(task->{
+                    if(task.isSuccessful()){
+                        callback.accept(true);
+                    }
+                    else {
+                        callback.accept(false);
+                    }
+                });
+    }
+
     public interface ProblemFetchCallback {
         void onFetchComplete(List<Problem> problems);
     }
