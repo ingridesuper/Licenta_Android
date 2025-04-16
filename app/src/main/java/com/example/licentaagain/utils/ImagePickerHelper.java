@@ -4,14 +4,19 @@ import android.app.Activity;
 import android.content.ClipData;
 import android.content.Intent;
 import android.net.Uri;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
 public class ImagePickerHelper {
@@ -59,20 +64,33 @@ public class ImagePickerHelper {
                 result -> {
                     if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
                         ClipData clipData = result.getData().getClipData();
-                        selectedImageUris.clear();
+
+                        int remainingSlots = MAX_IMAGES - selectedImageUris.size();
+                        if (remainingSlots <= 0) {
+                            Toast.makeText(fragment.requireContext(), "Maximum number of images reached", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
                         if (clipData != null) {
-                            int count = Math.min(clipData.getItemCount(), MAX_IMAGES);
-                            for (int i = 0; i < count; i++) {
+                            int countToAdd = Math.min(clipData.getItemCount(), remainingSlots);
+                            for (int i = 0; i < countToAdd; i++) {
                                 selectedImageUris.add(clipData.getItemAt(i).getUri());
                             }
                         } else {
-                            selectedImageUris.add(result.getData().getData());
+                            Uri singleUri = result.getData().getData();
+                            if (singleUri != null && selectedImageUris.size() < MAX_IMAGES) {
+                                selectedImageUris.add(singleUri);
+                            } else {
+                                Toast.makeText(fragment.requireContext(), "Maximum number of images reached", Toast.LENGTH_SHORT).show();
+                            }
                         }
+
                         callback.onImagesSelected(selectedImageUris);
                     }
                 }
         );
     }
+
 
     public void openCamera() {
         if (selectedImageUris.size() >= MAX_IMAGES) {
@@ -105,6 +123,29 @@ public class ImagePickerHelper {
         imagePickerLauncher.launch(intent);
     }
 
+    public void enableDragAndDrop(RecyclerView recyclerView, RecyclerView.Adapter<?> adapter) {
+        ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(
+                ItemTouchHelper.UP | ItemTouchHelper.DOWN | ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT,
+                0) {
+
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView,
+                                  @NonNull RecyclerView.ViewHolder viewHolder,
+                                  @NonNull RecyclerView.ViewHolder target) {
+                int fromPosition = viewHolder.getBindingAdapterPosition();
+                int toPosition = target.getBindingAdapterPosition();
+                Collections.swap(selectedImageUris, fromPosition, toPosition);
+                adapter.notifyItemMoved(fromPosition, toPosition);
+                return true;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+            }
+        };
+
+        new ItemTouchHelper(simpleCallback).attachToRecyclerView(recyclerView);
+    }
 
 }
 

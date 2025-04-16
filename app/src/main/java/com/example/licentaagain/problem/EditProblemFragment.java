@@ -37,6 +37,7 @@ import com.example.licentaagain.custom_adapters.SelectedImagesAdapter;
 import com.example.licentaagain.enums.CategorieProblema;
 import com.example.licentaagain.enums.Sector;
 import com.example.licentaagain.models.Problem;
+import com.example.licentaagain.utils.ImagePickerHelper;
 import com.example.licentaagain.views.WorkaroundMapFragment;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -66,23 +67,20 @@ public class EditProblemFragment extends Fragment implements OnMapReadyCallback 
     //DEOCAMDATA NU VOI ADAUGA POSIBILITATEA DE A SCHIMBA POZELE
 
     private GoogleMap myMap;
-    private Uri cameraImageUri;
     private Place selectedPlace;
     private AutocompleteSupportFragment autocompleteFragment;
     private ProblemByUserViewModel viewModel;
+    private ImagePickerHelper imagePickerHelper;
+
 
     private Problem problem;
     private RecyclerView rvSelectedImages;
-    private ScrollView scrollView;
 
-    private ActivityResultLauncher<Intent> imagePickerLauncher;
     private List<Uri> selectedImageUris = new ArrayList<>();
-    private final int MAX_IMAGES = 5;
     private TextInputEditText etTitle, etDescription;
     private Spinner spnSector, spnCategorie;
     private RelativeLayout loadingOverlay;
     private SelectedImagesAdapter selectedImagesAdapter;
-    private ActivityResultLauncher<Uri> takePictureLauncher;
 
 
     public EditProblemFragment() {
@@ -96,6 +94,21 @@ public class EditProblemFragment extends Fragment implements OnMapReadyCallback 
         if (!Places.isInitialized()) {
             Places.initialize(requireContext(), "AIzaSyBbOOjwR9Eq3CGJnGZhg9fMssUBRFlMDpc");
         }
+
+        imagePickerHelper = new ImagePickerHelper(this, selectedImageUris, new ImagePickerHelper.ImagePickerCallback() {
+            @Override
+            public void onImagesSelected(List<Uri> imageUris) {
+                if (selectedImagesAdapter != null) {
+                    selectedImagesAdapter.notifyDataSetChanged();
+                    rvSelectedImages.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void onImageCaptureFailed(String error) {
+                Toast.makeText(requireContext(), error, Toast.LENGTH_SHORT).show();
+            }
+        });
 
         if (getArguments() != null) {
             problem = (Problem) getArguments().getSerializable("problem");
@@ -111,8 +124,6 @@ public class EditProblemFragment extends Fragment implements OnMapReadyCallback 
 //            }
         }
 
-        addImageUploadSupport();
-        registerCameraLauncher();
         viewModel = new ViewModelProvider(requireActivity()).get(ProblemByUserViewModel.class);
     }
 
@@ -126,31 +137,6 @@ public class EditProblemFragment extends Fragment implements OnMapReadyCallback 
         selectedImagesAdapter = new SelectedImagesAdapter(getContext(), selectedImageUris);
         rvSelectedImages.setAdapter(selectedImagesAdapter);
         loadingOverlay = view.findViewById(R.id.loadingOverlay);
-        scrollView=view.findViewById(R.id.scrollView);
-    }
-
-    private void addImageUploadSupport() {
-        imagePickerLauncher = registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(),
-                result -> {
-                    if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
-                        ClipData clipData = result.getData().getClipData();
-                        selectedImageUris.clear();
-
-                        if (clipData != null) {
-                            int count = Math.min(clipData.getItemCount(), MAX_IMAGES);
-                            for (int i = 0; i < count; i++) {
-                                selectedImageUris.add(clipData.getItemAt(i).getUri());
-                            }
-                        } else {
-                            selectedImageUris.add(result.getData().getData());
-                        }
-                        selectedImagesAdapter.notifyDataSetChanged();
-                        rvSelectedImages.setVisibility(View.VISIBLE);
-                    }
-                }
-        );
-
     }
 
     @Override
@@ -162,7 +148,7 @@ public class EditProblemFragment extends Fragment implements OnMapReadyCallback 
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         initializeVariables(view);
-        enableDragAndDropPictures();
+        imagePickerHelper.enableDragAndDrop(rvSelectedImages, selectedImagesAdapter);
         setUpAutocompleteFragment();
         setupSpinners();
         setUpMapFragment(view);
@@ -259,7 +245,6 @@ public class EditProblemFragment extends Fragment implements OnMapReadyCallback 
         return true;
     }
 
-
     private void btnDeleteProblemSubscribeToEvent(View view) {
         MaterialButton btnDeleteProblem=view.findViewById(R.id.btnDeleteProblem);
         btnDeleteProblem.setOnClickListener(v->{
@@ -289,65 +274,14 @@ public class EditProblemFragment extends Fragment implements OnMapReadyCallback 
 
     private void btnAddPicturesSubscribeToEvent(View view) {
         Button btnAddPictures=view.findViewById(R.id.btnAddPictures);
-        btnAddPictures.setOnClickListener(v->{
-            Intent intent = new Intent(Intent.ACTION_PICK);
-            intent.setType("image/*");
-            intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-            imagePickerLauncher.launch(intent);
-        });
+        btnAddPictures.setOnClickListener(v->imagePickerHelper.openGallery());
     }
 
     private void btnOpenCameraSubscribeToEvent(View view) {
         Button btnTakePhoto=view.findViewById(R.id.btnTakePhoto);
-        btnTakePhoto.setOnClickListener(v -> {
-            if (selectedImageUris.size() >= MAX_IMAGES) {
-                showToast("Maximum number of images reached");
-                return;
-            }
-
-            File imageFile;
-            try {
-                imageFile = File.createTempFile("IMG_", ".jpg", requireContext().getCacheDir());
-            } catch (IOException e) {
-                e.printStackTrace();
-                showToast("Could not create image file");
-                return;
-            }
-
-            cameraImageUri = FileProvider.getUriForFile(
-                    requireContext(),
-                    requireContext().getPackageName() + ".provider",
-                    imageFile
-            );
-
-            takePictureLauncher.launch(cameraImageUri);
-        });
+        btnTakePhoto.setOnClickListener(v -> imagePickerHelper.openCamera());
     }
 
-    private void enableDragAndDropPictures() {
-        ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(
-                ItemTouchHelper.UP | ItemTouchHelper.DOWN | ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT,
-                0) {
-
-            @Override
-            public boolean onMove(@NonNull RecyclerView recyclerView,
-                                  @NonNull RecyclerView.ViewHolder viewHolder,
-                                  @NonNull RecyclerView.ViewHolder target) {
-                int fromPosition = viewHolder.getBindingAdapterPosition();
-                int toPosition = target.getBindingAdapterPosition();
-                Collections.swap(selectedImageUris, fromPosition, toPosition);
-                selectedImagesAdapter.notifyItemMoved(fromPosition, toPosition);
-                return true;
-            }
-
-            @Override
-            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-                // usually used for deleting -> we already did the x button
-            }
-        };
-
-        new ItemTouchHelper(simpleCallback).attachToRecyclerView(rvSelectedImages);
-    }
 
     private void setUpAutocompleteFragment() {
         autocompleteFragment = (AutocompleteSupportFragment) getChildFragmentManager().findFragmentById(R.id.autocomplete_fragment);
@@ -373,25 +307,6 @@ public class EditProblemFragment extends Fragment implements OnMapReadyCallback 
                 Log.e("Autocomplete Error", "Error: " + status.getStatusMessage());
             }
         });
-    }
-
-
-    private void registerCameraLauncher() {
-        takePictureLauncher = registerForActivityResult(
-                new ActivityResultContracts.TakePicture(),
-                result -> {
-                    if (result && cameraImageUri != null) {
-                        if (selectedImageUris.size() < MAX_IMAGES) {
-                            selectedImageUris.add(cameraImageUri);
-                            selectedImagesAdapter.notifyDataSetChanged();
-                            rvSelectedImages.setVisibility(View.VISIBLE);
-                        } else {
-                            showToast("Maximum number of images reached");
-                        }
-                    }
-                }
-        );
-
     }
 
     private void setupSpinners() {

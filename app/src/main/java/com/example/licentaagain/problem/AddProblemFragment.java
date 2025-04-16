@@ -1,19 +1,13 @@
 package com.example.licentaagain.problem;
 
 import android.app.Activity;
-import android.content.ClipData;
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -59,11 +53,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -124,7 +115,7 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
         super.onViewCreated(view, savedInstanceState);
 
         initializeVariables(view);
-        enableDragAndDropPictures();
+        imagePickerHelper.enableDragAndDrop(rvSelectedImages, selectedImagesAdapter);
         setupSpinners();
         setUpMapFragment(view);
         setUpAutocompleteFragment();
@@ -298,31 +289,6 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
         rvSelectedImages.setAdapter(selectedImagesAdapter);
         loadingOverlay = view.findViewById(R.id.loadingOverlay);
         scrollView=view.findViewById(R.id.scrollView);
-    }
-
-    private void enableDragAndDropPictures() {
-        ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(
-                ItemTouchHelper.UP | ItemTouchHelper.DOWN | ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT,
-                0) {
-
-            @Override
-            public boolean onMove(@NonNull RecyclerView recyclerView,
-                                  @NonNull RecyclerView.ViewHolder viewHolder,
-                                  @NonNull RecyclerView.ViewHolder target) {
-                int fromPosition = viewHolder.getBindingAdapterPosition();
-                int toPosition = target.getBindingAdapterPosition();
-                Collections.swap(selectedImageUris, fromPosition, toPosition);
-                selectedImagesAdapter.notifyItemMoved(fromPosition, toPosition);
-                return true;
-            }
-
-            @Override
-            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-                // usually used for deleting -> we already did the x button
-            }
-        };
-
-        new ItemTouchHelper(simpleCallback).attachToRecyclerView(rvSelectedImages);
     }
 
     private void setupSpinners() {
