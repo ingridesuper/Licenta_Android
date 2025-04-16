@@ -265,7 +265,7 @@ public class EditProblemFragment extends Fragment implements OnMapReadyCallback 
         btnDeleteProblem.setOnClickListener(v->{
             new AlertDialog.Builder(requireContext())
                     .setTitle("Confirmare ștergere")
-                    .setMessage("Sunteți sigur că vrei să ștergeți această problemă?")
+                    .setMessage("Sunteți sigur că vrei să ștergeți această problemă? Tot progresul asociat, împreună cu semnăturile strânse, vor fi șterse.")
                     .setPositiveButton("Șterge", (dialog, which) -> {
                         viewModel.deleteProblem(problem);
                         navigateBackToProblemList();

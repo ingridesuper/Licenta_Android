@@ -1,9 +1,6 @@
 package com.example.licentaagain.repositories;
 
-import android.app.Activity;
 import android.util.Log;
-
-import androidx.lifecycle.MutableLiveData;
 
 import com.example.licentaagain.enums.CategorieProblema;
 import com.example.licentaagain.enums.Sector;
@@ -13,7 +10,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -360,17 +356,50 @@ public class ProblemRepository {
                 .delete()
                 .addOnCompleteListener(task -> {
                     if(task.isSuccessful()){
-                        //eventual aici voi adauga un Toast si logica de stergere de semnaturi asociate (cascade)
-                        //acum nu e cazul
-                        //si also notificari catre semnatari
-                        //stergem pozele din storage
                         deletePicturesOfProblemFromStorage(problem, callback);
+                        deleteSignaturesOfProblem(problem, callback);
                     }
                     else {
                         callback.accept(false);
                     }
                 });
     }
+
+    private void deleteSignaturesOfProblem(Problem problem, Consumer<Boolean> callback) {
+        db.collection("problem_signatures")
+                .whereEqualTo("problemId", problem.getId())
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if (!queryDocumentSnapshots.isEmpty()) {
+                        int totalSignatures = queryDocumentSnapshots.size();
+                        final int[] deletedSignatures = {0};
+                        final boolean[] deletionFailed = {false};
+
+                        for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
+                            db.collection("problem_signatures").document(doc.getId()).delete()
+                                    .addOnSuccessListener(aVoid -> {
+                                        deletedSignatures[0]++;
+                                        if (deletedSignatures[0] == totalSignatures && !deletionFailed[0]) {
+                                            callback.accept(true);
+                                        }
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        if (!deletionFailed[0]) {
+                                            deletionFailed[0] = true;
+                                            callback.accept(false);
+                                        }
+                                    });
+                        }
+                    } else {
+                        callback.accept(true); // No signatures to delete
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("Firestore", "Error fetching signatures", e);
+                    callback.accept(false); // Error fetching signatures
+                });
+    }
+
 
     private void deletePicturesOfProblemFromStorage(Problem problem, Consumer<Boolean> callback) {
         List<String> imageUrls = problem.getImageUrls();
