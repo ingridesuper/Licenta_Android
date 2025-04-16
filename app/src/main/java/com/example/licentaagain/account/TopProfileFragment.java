@@ -47,8 +47,8 @@ public class TopProfileFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         initializeVariables(view);
-        //initial fragment set to account
-        loadSubFragment(new AccountFragment(), btnAccount, indicatorAccount, btnMyProblems, btnMyIdeas, indicatorMyProblems, indicatorMyIdeas);
+        //initial fragment set to my problems
+        loadSubFragment(new MyReportedProblemsFragment(), btnMyProblems, indicatorMyProblems, btnAccount, btnMyIdeas, indicatorAccount, indicatorMyIdeas);
 
         setUpMenuButtonEvents(view);
     }

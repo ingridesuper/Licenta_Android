@@ -31,6 +31,7 @@
     <string name="edit_account_title">Editing your account</string>
     <string name="edit_account">Edit account</string>
     <string name="search_place">Select an address...</string>
+    <string name="edit_problem">Editing problem</string>
 
     <string name="required_title_error_message">Title is required</string>
     <string name="required_description_error_message">Description is required</string>

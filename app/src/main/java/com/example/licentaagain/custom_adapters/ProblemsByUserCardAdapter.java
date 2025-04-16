@@ -1,6 +1,7 @@
 package com.example.licentaagain.custom_adapters;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,8 +12,12 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.licentaagain.HomePageActivity;
 import com.example.licentaagain.R;
 import com.example.licentaagain.models.Problem;
+import com.example.licentaagain.problem.EditProblemFragment;
+import com.example.licentaagain.problem.ProblemDetailsFragment;
+import com.example.licentaagain.repositories.ProblemRepository;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.imageview.ShapeableImageView;
 
@@ -22,10 +27,12 @@ public class ProblemsByUserCardAdapter extends RecyclerView.Adapter<ProblemsByUs
     private Context context;
 
     private List<Problem> problemList;
+    private ProblemRepository problemRepository;
 
     public ProblemsByUserCardAdapter(Context context, List<Problem> problemList) {
         this.context = context;
         this.problemList = problemList;
+        problemRepository=new ProblemRepository();
     }
 
     public ProblemByUserViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -39,9 +46,30 @@ public class ProblemsByUserCardAdapter extends RecyclerView.Adapter<ProblemsByUs
         Problem problem = problemList.get(position);
         fillUiWithData(holder, problem);
         Log.i("bind", String.valueOf(position));
-        //setButtonListeners(holder, problem);
+        setButtonListeners(holder, problem);
         //setOnProblemClickListener(holder, problem);
     }
+
+    private void setButtonListeners(ProblemByUserViewHolder holder, Problem problem) {
+        holder.btnEdit.setOnClickListener(v->{
+            if (context instanceof HomePageActivity) {
+                HomePageActivity activity = (HomePageActivity) context;
+
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("problem", problem);
+
+                EditProblemFragment editProblemFragment = new EditProblemFragment();
+                editProblemFragment.setArguments(bundle);
+
+                activity.getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.fragment_container_view, editProblemFragment)
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
+    }
+
     private void fillUiWithData(@NonNull ProblemsByUserCardAdapter.ProblemByUserViewHolder holder, Problem problem) {
         holder.titleTextView.setText(problem.getTitle());
         holder.addressTextView.setText(problem.getAddress()+", Sector "+problem.getSector());
