@@ -150,7 +150,7 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
             return;
         }
         if(selectedImageUris.isEmpty()){
-            Toast.makeText(getContext(), "Va rugam atasati cel putin o imagine", Toast.LENGTH_SHORT).show();
+            showToast("Va rugam atasati cel putin o imagine");
             return;
         }
         showLoadingOverlay(true);
@@ -188,7 +188,8 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
                 });
     }
     private void uploadSelectedImages(String problemId, Runnable onComplete) {
-        List<Task<?>> uploadTasks = new ArrayList<>();
+        List<Task<Uri>> uploadTasks = new ArrayList<>();
+        List<String> downloadUrls = new ArrayList<>();
 
         for (Uri imageUri : selectedImageUris) {
             String filename = UUID.randomUUID().toString() + ".jpg";
@@ -201,20 +202,31 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
                             throw task.getException();
                         }
                         return imgRef.getDownloadUrl();
-                    })
-                    .addOnSuccessListener(downloadUri -> {
-                        db.collection("problems")
-                                .document(problemId)
-                                .update("imageUrls", FieldValue.arrayUnion(downloadUri.toString()));
                     });
 
             uploadTasks.add(uploadTask);
         }
 
         Tasks.whenAllSuccess(uploadTasks)
-                .addOnSuccessListener(results -> onComplete.run())
+                .addOnSuccessListener(results -> {
+                    for (Object result : results) {
+                        if (result instanceof Uri) {
+                            downloadUrls.add(result.toString());
+                        }
+                    }
+
+                    // Upload all image URLs at once, preserving order
+                    db.collection("problems")
+                            .document(problemId)
+                            .update("imageUrls", downloadUrls)
+                            .addOnSuccessListener(aVoid -> onComplete.run())
+                            .addOnFailureListener(e -> {
+                                Log.e("Firestore", "Failed to update image URLs", e);
+                                onComplete.run();
+                            });
+                })
                 .addOnFailureListener(e -> {
-                    showToast("Problem upload failed");
+                    Log.e("Upload", "Image upload failed", e);
                     onComplete.run();
                 });
     }
