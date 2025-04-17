@@ -44,7 +44,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 public class LoginActivity extends AppCompatActivity {
     TextInputEditText etEmail, etPassword;
     Button btnSignup, btnGoogleSignin;
-    MaterialButton btnLogin;
+    MaterialButton btnLogin, btnForgotPassword;
     FirebaseAuth mAuth;
     FirebaseFirestore db;
 
@@ -79,6 +79,7 @@ public class LoginActivity extends AppCompatActivity {
 
         btnSignup=findViewById(R.id.btnSignup);
         btnLogin=findViewById(R.id.btnLogin);
+        btnForgotPassword=findViewById(R.id.btnForgotPassowrd);
         btnGoogleSignin=findViewById(R.id.btnSigninGoogle);
         etEmail=findViewById(R.id.etEmail);
         etPassword=findViewById(R.id.etPassword);
@@ -151,6 +152,25 @@ public class LoginActivity extends AppCompatActivity {
                     }
             );
 
+        });
+
+        //daca e un user pe google si completeaza asta -> il muta la email
+        btnForgotPassword.setOnClickListener(v->{
+            String email = String.valueOf(etEmail.getText()).trim();
+
+            if (TextUtils.isEmpty(email)) {
+                Toast.makeText(LoginActivity.this, "Please enter your email.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            mAuth.sendPasswordResetEmail(email)
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            Toast.makeText(LoginActivity.this, "Reset link sent to your email.", Toast.LENGTH_LONG).show();
+                        } else {
+                            Toast.makeText(LoginActivity.this, "Error: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
         });
     }
 
