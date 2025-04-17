@@ -1,4 +1,4 @@
-package com.example.licentaagain.account;
+package com.example.licentaagain.view_models;
 
 import android.net.Uri;
 import android.util.Log;
@@ -11,7 +11,6 @@ import com.example.licentaagain.models.Problem;
 import com.example.licentaagain.repositories.ProblemRepository;
 
 import java.util.List;
-import java.util.function.Consumer;
 
 public class ProblemByUserViewModel extends ViewModel implements ProblemRepository.ProblemFetchCallback {
     private MutableLiveData<List<Problem>> problemsLiveData=new MutableLiveData<>();

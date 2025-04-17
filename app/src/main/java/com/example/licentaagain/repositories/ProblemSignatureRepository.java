@@ -16,7 +16,8 @@ public class ProblemSignatureRepository {
         this.db = FirebaseFirestore.getInstance();
     }
 
-    public void addProblemSignature(ProblemSignature newSignature, Consumer<Boolean> callback){
+    public void addProblemSignature(String problemdId, String uid, Consumer<Boolean> callback){
+        ProblemSignature newSignature=new ProblemSignature(problemdId, uid);
         db.collection("problem_signatures")
                 .add(newSignature)
                 .addOnSuccessListener(documentReference -> {

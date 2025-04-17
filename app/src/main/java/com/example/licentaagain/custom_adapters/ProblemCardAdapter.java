@@ -123,9 +123,8 @@ public class ProblemCardAdapter extends RecyclerView.Adapter<ProblemCardAdapter.
     private void addSignature(Problem problem, Consumer<Boolean> callback) {
         new UserRepository().checkIfUserHasNameSurnameSectorData(FirebaseAuth.getInstance().getCurrentUser().getUid(), result->{
             if(result){
-                ProblemSignature newSignature=new ProblemSignature(problem.getId(), FirebaseAuth.getInstance().getCurrentUser().getUid());
 
-                problemSignatureRepository.addProblemSignature(newSignature, addingResult->{
+                problemSignatureRepository.addProblemSignature(problem.getId(), FirebaseAuth.getInstance().getCurrentUser().getUid(), addingResult->{
                     if(addingResult){
                         callback.accept(true);
                     }

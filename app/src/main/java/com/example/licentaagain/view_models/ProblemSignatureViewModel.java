@@ -1,10 +1,9 @@
-package com.example.licentaagain.mainpage;
+package com.example.licentaagain.view_models;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.licentaagain.models.Problem;
 import com.example.licentaagain.models.ProblemSignature;
 
 import java.util.List;

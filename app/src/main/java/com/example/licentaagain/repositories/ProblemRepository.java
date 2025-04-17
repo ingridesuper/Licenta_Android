@@ -559,4 +559,50 @@ public class ProblemRepository {
         void onFailure(Exception e);
     }
 
+    public void fetchSignedProblemsOfUser(String uid, ProblemFetchCallback callback) {
+        List<Problem> fetchedProblems = new ArrayList<>();
+
+        db.collection("problem_signatures")
+                .whereEqualTo("userId", uid)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        QuerySnapshot querySnapshot = task.getResult();
+                        int totalProblems = querySnapshot.size();
+                        final int[] problemsFetched = {0};  // Wrapped for lambda use
+
+                        for (QueryDocumentSnapshot signature : querySnapshot) {
+                            String problemId = signature.getString("problemId");
+
+                            db.collection("problems")
+                                    .document(problemId)
+                                    .get()
+                                    .addOnSuccessListener(documentTask -> {
+                                        DocumentSnapshot problem = documentTask;
+                                        if (problem.exists()) {
+                                            Problem newProblem = new Problem(
+                                                    problem.getString("address"),
+                                                    problem.getString("authorUid"),
+                                                    problem.getString("description"),
+                                                    problem.getDouble("latitude"),
+                                                    problem.getDouble("longitude"),
+                                                    problem.getDouble("sector").intValue(),
+                                                    problem.getString("title"),
+                                                    problem.getString("categorieProblema"),
+                                                    (List<String>) problem.get("imageUrls")
+                                            );
+                                            newProblem.setId(problem.getId());
+                                            fetchedProblems.add(newProblem);
+                                        }
+
+                                        problemsFetched[0]++;
+                                        if (problemsFetched[0] == totalProblems) {
+                                            callback.onFetchComplete(fetchedProblems);
+                                        }
+                                    });
+                        }
+                    }
+                });
+    }
+
 }

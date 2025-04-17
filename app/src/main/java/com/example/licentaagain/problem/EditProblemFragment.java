@@ -2,20 +2,14 @@ package com.example.licentaagain.problem;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.ClipData;
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -32,7 +26,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.licentaagain.R;
-import com.example.licentaagain.account.ProblemByUserViewModel;
+import com.example.licentaagain.view_models.ProblemByUserViewModel;
 import com.example.licentaagain.custom_adapters.SelectedImagesAdapter;
 import com.example.licentaagain.enums.CategorieProblema;
 import com.example.licentaagain.enums.Sector;
@@ -53,13 +47,9 @@ import com.google.android.libraries.places.widget.listener.PlaceSelectionListene
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 public class EditProblemFragment extends Fragment implements OnMapReadyCallback {

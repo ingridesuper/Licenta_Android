@@ -1,32 +1,16 @@
-package com.example.licentaagain.mainpage;
+package com.example.licentaagain.view_models;
 
 import android.util.Log;
-import android.view.View;
 
-import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.licentaagain.enums.CategorieProblema;
-import com.example.licentaagain.enums.Sector;
 import com.example.licentaagain.models.Problem;
 import com.example.licentaagain.repositories.ProblemRepository;
 import com.example.licentaagain.utils.ProblemFilterState;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.android.gms.tasks.Tasks;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.function.Consumer;
 
 public class ProblemViewModel extends ViewModel implements ProblemRepository.ProblemFetchCallback{
     private MutableLiveData<List<Problem>> problemsLiveData=new MutableLiveData<>();

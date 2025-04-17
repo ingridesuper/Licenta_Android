@@ -15,7 +15,7 @@ import android.view.ViewGroup;
 
 import com.example.licentaagain.R;
 import com.example.licentaagain.custom_adapters.ProblemsByUserCardAdapter;
-import com.example.licentaagain.mainpage.ProblemViewModel;
+import com.example.licentaagain.view_models.ProblemByUserViewModel;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
