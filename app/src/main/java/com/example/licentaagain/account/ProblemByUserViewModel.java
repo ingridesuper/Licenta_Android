@@ -65,13 +65,13 @@ public class ProblemByUserViewModel extends ViewModel implements ProblemReposito
         });
     }
 
-    public void updateProblemWithPictureChange(Problem oldProblem, Problem newProblem, List<String> existingUris ,List<Uri> newUris) {
-        problemRepository.updateProblemWithPictureChange(oldProblem.getId(), newProblem, existingUris, newUris, result->{
+    public void updateProblemWithPictureChange(Problem oldProblem, Problem newProblem, List<Uri> newLocalUris, List<String> existingRemoteUrls) {
+        problemRepository.updateProblemWithPictureChange(oldProblem, newProblem, newLocalUris, existingRemoteUrls, result -> {
             if(result){
 
             }
             else {
-
+                Log.e("updateProblemWithPictureChange", "ERROR");
             }
         });
     }

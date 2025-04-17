@@ -195,8 +195,8 @@ public class EditProblemFragment extends Fragment implements OnMapReadyCallback 
                                 title,
                                 category
                         );
-                        List<String> currentUrls = new ArrayList<>();
-                        List<Uri> newLocalUris = new ArrayList<>();
+                        List<String> currentUrls = new ArrayList<>(); //current urls still being used
+                        List<Uri> newLocalUris = new ArrayList<>(); //totally new urls
 
                         for (Uri uri : selectedImageUris) {
                             String uriStr = uri.toString();
@@ -210,11 +210,14 @@ public class EditProblemFragment extends Fragment implements OnMapReadyCallback 
                         boolean imageListUnchanged = newLocalUris.isEmpty() && currentUrls.size() == originalImageUrls.size()
                                 && originalImageUrls.containsAll(currentUrls);
 
-
+                        //if i add pictures
+                        //in stirage only the new ones appear, all old ones even some in use are eleted
+                        //if i just remove pictures in storage the file of the photo is completely deleted
+                        //tho in firestore things seem to work
                         if (imageListUnchanged) {
                             viewModel.updateProblemWithoutPictureChange(problem.getId(), newProblem);
                         } else {
-                            viewModel.updateProblemWithPictureChange(problem, newProblem, problem.getImageUrls(), newLocalUris);
+                            viewModel.updateProblemWithPictureChange(problem, newProblem, newLocalUris, currentUrls);
                         }
                         navigateBackToProblemList();
 
@@ -289,12 +292,10 @@ public class EditProblemFragment extends Fragment implements OnMapReadyCallback 
         btnCancel.setOnClickListener(v-> navigateBackToProblemList());
     }
 
-
     private void btnAddPicturesSubscribeToEvent(View view) {
         Button btnAddPictures=view.findViewById(R.id.btnAddPictures);
         btnAddPictures.setOnClickListener(v->imagePickerHelper.openGallery());
     }
-
     private void btnOpenCameraSubscribeToEvent(View view) {
         Button btnTakePhoto=view.findViewById(R.id.btnTakePhoto);
         btnTakePhoto.setOnClickListener(v -> imagePickerHelper.openCamera());
@@ -342,7 +343,6 @@ public class EditProblemFragment extends Fragment implements OnMapReadyCallback 
         }
 
     }
-
     private void navigateBackToProblemList() {
         FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
         if (fragmentManager.getBackStackEntryCount() > 0) {

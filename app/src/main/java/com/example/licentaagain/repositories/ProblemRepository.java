@@ -415,44 +415,58 @@ public class ProblemRepository {
     }
 
     public void updateProblemWithPictureChange(
-            String problemId,
-            Problem updatedProblem,
-            List<String> existingImageUrls,
-            List<Uri> newImageUris,
+            Problem oldProblem,
+            Problem newProblem,
+            List<Uri> newLocalUris,
+            List<String> existingRemoteUrls,
             Consumer<Boolean> callback) {
 
-        uploadImages(problemId, newImageUris, newDownloadUrls -> {
-            // Combine existing and new URLs
-            List<String> allImageUrls = new ArrayList<>();
-            if (existingImageUrls != null) {
-                allImageUrls.addAll(existingImageUrls);
+        deletePicturesOfProblemFromStorage(oldProblem, result -> {
+            if (!result) {
+                Log.e("updateProblemWithPictureChange", "Error deleting old images");
+                callback.accept(false);
+                return;
             }
-            allImageUrls.addAll(newDownloadUrls);
 
-            // Update problem fields + new image URLs
             Map<String, Object> updatedFields = new HashMap<>();
-            updatedFields.put("title", updatedProblem.getTitle());
-            updatedFields.put("description", updatedProblem.getDescription());
-            updatedFields.put("sector", updatedProblem.getSector());
-            updatedFields.put("categorieProblema", updatedProblem.getCategorieProblema());
-            updatedFields.put("latitude", updatedProblem.getLatitude());
-            updatedFields.put("longitude", updatedProblem.getLongitude());
-            updatedFields.put("address", updatedProblem.getAddress());
-            updatedFields.put("imageUrls", allImageUrls);
+            updatedFields.put("title", newProblem.getTitle());
+            updatedFields.put("description", newProblem.getDescription());
+            updatedFields.put("sector", newProblem.getSector());
+            updatedFields.put("categorieProblema", newProblem.getCategorieProblema());
+            updatedFields.put("latitude", newProblem.getLatitude());
+            updatedFields.put("longitude", newProblem.getLongitude());
+            updatedFields.put("address", newProblem.getAddress());
 
-            db.collection("problems").document(problemId)
-                    .update(updatedFields)
-                    .addOnSuccessListener(aVoid -> {
-                        callback.accept(true);
-                    })
-                    .addOnFailureListener(e -> {
-                        callback.accept(false);
-                    });
+            updateProblemWithoutPictureChange(oldProblem.getId(), newProblem, updateResult -> {
+                if (!updateResult) {
+                    Log.e("updateProblemWithPictureChange", "Error updating fields");
+                    callback.accept(false);
+                    return;
+                }
 
-        }, e -> {
-            callback.accept(false);
+                uploadImages(oldProblem.getId(), newLocalUris, downloadLinks -> {
+                    List<String> allImageUrls = new ArrayList<>();
+                    allImageUrls.addAll(existingRemoteUrls);  // Keep existing images
+                    allImageUrls.addAll(downloadLinks);       // Add new ones
+
+                    db.collection("problems")
+                            .document(oldProblem.getId())
+                            .update("imageUrls", allImageUrls)
+                            .addOnSuccessListener(aVoid -> callback.accept(true))
+                            .addOnFailureListener(e -> {
+                                Log.e("updateProblemWithPictureChange", "Failed to update imageUrls", e);
+                                callback.accept(false);
+                            });
+
+                }, e -> {
+                    Log.e("updateProblemWithPictureChange", "Image upload error: " + e.getMessage());
+                    callback.accept(false);
+                });
+            });
         });
     }
+
+
 
 
     public void updateProblemWithoutPictureChange(String problemId, Problem newProblem, Consumer<Boolean> callback) {
