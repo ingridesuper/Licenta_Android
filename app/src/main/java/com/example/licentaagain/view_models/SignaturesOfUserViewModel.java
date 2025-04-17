@@ -35,7 +35,7 @@ public class SignaturesOfUserViewModel extends ViewModel implements ProblemRepos
     @Override
     public void onFetchComplete(List<Problem> problems) {
         problemsLiveData.setValue(problems);
-        Log.i("problemsByUser", String.valueOf(problems.size()));
+        Log.i("signatureOfUser", String.valueOf(problems.size()));
     }
 
     public void fetchSignedProblemsOfUser(String uid){
@@ -45,7 +45,7 @@ public class SignaturesOfUserViewModel extends ViewModel implements ProblemRepos
     public void unSignProblem(Problem problem, String uid){
         new ProblemSignatureRepository().removeSignature(problem.getId(), uid, result -> {
             if (result) {
-                this.problemsLiveData.getValue().remove(problem);
+                fetchSignedProblemsOfUser(uid);
             }
         });
     }

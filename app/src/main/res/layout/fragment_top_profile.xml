@@ -41,6 +41,8 @@
         <View
             android:id="@+id/indicatorMyProblems"
             android:layout_width="0dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@color/darkGray" />
@@ -48,6 +50,8 @@
         <View
             android:id="@+id/indicatorMyIdeas"
             android:layout_width="0dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@android:color/transparent" />
@@ -55,6 +59,8 @@
         <View
             android:id="@+id/indicatorMySignatures"
             android:layout_width="0dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@android:color/transparent" />
@@ -62,6 +68,8 @@
         <View
             android:id="@+id/indicatorAccount"
             android:layout_width="0dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@android:color/transparent" />
