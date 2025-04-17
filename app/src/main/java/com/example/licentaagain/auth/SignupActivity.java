@@ -103,7 +103,22 @@ public class SignupActivity extends AppCompatActivity {
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
                             FirebaseUser firebaseUser = mAuth.getCurrentUser();
-                            addUserToFirestore(firebaseUser, false);
+                            if (firebaseUser != null) {
+                                // Send verification email
+                                firebaseUser.sendEmailVerification()
+                                        .addOnCompleteListener(verifyTask -> {
+                                            if (verifyTask.isSuccessful()) {
+                                                Toast.makeText(this, "Verification email sent. Please check your inbox.", Toast.LENGTH_LONG).show();
+                                                addUserToFirestore(firebaseUser, false);
+                                                mAuth.signOut();
+                                                Intent intent = new Intent(SignupActivity.this, LoginActivity.class);
+                                                startActivity(intent);
+                                                finish();
+                                            } else {
+                                                Toast.makeText(this, "Failed to send verification email.", Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
+                            }
                         } else {
                             Exception e = task.getException();
                             handleSignupException(e);

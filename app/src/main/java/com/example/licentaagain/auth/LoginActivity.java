@@ -106,7 +106,13 @@ public class LoginActivity extends AppCompatActivity {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
-                                goToHomePage();
+                                FirebaseUser user = mAuth.getCurrentUser();
+                                if (user != null && user.isEmailVerified()) {
+                                    goToHomePage();
+                                } else {
+                                    Toast.makeText(getApplicationContext(), "Please verify your email before logging in.", Toast.LENGTH_LONG).show();
+                                    mAuth.signOut(); // sign out if not verified
+                                }
                             } else {
                                 Toast.makeText(LoginActivity.this, "Authentication failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                             }
