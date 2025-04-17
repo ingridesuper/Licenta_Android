@@ -1,6 +1,7 @@
 package com.example.licentaagain.models;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 public class User implements Serializable {
     private String uid;
@@ -74,5 +75,18 @@ public class User implements Serializable {
                 ", surname='" + surname + '\'' +
                 ", sector=" + sector +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return Objects.equals(uid, user.uid);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(uid);
     }
 }

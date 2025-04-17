@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.licentaagain.R;
+import com.example.licentaagain.models.Problem;
 import com.example.licentaagain.models.User;
 import com.example.licentaagain.repositories.UserRepository;
 
@@ -22,7 +23,6 @@ public class SearchUserAdapter extends RecyclerView.Adapter<SearchUserAdapter.Us
     private Context context;
 
     private List<User> userList;
-    private UserRepository userRepository;
 
     public SearchUserAdapter(List<User> userList) {
         this.userList = userList;
@@ -39,13 +39,18 @@ public class SearchUserAdapter extends RecyclerView.Adapter<SearchUserAdapter.Us
     @Override
     public void onBindViewHolder(@NonNull UserViewHolder holder, int position) {
         User user = userList.get(position);
-        holder.name.setText(user.getName());
+        holder.name.setText(user.getName()+" "+user.getSurname());
         holder.email.setText(user.getEmail());
     }
 
     @Override
     public int getItemCount() {
         return userList.size();
+    }
+
+    public void updateData(List<User> newUsers) {
+        this.userList = newUsers;
+        notifyDataSetChanged(); // You could use DiffUtil for better performance
     }
 
     static class UserViewHolder extends RecyclerView.ViewHolder {
