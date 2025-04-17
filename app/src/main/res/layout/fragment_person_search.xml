@@ -15,7 +15,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:hint="Search user by name or email..."
+            android:queryHint="Search user by name or email..."
             android:layout_margin="20dp"/>
 
         <androidx.recyclerview.widget.RecyclerView

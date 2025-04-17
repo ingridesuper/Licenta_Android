@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel;
 import com.example.licentaagain.models.Problem;
 import com.example.licentaagain.models.User;
 import com.example.licentaagain.repositories.UserRepository;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.List;
 
@@ -21,7 +22,7 @@ public class UserViewModel extends ViewModel implements UserRepository.UserFetch
 
 
     public void searchUserByEmailOrNameSurname(String searchText){
-        userRepository.searchUserByEmailOrNameSurname(searchText, this);
+        userRepository.searchUserByEmailOrNameSurname(searchText, FirebaseAuth.getInstance().getCurrentUser().getUid(),this);
     }
     public void setUsers(List<User> users) {
         usersLiveData.setValue(users);

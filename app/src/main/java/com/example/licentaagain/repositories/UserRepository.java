@@ -20,7 +20,8 @@ import java.util.function.Consumer;
 public class UserRepository {
     private FirebaseFirestore db;
 
-    public void searchUserByEmailOrNameSurname(String searchText, UserFetchCallback callback) {
+    //obs current user does not appear in searches
+    public void searchUserByEmailOrNameSurname(String searchText, String currentUserId ,UserFetchCallback callback) {
         CollectionReference ref = FirebaseFirestore.getInstance().collection("users");
         List<User> fetchedUsers=new ArrayList<>();
 
@@ -45,7 +46,7 @@ public class UserRepository {
                         QuerySnapshot result = (QuerySnapshot) individualTask.getResult();
                         for (DocumentSnapshot doc : result.getDocuments()) {
                             User user = doc.toObject(User.class);
-                            if (!fetchedUsers.contains(user)) { //based on uid
+                            if (!fetchedUsers.contains(user) && !user.getUid().equals(currentUserId)) { //based on uid
                                 fetchedUsers.add(user);
                             }
                         }
