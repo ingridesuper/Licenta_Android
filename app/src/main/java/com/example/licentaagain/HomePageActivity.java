@@ -2,10 +2,8 @@ package com.example.licentaagain;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 
 import androidx.activity.EdgeToEdge;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -13,19 +11,12 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.example.licentaagain.account.AccountFragment;
 import com.example.licentaagain.account.TopProfileFragment;
 import com.example.licentaagain.auth.LoginActivity;
 import com.example.licentaagain.mainpage.MainPageFragment;
 import com.example.licentaagain.problem.AddProblemFragment;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
+import com.example.licentaagain.user_page.SearchUserFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.navigation.NavigationBarView;
 
 
 public class HomePageActivity extends AppCompatActivity {
@@ -81,6 +72,10 @@ public class HomePageActivity extends AppCompatActivity {
             else if (item.getItemId()==R.id.bmAdd){
                 AddProblemFragment addProblemFragment=new AddProblemFragment();
                 fragmentTransaction.replace(R.id.fragment_container_view, addProblemFragment);
+            }
+            else if(item.getItemId()==R.id.bmSearchAccount){
+                SearchUserFragment otherUserTopPageFragment=new SearchUserFragment();
+                fragmentTransaction.replace(R.id.fragment_container_view, otherUserTopPageFragment);
             }
             fragmentTransaction.addToBackStack(null);
             fragmentTransaction.commit();

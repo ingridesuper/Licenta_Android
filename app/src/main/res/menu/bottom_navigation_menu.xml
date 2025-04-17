@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
         android:id="@+id/bmHome"
@@ -8,13 +7,24 @@
         android:icon="@drawable/ic_home" />
 
     <item
+        android:id="@+id/bmSearchAccount"
+        android:enabled="true"
+        android:icon="@drawable/ic_person_search"/>
+
+    <item
         android:id="@+id/bmAdd"
         android:enabled="true"
         android:icon="@drawable/ic_add" />
 
     <item
+        android:id="@+id/bmIdeas"
+        android:enabled="true"
+        android:icon="@drawable/ic_lightbulb"/>
+
+    <item
         android:id="@+id/bmAccount"
         android:enabled="true"
         android:icon="@drawable/ic_account" />
+
 
 </menu>
