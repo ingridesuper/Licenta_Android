@@ -1,5 +1,6 @@
 package com.example.licentaagain.account;
 
+import android.net.Uri;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
@@ -55,7 +56,23 @@ public class ProblemByUserViewModel extends ViewModel implements ProblemReposito
 
     public void updateProblemWithoutPictureChange(String problemId, Problem newProblem){
         problemRepository.updateProblemWithoutPictureChange(problemId, newProblem, result->{
+            if(result){
 
+            }
+            else {
+
+            }
+        });
+    }
+
+    public void updateProblemWithPictureChange(Problem oldProblem, Problem newProblem, List<String> existingUris ,List<Uri> newUris) {
+        problemRepository.updateProblemWithPictureChange(oldProblem.getId(), newProblem, existingUris, newUris, result->{
+            if(result){
+
+            }
+            else {
+
+            }
         });
     }
 }

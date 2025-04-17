@@ -77,6 +77,8 @@ public class EditProblemFragment extends Fragment implements OnMapReadyCallback 
     private RecyclerView rvSelectedImages;
 
     private List<Uri> selectedImageUris = new ArrayList<>();
+    private List<String> originalImageUrls = new ArrayList<>();
+
     private TextInputEditText etTitle, etDescription;
     private Spinner spnSector, spnCategorie;
     private RelativeLayout loadingOverlay;
@@ -91,8 +93,19 @@ public class EditProblemFragment extends Fragment implements OnMapReadyCallback 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //sterge harcodare aici!
+        if (getArguments() != null) {
+            problem = (Problem) getArguments().getSerializable("problem");
+            selectedPlace=Place.builder()
+                    .setDisplayName(problem.getAddress())
+                    .setLocation(new LatLng(problem.getLatitude(), problem.getLongitude()))
+                    .build();
         if (!Places.isInitialized()) {
             Places.initialize(requireContext(), "AIzaSyBbOOjwR9Eq3CGJnGZhg9fMssUBRFlMDpc");
+        }
+
+        for(String url:problem.getImageUrls()){
+            selectedImageUris.add(Uri.parse(url));
+            originalImageUrls.add(url);
         }
 
         imagePickerHelper = new ImagePickerHelper(this, selectedImageUris, new ImagePickerHelper.ImagePickerCallback() {
@@ -109,19 +122,6 @@ public class EditProblemFragment extends Fragment implements OnMapReadyCallback 
                 Toast.makeText(requireContext(), error, Toast.LENGTH_SHORT).show();
             }
         });
-
-        if (getArguments() != null) {
-            problem = (Problem) getArguments().getSerializable("problem");
-            selectedPlace=Place.builder()
-                    .setDisplayName(problem.getAddress())
-                    .setLocation(new LatLng(problem.getLatitude(), problem.getLongitude()))
-                    .build();
-
-//            selectedImageUris = new ArrayList<>();
-//            for (String imageUrl : problem.getImageUrls()) {
-//                Uri imageUri = Uri.parse(imageUrl); // Convert string URL to Uri
-//                selectedImageUris.add(imageUri);
-//            }
         }
 
         viewModel = new ViewModelProvider(requireActivity()).get(ProblemByUserViewModel.class);
@@ -153,8 +153,8 @@ public class EditProblemFragment extends Fragment implements OnMapReadyCallback 
         setupSpinners();
         setUpMapFragment(view);
         fillUiWithProblemData(view);
-//        btnAddPicturesSubscribeToEvent(view);
-//        btnOpenCameraSubscribeToEvent(view);
+        btnAddPicturesSubscribeToEvent(view);
+        btnOpenCameraSubscribeToEvent(view);
         btnCancelSubscribeToEvent(view);
         btnDeleteProblemSubscribeToEvent(view);
         btnEditProblemSubscribeToEvent(view);
@@ -180,6 +180,10 @@ public class EditProblemFragment extends Fragment implements OnMapReadyCallback 
                             Toast.makeText(getContext(), "Va rugam atasati cel putin o imagine", Toast.LENGTH_SHORT).show();
                             return;
                         }
+                        showLoadingOverlay(true);
+                        ScrollView scrollView=view.findViewById(R.id.scrollView);
+                        disableAllViews(scrollView);
+
                         LatLng latLng = selectedPlace.getLocation();
                         Problem newProblem = new Problem(
                                 selectedPlace.getDisplayName(),
@@ -191,9 +195,29 @@ public class EditProblemFragment extends Fragment implements OnMapReadyCallback 
                                 title,
                                 category
                         );
+                        List<String> currentUrls = new ArrayList<>();
+                        List<Uri> newLocalUris = new ArrayList<>();
 
-                        viewModel.updateProblemWithoutPictureChange(problem.getId(), newProblem);
+                        for (Uri uri : selectedImageUris) {
+                            String uriStr = uri.toString();
+                            if (ImagePickerHelper.isRemoteUri(uri)) {
+                                currentUrls.add(uriStr);
+                            } else {
+                                newLocalUris.add(uri);
+                            }
+                        }
+
+                        boolean imageListUnchanged = newLocalUris.isEmpty() && currentUrls.size() == originalImageUrls.size()
+                                && originalImageUrls.containsAll(currentUrls);
+
+
+                        if (imageListUnchanged) {
+                            viewModel.updateProblemWithoutPictureChange(problem.getId(), newProblem);
+                        } else {
+                            viewModel.updateProblemWithPictureChange(problem, newProblem, problem.getImageUrls(), newLocalUris);
+                        }
                         navigateBackToProblemList();
+
                     })
                     .setNegativeButton("Anulează", null)
                     .show();
@@ -265,12 +289,6 @@ public class EditProblemFragment extends Fragment implements OnMapReadyCallback 
         btnCancel.setOnClickListener(v-> navigateBackToProblemList());
     }
 
-    private void navigateBackToProblemList() {
-        FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-        if (fragmentManager.getBackStackEntryCount() > 0) {
-            fragmentManager.popBackStack();
-        }
-    }
 
     private void btnAddPicturesSubscribeToEvent(View view) {
         Button btnAddPictures=view.findViewById(R.id.btnAddPictures);
@@ -281,8 +299,56 @@ public class EditProblemFragment extends Fragment implements OnMapReadyCallback 
         Button btnTakePhoto=view.findViewById(R.id.btnTakePhoto);
         btnTakePhoto.setOnClickListener(v -> imagePickerHelper.openCamera());
     }
+    private void fillUiWithProblemData(View view) {
+        etTitle.setText(problem.getTitle());
+        etDescription.setText(problem.getDescription());
+        int sectorNumar = problem.getSector();
+        Sector selectedSector = null;
+        for (Sector s : Sector.values()) {
+            if (s.getNumar() == sectorNumar) {
+                selectedSector = s;
+                break;
+            }
+        }
+        if (selectedSector != null) {
+            ArrayAdapter<Sector> adapter = (ArrayAdapter<Sector>) spnSector.getAdapter();
+            int position = adapter.getPosition(selectedSector);
+            spnSector.setSelection(position);
+        }
 
+        String categorieText = problem.getCategorieProblema();
+        CategorieProblema selectedCategorie = null;
+        for (CategorieProblema c : CategorieProblema.values()) {
+            if (c.getCategorie().equalsIgnoreCase(categorieText)) {
+                selectedCategorie = c;
+                break;
+            }
+        }
+        if (selectedCategorie != null) {
+            ArrayAdapter<CategorieProblema> categorieAdapter = (ArrayAdapter<CategorieProblema>) spnCategorie.getAdapter();
+            int categoriePosition = categorieAdapter.getPosition(selectedCategorie);
+            spnCategorie.setSelection(categoriePosition);
+        }
 
+        autocompleteFragment.setHint(problem.getAddress());
+        List<String> problemImageUrls = problem.getImageUrls();
+        if (problemImageUrls != null) {
+            selectedImageUris.clear();
+            for (String url : problemImageUrls) {
+                selectedImageUris.add(Uri.parse(url));
+            }
+            selectedImagesAdapter.notifyDataSetChanged();
+            rvSelectedImages.setVisibility(View.VISIBLE);
+        }
+
+    }
+
+    private void navigateBackToProblemList() {
+        FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+        if (fragmentManager.getBackStackEntryCount() > 0) {
+            fragmentManager.popBackStack();
+        }
+    }
     private void setUpAutocompleteFragment() {
         autocompleteFragment = (AutocompleteSupportFragment) getChildFragmentManager().findFragmentById(R.id.autocomplete_fragment);
         autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.DISPLAY_NAME, Place.Field.LOCATION));
@@ -330,50 +396,6 @@ public class EditProblemFragment extends Fragment implements OnMapReadyCallback 
         } else {
             Log.e("map not found", "Map fragment not found");
         }
-    }
-
-    private void fillUiWithProblemData(View view) {
-        etTitle.setText(problem.getTitle());
-        etDescription.setText(problem.getDescription());
-        int sectorNumar = problem.getSector();
-        Sector selectedSector = null;
-        for (Sector s : Sector.values()) {
-            if (s.getNumar() == sectorNumar) {
-                selectedSector = s;
-                break;
-            }
-        }
-        if (selectedSector != null) {
-            ArrayAdapter<Sector> adapter = (ArrayAdapter<Sector>) spnSector.getAdapter();
-            int position = adapter.getPosition(selectedSector);
-            spnSector.setSelection(position);
-        }
-
-        String categorieText = problem.getCategorieProblema();
-        CategorieProblema selectedCategorie = null;
-        for (CategorieProblema c : CategorieProblema.values()) {
-            if (c.getCategorie().equalsIgnoreCase(categorieText)) {
-                selectedCategorie = c;
-                break;
-            }
-        }
-        if (selectedCategorie != null) {
-            ArrayAdapter<CategorieProblema> categorieAdapter = (ArrayAdapter<CategorieProblema>) spnCategorie.getAdapter();
-            int categoriePosition = categorieAdapter.getPosition(selectedCategorie);
-            spnCategorie.setSelection(categoriePosition);
-        }
-
-        autocompleteFragment.setHint(problem.getAddress());
-        List<String> problemImageUrls = problem.getImageUrls();
-        if (problemImageUrls != null) {
-            selectedImageUris.clear();
-            for (String url : problemImageUrls) {
-                selectedImageUris.add(Uri.parse(url));
-            }
-            selectedImagesAdapter.notifyDataSetChanged();
-            rvSelectedImages.setVisibility(View.VISIBLE);
-        }
-
     }
 
     @Override

@@ -147,5 +147,10 @@ public class ImagePickerHelper {
         new ItemTouchHelper(simpleCallback).attachToRecyclerView(recyclerView);
     }
 
+    public static boolean isRemoteUri(Uri uri) {
+        return uri.toString().startsWith("http");
+    }
+
+
 }
 

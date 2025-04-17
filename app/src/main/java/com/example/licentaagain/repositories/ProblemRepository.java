@@ -32,6 +32,8 @@ public class ProblemRepository {
     private final FirebaseFirestore db;
     private final FirebaseStorage storage;
 
+
+
     public interface ProblemFetchCallback {
         void onFetchComplete(List<Problem> problems);
     }
@@ -411,6 +413,47 @@ public class ProblemRepository {
                     });
         }
     }
+
+    public void updateProblemWithPictureChange(
+            String problemId,
+            Problem updatedProblem,
+            List<String> existingImageUrls,
+            List<Uri> newImageUris,
+            Consumer<Boolean> callback) {
+
+        uploadImages(problemId, newImageUris, newDownloadUrls -> {
+            // Combine existing and new URLs
+            List<String> allImageUrls = new ArrayList<>();
+            if (existingImageUrls != null) {
+                allImageUrls.addAll(existingImageUrls);
+            }
+            allImageUrls.addAll(newDownloadUrls);
+
+            // Update problem fields + new image URLs
+            Map<String, Object> updatedFields = new HashMap<>();
+            updatedFields.put("title", updatedProblem.getTitle());
+            updatedFields.put("description", updatedProblem.getDescription());
+            updatedFields.put("sector", updatedProblem.getSector());
+            updatedFields.put("categorieProblema", updatedProblem.getCategorieProblema());
+            updatedFields.put("latitude", updatedProblem.getLatitude());
+            updatedFields.put("longitude", updatedProblem.getLongitude());
+            updatedFields.put("address", updatedProblem.getAddress());
+            updatedFields.put("imageUrls", allImageUrls);
+
+            db.collection("problems").document(problemId)
+                    .update(updatedFields)
+                    .addOnSuccessListener(aVoid -> {
+                        callback.accept(true);
+                    })
+                    .addOnFailureListener(e -> {
+                        callback.accept(false);
+                    });
+
+        }, e -> {
+            callback.accept(false);
+        });
+    }
+
 
     public void updateProblemWithoutPictureChange(String problemId, Problem newProblem, Consumer<Boolean> callback) {
         Map<String, Object> updatedFields = new HashMap<>();
