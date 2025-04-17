@@ -1,6 +1,5 @@
 package com.example.licentaagain.account;
 
-import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
 
@@ -8,7 +7,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,12 +17,8 @@ import com.google.android.material.button.MaterialButton;
 
 public class TopProfileFragment extends Fragment {
     FragmentManager fragmentManager;
-    MaterialButton btnAccount;
-    MaterialButton btnMyProblems;
-    MaterialButton btnMyIdeas;
-    View indicatorMyProblems;
-    View indicatorMyIdeas;
-    View indicatorAccount;
+    MaterialButton btnAccount, btnMyProblems, btnMyIdeas, btnMySignatures;
+    View indicatorMyProblems, indicatorMyIdeas, indicatorAccount, indicatorMySignatures;
 
 
     public TopProfileFragment() {
@@ -47,48 +41,45 @@ public class TopProfileFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         initializeVariables(view);
-        //initial fragment set to my problems
-        loadSubFragment(new MyReportedProblemsFragment(), btnMyProblems, indicatorMyProblems, btnAccount, btnMyIdeas, indicatorAccount, indicatorMyIdeas);
 
-        setUpMenuButtonEvents(view);
+        //initial fragment set to my problems
+        loadSubFragment(new MyReportedProblemsFragment(), btnMyProblems, indicatorMyProblems, btnAccount, btnMyIdeas, btnMySignatures, indicatorAccount, indicatorMyIdeas, indicatorMySignatures);
+        setUpMenuButtonEvents();
     }
 
     private void initializeVariables(View view) {
         btnAccount=view.findViewById(R.id.btnMyAccountSettings);
         btnMyProblems=view.findViewById(R.id.btnMyProblems);
         btnMyIdeas=view.findViewById(R.id.btnMyIdeas);
+        btnMySignatures=view.findViewById(R.id.btnMySignatures);
         indicatorMyProblems=view.findViewById(R.id.indicatorMyProblems);
         indicatorMyIdeas=view.findViewById(R.id.indicatorMyIdeas);
         indicatorAccount=view.findViewById(R.id.indicatorAccount);
+        indicatorMySignatures=view.findViewById(R.id.indicatorMySignatures);
     }
 
-    private void setUpMenuButtonEvents(View view) {
-        btnAccount.setOnClickListener(v -> {
-            loadSubFragment(new AccountFragment(), btnAccount, indicatorAccount,
-                    btnMyProblems, btnMyIdeas, indicatorMyProblems, indicatorMyIdeas);
-        });
-
-        btnMyProblems.setOnClickListener(v -> {
-            loadSubFragment(new MyReportedProblemsFragment(), btnMyProblems, indicatorMyProblems,
-                    btnAccount, btnMyIdeas, indicatorAccount, indicatorMyIdeas);
-        });
-
-        btnMyIdeas.setOnClickListener(v -> {
-            loadSubFragment(new MyIdeasFragment(), btnMyIdeas, indicatorMyIdeas,
-                    btnAccount, btnMyProblems, indicatorAccount, indicatorMyProblems);
-        });
+    private void setUpMenuButtonEvents() {
+        btnAccount.setOnClickListener(v -> loadSubFragment(new AccountFragment(), btnAccount, indicatorAccount,
+                btnMyProblems, btnMyIdeas, btnMySignatures, indicatorMyProblems, indicatorMyIdeas, indicatorMySignatures));
+        btnMyProblems.setOnClickListener(v -> loadSubFragment(new MyReportedProblemsFragment(), btnMyProblems, indicatorMyProblems,
+                btnAccount, btnMyIdeas, btnMySignatures, indicatorAccount, indicatorMyIdeas, indicatorMySignatures));
+        btnMyIdeas.setOnClickListener(v -> loadSubFragment(new MyIdeasFragment(), btnMyIdeas, indicatorMyIdeas,
+                btnMyProblems, btnAccount, btnMySignatures, indicatorMyProblems, indicatorAccount, indicatorMySignatures));
+        btnMySignatures.setOnClickListener(v->loadSubFragment(new MySignaturesFragment(), btnMySignatures, indicatorMySignatures,
+                btnAccount, btnMyIdeas, btnMyProblems ,indicatorAccount, indicatorMyIdeas, indicatorMyProblems));
     }
 
-    private void loadSubFragment(Fragment fragment,  MaterialButton selectedButton, View selectedIndicator, MaterialButton btn2, MaterialButton btn3, View ind2, View ind3) {
+    private void loadSubFragment(Fragment fragment,  MaterialButton selectedButton, View selectedIndicator, MaterialButton btn2, MaterialButton btn3, MaterialButton btn4 , View ind2, View ind3, View ind4) {
         fragmentManager.beginTransaction()
                 .replace(R.id.fragmentContainer, fragment)
                 .commit();
 
-        updateTabStyle(selectedButton, btn2, btn3);
+        updateTabStyle(selectedButton, btn2, btn3, btn4);
 
         selectedIndicator.setBackgroundColor(getResources().getColor(R.color.darkGray));
         ind2.setBackgroundColor(Color.TRANSPARENT);
         ind3.setBackgroundColor(Color.TRANSPARENT);
+        ind4.setBackgroundColor(Color.TRANSPARENT);
     }
 
 

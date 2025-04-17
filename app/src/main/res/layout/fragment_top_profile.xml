@@ -27,8 +27,8 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
-        android:layout_marginStart="7dp"
-        android:layout_marginEnd="7dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
         android:id="@+id/indicatorLayout"
         android:layout_width="match_parent"
         android:layout_marginTop="40dp"
@@ -47,6 +47,13 @@
 
         <View
             android:id="@+id/indicatorMyIdeas"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@android:color/transparent" />
+
+        <View
+            android:id="@+id/indicatorMySignatures"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -74,35 +81,50 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnMyProblems"
+            app:iconGravity="textTop"
+            android:textSize="12sp"
             style="@style/Widget.Material3.Button.TextButton.Icon"
             android:layout_width="wrap_content"
             android:text="Your reports"
             android:layout_height="wrap_content"
             app:iconTint="@color/darkGray"
             android:textColor="@color/darkGray"
-            android:layout_marginHorizontal="12dp"
             app:icon="@drawable/ic_problem_file" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnMyIdeas"
+            app:iconGravity="textTop"
             style="@style/Widget.Material3.Button.TextButton.Icon"
+            android:textSize="12sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Your ideas"
             app:iconTint="@color/darkGray"
             android:textColor="@color/darkGray"
-            android:layout_marginHorizontal="12dp"
             app:icon="@drawable/ic_lightbulb" />
 
         <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnMySignatures"
+            app:iconGravity="textTop"
+            android:textSize="12sp"
+            style="@style/Widget.Material3.Button.TextButton.Icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Your signatures"
+            app:iconTint="@color/darkGray"
+            android:textColor="@color/darkGray"
+            app:icon="@drawable/ic_sign" />
+
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnMyAccountSettings"
+            app:iconGravity="textTop"
+            android:textSize="12sp"
             style="@style/Widget.Material3.Button.TextButton.Icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:iconTint="@color/darkGray"
             android:text="Account"
             android:textColor="@color/darkGray"
-            android:layout_marginHorizontal="12dp"
             app:icon="@drawable/ic_settings" />
 
     </LinearLayout>
