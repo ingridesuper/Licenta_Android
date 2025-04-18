@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
@@ -23,8 +24,10 @@ import android.widget.Toast;
 import com.example.licentaagain.R;
 import com.example.licentaagain.account.TopProfileFragment;
 import com.example.licentaagain.custom_adapters.ImageAdapterProblemDetails;
+import com.example.licentaagain.custom_adapters.SearchUserAdapter;
 import com.example.licentaagain.mainpage.MainPageFragment;
 import com.example.licentaagain.models.Problem;
+import com.example.licentaagain.models.User;
 import com.example.licentaagain.repositories.UserRepository;
 import com.example.licentaagain.views.WorkaroundMapFragment;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -35,6 +38,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -42,6 +46,8 @@ public class ProblemOfCurrentUserDetailsFragment extends Fragment implements OnM
     private Problem problem;
     private GoogleMap myMap;
     private Button btnClose, btnOpenInGoogleMaps;
+    SearchUserAdapter adapter;
+    private List<User> semnatariList=new ArrayList<>();
 
 
     @Override
@@ -128,15 +134,18 @@ public class ProblemOfCurrentUserDetailsFragment extends Fragment implements OnM
         ImageAdapterProblemDetails adapter=new ImageAdapterProblemDetails(getContext(), problemImageUrls);
         recyclerViewPictures.setAdapter(adapter);
 
-        fillUpSemnatariListContainer(view);
+        fillUpSemnatariRecyclerView(view);
     }
 
-    private void fillUpSemnatariListContainer(View view) {
-        FragmentManager fragmentManager=getChildFragmentManager();
-        FragmentTransaction fragmentTransaction=fragmentManager.beginTransaction();
-//        SemnatariListFragment semnatariListFragment=new SemnatariListFragment();
-//        fragmentTransaction.add(R.id.fragmentContainerSemnatariList, semnatariListFragment);
-        fragmentTransaction.commit();
+    private void fillUpSemnatariRecyclerView(View view) {
+        RecyclerView rvSemnatariList=view.findViewById(R.id.rvSemnatariList);
+        rvSemnatariList.setNestedScrollingEnabled(false);
+        adapter=new SearchUserAdapter(new ArrayList<>());
+        rvSemnatariList.setLayoutManager(new LinearLayoutManager(getActivity()));
+        rvSemnatariList.setAdapter(adapter);
+        new UserRepository().getUsersWhoSignedProblem(problem.getId(), users -> {
+            adapter.updateData(users);
+        });
     }
 
     @Override

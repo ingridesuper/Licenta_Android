@@ -15,6 +15,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 public class UserRepository {
@@ -106,5 +107,53 @@ public class UserRepository {
                     }
                 });
     }
+
+    public void getUsersWhoSignedProblem(String problemId, Consumer<List<User>> callback) {
+        db.collection("problem_signatures")
+                .whereEqualTo("problemId", problemId)
+                .get()
+                .addOnSuccessListener(signaturesSnapshot -> {
+                    List<String> userIds = new ArrayList<>();
+                    for (QueryDocumentSnapshot signature : signaturesSnapshot) {
+                        String userId = signature.getString("userId");
+                        if (userId != null) {
+                            userIds.add(userId);
+                        }
+                    }
+
+                    if (userIds.isEmpty()) {
+                        callback.accept(new ArrayList<>()); // No users signed
+                        return;
+                    }
+
+                    List<User> users = new ArrayList<>();
+                    AtomicInteger completed = new AtomicInteger(0);
+                    for (String userId : userIds) {
+                        db.collection("users")
+                                .whereEqualTo("uid", userId)
+                                .get()
+                                .addOnSuccessListener(userSnapshot -> {
+                                    for (QueryDocumentSnapshot userDoc : userSnapshot) {
+                                        User user = userDoc.toObject(User.class);
+                                        users.add(user);
+                                    }
+                                    if (completed.incrementAndGet() == userIds.size()) {
+                                        callback.accept(users);
+                                    }
+                                })
+                                .addOnFailureListener(e -> {
+                                    Log.e("Firestore", "Failed to fetch user " + userId, e);
+                                    if (completed.incrementAndGet() == userIds.size()) {
+                                        callback.accept(users);
+                                    }
+                                });
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("Firestore", "Failed to fetch problem signatures", e);
+                    callback.accept(new ArrayList<>());
+                });
+    }
+
 
 }

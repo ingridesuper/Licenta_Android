@@ -74,8 +74,8 @@
             style="@style/Widget.Material3.Button.TextButton.Icon"
             app:icon="@drawable/ic_google_maps"/>
 
-        <androidx.fragment.app.FragmentContainerView
-            android:id="@+id/fragmentContainerSemnatariList"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvSemnatariList"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
 
