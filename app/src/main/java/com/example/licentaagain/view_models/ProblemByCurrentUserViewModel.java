@@ -12,11 +12,11 @@ import com.example.licentaagain.repositories.ProblemRepository;
 
 import java.util.List;
 
-public class ProblemByUserViewModel extends ViewModel implements ProblemRepository.ProblemFetchCallback {
+public class ProblemByCurrentUserViewModel extends ViewModel implements ProblemRepository.ProblemFetchCallback {
     private MutableLiveData<List<Problem>> problemsLiveData=new MutableLiveData<>();
     private final ProblemRepository problemRepository;
 
-    public ProblemByUserViewModel() {
+    public ProblemByCurrentUserViewModel() {
         problemRepository = new ProblemRepository();
     }
 

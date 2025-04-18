@@ -16,7 +16,6 @@ import com.example.licentaagain.HomePageActivity;
 import com.example.licentaagain.R;
 import com.example.licentaagain.models.Problem;
 import com.example.licentaagain.problem.EditProblemFragment;
-import com.example.licentaagain.problem.ProblemDetailsFragment;
 import com.example.licentaagain.repositories.ProblemRepository;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.imageview.ShapeableImageView;
@@ -37,7 +36,7 @@ public class ProblemsByUserCardAdapter extends RecyclerView.Adapter<ProblemsByUs
 
     public ProblemByUserViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         // Inflate the item layout for each problem
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.problem_by_user_card_item, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.problem_by_current_user_card_item, parent, false);
         return new ProblemsByUserCardAdapter.ProblemByUserViewHolder(view);
     }
 

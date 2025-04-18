@@ -26,7 +26,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.licentaagain.R;
-import com.example.licentaagain.view_models.ProblemByUserViewModel;
+import com.example.licentaagain.view_models.ProblemByCurrentUserViewModel;
 import com.example.licentaagain.custom_adapters.SelectedImagesAdapter;
 import com.example.licentaagain.enums.CategorieProblema;
 import com.example.licentaagain.enums.Sector;
@@ -59,7 +59,7 @@ public class EditProblemFragment extends Fragment implements OnMapReadyCallback 
     private GoogleMap myMap;
     private Place selectedPlace;
     private AutocompleteSupportFragment autocompleteFragment;
-    private ProblemByUserViewModel viewModel;
+    private ProblemByCurrentUserViewModel viewModel;
     private ImagePickerHelper imagePickerHelper;
 
 
@@ -114,7 +114,7 @@ public class EditProblemFragment extends Fragment implements OnMapReadyCallback 
         });
         }
 
-        viewModel = new ViewModelProvider(requireActivity()).get(ProblemByUserViewModel.class);
+        viewModel = new ViewModelProvider(requireActivity()).get(ProblemByCurrentUserViewModel.class);
     }
 
     private void initializeVariables(@NonNull View view) {
