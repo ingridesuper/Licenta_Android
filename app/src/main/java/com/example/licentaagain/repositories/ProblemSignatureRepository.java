@@ -79,6 +79,20 @@ public class ProblemSignatureRepository {
                 });
     }
 
+    public void numberSignaturesOfProblem(String problemId, Consumer<Integer> callback) {
+        db.collection("problem_signatures")
+                .whereEqualTo("problemId", problemId)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    int count = queryDocumentSnapshots.size();
+                    callback.accept(count);
+                })
+                .addOnFailureListener(e -> {
+                    callback.accept(0);
+                });
+    }
+
+
 
 
 }

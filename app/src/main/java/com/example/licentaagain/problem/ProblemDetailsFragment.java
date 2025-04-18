@@ -205,6 +205,7 @@ public class ProblemDetailsFragment extends Fragment implements OnMapReadyCallba
 
     private void fillUiWithProblemData(@NonNull View view) {
         TextView tvProblemTitle= view.findViewById(R.id.tvProblemTitle);
+        TextView tvNrSemnaturi=view.findViewById(R.id.tvNrSemnaturi);
         tvProblemAuthor=view.findViewById(R.id.tvProblemAuthor);
         TextView tvProblemDescription=view.findViewById(R.id.tvProblemDescription);
         TextView tvProblemCategory=view.findViewById(R.id.tvProblemCategory);
@@ -224,6 +225,10 @@ public class ProblemDetailsFragment extends Fragment implements OnMapReadyCallba
         tvProblemDescription.setText(problem.getDescription());
         tvProblemCategory.setText("Categorie: "+problem.getCategorieProblema());
         tvProblemAddressSector.setText(problem.getAddress()+", Sectorul "+problem.getSector());
+
+        problemSignatureRepository.numberSignaturesOfProblem(problem.getId(), count->{
+            tvNrSemnaturi.setText("Număr semnături: "+count);
+        });
 
         List<String> problemImageUrls=problem.getImageUrls();
         ImageAdapterProblemDetails adapter=new ImageAdapterProblemDetails(getContext(), problemImageUrls);
