@@ -77,7 +77,8 @@
             app:icon="@drawable/ic_google_maps"/>
 
         <TextView
-            android:text="Semnatari:"
+            android:id="@+id/tvNrSemnatariHeading"
+            android:text="Semnatari ():"
             android:layout_marginBottom="15dp"
             android:fontFamily="@font/manrope_bold"
             android:layout_width="match_parent"

@@ -29,6 +29,7 @@ import com.example.licentaagain.custom_adapters.SearchUserAdapter;
 import com.example.licentaagain.mainpage.MainPageFragment;
 import com.example.licentaagain.models.Problem;
 import com.example.licentaagain.models.User;
+import com.example.licentaagain.repositories.ProblemSignatureRepository;
 import com.example.licentaagain.repositories.UserRepository;
 import com.example.licentaagain.view_models.SearchedUserViewModel;
 import com.example.licentaagain.view_models.SemnatariViewModel;
@@ -126,6 +127,7 @@ public class ProblemOfCurrentUserDetailsFragment extends Fragment implements OnM
         TextView tvProblemCategory=view.findViewById(R.id.tvProblemCategory);
         TextView tvProblemAddressSector=view.findViewById(R.id.tvProblemAddressSector);
         RecyclerView recyclerViewPictures=view.findViewById(R.id.recyclerViewPictures);
+        TextView tvNrSemnatariHeading=view.findViewById(R.id.tvNrSemnatariHeading);
         btnClose=view.findViewById(R.id.btnClose);
         btnOpenInGoogleMaps=view.findViewById(R.id.btnOpenInGoogleMaps);
 
@@ -133,6 +135,8 @@ public class ProblemOfCurrentUserDetailsFragment extends Fragment implements OnM
         tvProblemDescription.setText(problem.getDescription());
         tvProblemCategory.setText("Categorie: "+problem.getCategorieProblema());
         tvProblemAddressSector.setText(problem.getAddress()+", Sectorul "+problem.getSector());
+
+        new ProblemSignatureRepository().numberSignaturesOfProblem(problem.getId(), result-> tvNrSemnatariHeading.setText("Semnatari ("+result.toString()+"): "));
 
         List<String> problemImageUrls=problem.getImageUrls();
         ImageAdapterProblemDetails adapter=new ImageAdapterProblemDetails(getContext(), problemImageUrls);
