@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -29,6 +30,8 @@ import com.example.licentaagain.mainpage.MainPageFragment;
 import com.example.licentaagain.models.Problem;
 import com.example.licentaagain.models.User;
 import com.example.licentaagain.repositories.UserRepository;
+import com.example.licentaagain.view_models.SearchedUserViewModel;
+import com.example.licentaagain.view_models.SemnatariViewModel;
 import com.example.licentaagain.views.WorkaroundMapFragment;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -46,8 +49,8 @@ public class ProblemOfCurrentUserDetailsFragment extends Fragment implements OnM
     private Problem problem;
     private GoogleMap myMap;
     private Button btnClose, btnOpenInGoogleMaps;
+    private SemnatariViewModel viewModel;
     SearchUserAdapter adapter;
-    private List<User> semnatariList=new ArrayList<>();
 
 
     @Override
@@ -56,6 +59,7 @@ public class ProblemOfCurrentUserDetailsFragment extends Fragment implements OnM
         if (getArguments() != null) {
             problem = (Problem) getArguments().getSerializable("problem");
         }
+        viewModel=new ViewModelProvider(requireActivity()).get(SemnatariViewModel.class);
     }
 
     @Override
@@ -143,9 +147,11 @@ public class ProblemOfCurrentUserDetailsFragment extends Fragment implements OnM
         adapter=new SearchUserAdapter(new ArrayList<>());
         rvSemnatariList.setLayoutManager(new LinearLayoutManager(getActivity()));
         rvSemnatariList.setAdapter(adapter);
-        new UserRepository().getUsersWhoSignedProblem(problem.getId(), users -> {
+        viewModel.getUsers().observe(getViewLifecycleOwner(), users -> {
             adapter.updateData(users);
+            Log.i("fetchedUsers", String.valueOf(users.size())+": "+users.toString());
         });
+        viewModel.getSemnatariOfProblema(problem.getId());
     }
 
     @Override

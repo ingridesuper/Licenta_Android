@@ -17,19 +17,18 @@ import android.widget.SearchView;
 
 import com.example.licentaagain.R;
 import com.example.licentaagain.custom_adapters.SearchUserAdapter;
-import com.example.licentaagain.view_models.UserViewModel;
+import com.example.licentaagain.view_models.SearchedUserViewModel;
 
 import java.util.ArrayList;
-import java.util.Locale;
 
 public class SearchUserFragment extends Fragment {
-    private UserViewModel viewModel;
+    private SearchedUserViewModel viewModel;
     private SearchUserAdapter adapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        viewModel=new ViewModelProvider(requireActivity()).get(UserViewModel.class);
+        viewModel=new ViewModelProvider(requireActivity()).get(SearchedUserViewModel.class);
     }
 
     @Override

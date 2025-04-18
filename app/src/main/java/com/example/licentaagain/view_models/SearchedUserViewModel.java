@@ -4,18 +4,17 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.licentaagain.models.Problem;
 import com.example.licentaagain.models.User;
 import com.example.licentaagain.repositories.UserRepository;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.List;
 
-public class UserViewModel extends ViewModel implements UserRepository.UserFetchCallback {
+public class SearchedUserViewModel extends ViewModel implements UserRepository.UserFetchCallback {
 
     private MutableLiveData<List<User>> usersLiveData=new MutableLiveData<>();
     private final UserRepository userRepository;
-    public UserViewModel(){ userRepository=new UserRepository();}
+    public SearchedUserViewModel(){ userRepository=new UserRepository();}
     public LiveData<List<User>> getUsers() {
         return usersLiveData;
     }
