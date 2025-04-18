@@ -611,4 +611,18 @@ public class ProblemRepository {
                 });
     }
 
+    public void numberOfProblemsReporteddByUser(String userId, Consumer<Integer> callback) {
+        db.collection("problems")
+                .whereEqualTo("authorUid", userId)
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    int count = querySnapshot.size();
+                    callback.accept(count);
+                })
+                .addOnFailureListener(e -> {
+                    callback.accept(0);
+                    Log.e("Firestore", "Error getting signed problems", e);
+                });
+    }
+
 }

@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel;
 
 import com.example.licentaagain.models.Problem;
 import com.example.licentaagain.repositories.ProblemRepository;
+import com.example.licentaagain.repositories.ProblemSignatureRepository;
 
 import java.util.List;
 
@@ -35,9 +36,26 @@ public class ProblemBySelectedUserViewModel extends ViewModel implements Problem
         problemRepository.fetchAllProblemsByUser(uid, this);
     }
 
+
     @Override
     public void onFetchComplete(List<Problem> problems) {
         problemsLiveData.setValue(problems);
         Log.i("problemsByUser", String.valueOf(problems.size()));
     }
+
+
+    private final MutableLiveData<Integer> signedProblemCountLiveData = new MutableLiveData<>();
+
+    public LiveData<Integer> getSignedProblemCount() {
+        return signedProblemCountLiveData;
+    }
+
+    public void fetchSignedProblemCountByUser(String userId) {
+        problemRepository.numberOfProblemsReporteddByUser(userId, count -> {
+            signedProblemCountLiveData.postValue(count);
+            Log.i("signedCount", "Signed problems: " + count);
+        });
+    }
+
+
 }
