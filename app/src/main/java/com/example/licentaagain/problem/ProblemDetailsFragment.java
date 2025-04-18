@@ -1,5 +1,6 @@
 package com.example.licentaagain.problem;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -20,13 +21,16 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.licentaagain.HomePageActivity;
 import com.example.licentaagain.R;
 import com.example.licentaagain.custom_adapters.ImageAdapterProblemDetails;
 import com.example.licentaagain.mainpage.MainPageFragment;
 import com.example.licentaagain.models.Problem;
 import com.example.licentaagain.models.ProblemSignature;
+import com.example.licentaagain.models.User;
 import com.example.licentaagain.repositories.ProblemSignatureRepository;
 import com.example.licentaagain.repositories.UserRepository;
+import com.example.licentaagain.user_page.OtherUserFragment;
 import com.example.licentaagain.views.WorkaroundMapFragment;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -47,11 +51,10 @@ import java.util.function.Consumer;
 
 public class ProblemDetailsFragment extends Fragment implements OnMapReadyCallback {
     private Problem problem;
+    private User author;
     private GoogleMap myMap;
-    private Button btnClose;
-    private Button btnSign;
-    private Button btnSigned;
-    private Button btnOpenInGoogleMaps;
+    private Button btnClose, btnSign, btnSigned, btnOpenInGoogleMaps;
+    private TextView tvProblemAuthor;
     private ProblemSignatureRepository problemSignatureRepository;
 
 
@@ -63,6 +66,9 @@ public class ProblemDetailsFragment extends Fragment implements OnMapReadyCallba
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            problem = (Problem) getArguments().getSerializable("problem");
+        }
         problemSignatureRepository=new ProblemSignatureRepository();
     }
 
@@ -75,12 +81,14 @@ public class ProblemDetailsFragment extends Fragment implements OnMapReadyCallba
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        if (getArguments() != null) {
-            problem = (Problem) getArguments().getSerializable("problem");
-        }
+        new UserRepository().getUserBasedOnId(problem.getAuthorUid(), result -> {
+            author = result;
+            if (author != null) {
+                fillUiWithProblemData(view);
+                subscribeButtonsToEvents();
+            }
+        });
 
-        fillUiWithProblemData(view);
-        subscribeButtonsToEvents();
         setUpMapFragment(view);
     }
 
@@ -101,6 +109,28 @@ public class ProblemDetailsFragment extends Fragment implements OnMapReadyCallba
         subscribeBtnCloseToEvent();
         subscribeSigningButtonsToEvents();
         subscribeOpenInGoogleMaps();
+        subscribeAuthorClickToEvent();
+    }
+
+    private void subscribeAuthorClickToEvent() {
+        tvProblemAuthor.setOnClickListener(v->{
+                Context context=v.getContext();
+                if (context instanceof HomePageActivity) {
+                    HomePageActivity activity = (HomePageActivity) context;
+
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("user", author);
+
+                    OtherUserFragment otherUserFragment = new OtherUserFragment();
+                    otherUserFragment.setArguments(bundle);
+
+                    activity.getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.fragment_container_view, otherUserFragment)
+                            .addToBackStack(null)
+                            .commit();
+                }
+            });
     }
 
     private void subscribeOpenInGoogleMaps() {
@@ -175,7 +205,7 @@ public class ProblemDetailsFragment extends Fragment implements OnMapReadyCallba
 
     private void fillUiWithProblemData(@NonNull View view) {
         TextView tvProblemTitle= view.findViewById(R.id.tvProblemTitle);
-        TextView tvProblemAuthor=view.findViewById(R.id.tvProblemAuthor);
+        tvProblemAuthor=view.findViewById(R.id.tvProblemAuthor);
         TextView tvProblemDescription=view.findViewById(R.id.tvProblemDescription);
         TextView tvProblemCategory=view.findViewById(R.id.tvProblemCategory);
         TextView tvProblemAddressSector=view.findViewById(R.id.tvProblemAddressSector);
@@ -190,9 +220,7 @@ public class ProblemDetailsFragment extends Fragment implements OnMapReadyCallba
         });
 
         tvProblemTitle.setText(problem.getTitle());
-        new UserRepository().getUserNameSurnameBasedOnId(problem.getAuthorUid(), fullName->{
-            tvProblemAuthor.setText("Reported by: "+fullName);
-        });
+        tvProblemAuthor.setText(author.getName()+" "+author.getSurname());
         tvProblemDescription.setText(problem.getDescription());
         tvProblemCategory.setText("Categorie: "+problem.getCategorieProblema());
         tvProblemAddressSector.setText(problem.getAddress()+", Sectorul "+problem.getSector());

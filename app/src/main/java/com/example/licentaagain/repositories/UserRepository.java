@@ -1,7 +1,9 @@
 package com.example.licentaagain.repositories;
 
+import android.telecom.Call;
 import android.util.Log;
 
+import com.example.licentaagain.models.Problem;
 import com.example.licentaagain.models.User;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
@@ -58,6 +60,25 @@ public class UserRepository {
                 Log.e("FirestoreSearch", "Error retrieving search results", task.getException());
             }
         });
+    }
+
+    public void getUserBasedOnId(String uid, Consumer<User> callback) {
+        db.collection("users")
+                .whereEqualTo("uid", uid)
+                .get()
+                .addOnCompleteListener(task->{
+                    if(task.isSuccessful()){
+                        for (QueryDocumentSnapshot doc : task.getResult()){
+                            User user=doc.toObject(User.class);
+                            callback.accept(user);
+                            Log.i("userA", user.toString());
+                        }
+                    }
+                    else {
+                        Log.e("userNameError", "Error fetching "+task.getException());
+                        callback.accept(null);
+                    }
+                });
     }
 
     public interface UserFetchCallback {
