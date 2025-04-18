@@ -14,7 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.licentaagain.R;
-import com.example.licentaagain.custom_adapters.ProblemsByUserCardAdapter;
+import com.example.licentaagain.custom_adapters.ProblemsByCurrentUserCardAdapter;
 import com.example.licentaagain.view_models.ProblemByCurrentUserViewModel;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -24,7 +24,7 @@ import java.util.ArrayList;
 public class MyReportedProblemsFragment extends Fragment {
     FirebaseFirestore db;
     FirebaseAuth auth;
-    ProblemsByUserCardAdapter adapter;
+    ProblemsByCurrentUserCardAdapter adapter;
     ProblemByCurrentUserViewModel viewModel;
 
     public MyReportedProblemsFragment() {
@@ -50,7 +50,7 @@ public class MyReportedProblemsFragment extends Fragment {
 
         RecyclerView recyclerView = view.findViewById(R.id.rvProblems);
         recyclerView.setNestedScrollingEnabled(false);
-        adapter=new ProblemsByUserCardAdapter(getContext(), new ArrayList<>());
+        adapter=new ProblemsByCurrentUserCardAdapter(getContext(), new ArrayList<>());
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(adapter);
         viewModel.getProblems().observe(getViewLifecycleOwner(), problems -> adapter.updateData(problems));

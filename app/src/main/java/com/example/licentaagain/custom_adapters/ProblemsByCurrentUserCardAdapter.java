@@ -16,19 +16,20 @@ import com.example.licentaagain.HomePageActivity;
 import com.example.licentaagain.R;
 import com.example.licentaagain.models.Problem;
 import com.example.licentaagain.problem.EditProblemFragment;
+import com.example.licentaagain.problem.ProblemOfCurrentUserDetailsFragment;
 import com.example.licentaagain.repositories.ProblemRepository;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.imageview.ShapeableImageView;
 
 import java.util.List;
 
-public class ProblemsByUserCardAdapter extends RecyclerView.Adapter<ProblemsByUserCardAdapter.ProblemByUserViewHolder> {
+public class ProblemsByCurrentUserCardAdapter extends RecyclerView.Adapter<ProblemsByCurrentUserCardAdapter.ProblemByUserViewHolder> {
     private Context context;
 
     private List<Problem> problemList;
     private ProblemRepository problemRepository;
 
-    public ProblemsByUserCardAdapter(Context context, List<Problem> problemList) {
+    public ProblemsByCurrentUserCardAdapter(Context context, List<Problem> problemList) {
         this.context = context;
         this.problemList = problemList;
         problemRepository=new ProblemRepository();
@@ -37,16 +38,38 @@ public class ProblemsByUserCardAdapter extends RecyclerView.Adapter<ProblemsByUs
     public ProblemByUserViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         // Inflate the item layout for each problem
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.problem_by_current_user_card_item, parent, false);
-        return new ProblemsByUserCardAdapter.ProblemByUserViewHolder(view);
+        return new ProblemsByCurrentUserCardAdapter.ProblemByUserViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ProblemsByUserCardAdapter.ProblemByUserViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ProblemsByCurrentUserCardAdapter.ProblemByUserViewHolder holder, int position) {
         Problem problem = problemList.get(position);
         fillUiWithData(holder, problem);
         Log.i("bind", String.valueOf(position));
         setButtonListeners(holder, problem);
-        //setOnProblemClickListener(holder, problem);
+        setOnProblemClickListener(holder, problem);
+    }
+
+    private void setOnProblemClickListener(ProblemByUserViewHolder holder, Problem problem) {
+        holder.itemView.setOnClickListener(v->{
+            Context context = v.getContext();
+
+            if (context instanceof HomePageActivity) {
+                HomePageActivity activity = (HomePageActivity) context;
+
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("problem", problem);
+
+                ProblemOfCurrentUserDetailsFragment problemDetailsFragment = new ProblemOfCurrentUserDetailsFragment();
+                problemDetailsFragment.setArguments(bundle);
+
+                activity.getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.fragment_container_view, problemDetailsFragment)
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
     }
 
     private void setButtonListeners(ProblemByUserViewHolder holder, Problem problem) {
@@ -69,7 +92,7 @@ public class ProblemsByUserCardAdapter extends RecyclerView.Adapter<ProblemsByUs
         });
     }
 
-    private void fillUiWithData(@NonNull ProblemsByUserCardAdapter.ProblemByUserViewHolder holder, Problem problem) {
+    private void fillUiWithData(@NonNull ProblemsByCurrentUserCardAdapter.ProblemByUserViewHolder holder, Problem problem) {
         holder.titleTextView.setText(problem.getTitle());
         holder.addressTextView.setText(problem.getAddress()+", Sector "+problem.getSector());
         holder.categoryTextView.setText("Categorie: "+problem.getCategorieProblema());
