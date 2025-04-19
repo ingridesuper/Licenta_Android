@@ -158,7 +158,7 @@ public class ProblemDetailsFragment extends Fragment implements OnMapReadyCallba
         btnSigned.setOnClickListener(v ->
                 removeSignature(problem, success -> {
                     if(success){
-                        updateButtonVisibility(true);
+                        updateButtonVisibility(false);
                     }
                 })
         );

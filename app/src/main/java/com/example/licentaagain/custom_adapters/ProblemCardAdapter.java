@@ -98,7 +98,7 @@ public class ProblemCardAdapter extends RecyclerView.Adapter<ProblemCardAdapter.
         holder.btnSigned.setOnClickListener(v ->
                 removeSignature(problem, success -> {
                     if(success){
-                        updateButtonVisibility(holder, true);
+                        updateButtonVisibility(holder, false);
                     }
                 })
         );
