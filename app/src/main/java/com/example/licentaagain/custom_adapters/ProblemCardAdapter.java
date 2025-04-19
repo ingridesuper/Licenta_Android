@@ -135,6 +135,7 @@ public class ProblemCardAdapter extends RecyclerView.Adapter<ProblemCardAdapter.
                 problemSignatureRepository.addProblemSignature(problem.getId(), FirebaseAuth.getInstance().getCurrentUser().getUid(), context, addingResult->{
                     if(addingResult){
                         callback.accept(true);
+                        //here i want to message the user who owns the priblem that someone signed for his problem
                     }
                     else {
                         callback.accept(false);

@@ -4,6 +4,9 @@ import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.example.licentaagain.models.Problem;
 import com.example.licentaagain.models.ProblemSignature;
 import com.google.firebase.auth.FirebaseAuth;
@@ -11,7 +14,12 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 public class ProblemSignatureRepository {
@@ -43,6 +51,7 @@ public class ProblemSignatureRepository {
                         .add(newSignature)
                         .addOnSuccessListener(documentReference -> {
                             Log.i("Firestore", "Semnatura adaugata: " + documentReference.getId());
+                            //sendNotificationToProblemOwner(problemdId, context);
                             callback.accept(true);
                         })
                         .addOnFailureListener(e -> {
@@ -53,10 +62,66 @@ public class ProblemSignatureRepository {
             else {
                 callback.accept(false);
                 Toast.makeText(context, "Această problemă vă aparține - deja sunteți pe lista semnatarilor", Toast.LENGTH_LONG).show();
-                //here i want some sort of message to write in toast
             }
         });
     }
+
+//    private void sendNotificationToProblemOwner(String problemId, Context context) {
+//        FirebaseFirestore db = FirebaseFirestore.getInstance();
+//        db.collection("problems").document(problemId).get()
+//                .addOnSuccessListener(problemDoc -> {
+//                    if (problemDoc.exists()) {
+//                        String authorUid = problemDoc.getString("authorUid");
+//
+//                        db.collection("users").document(authorUid).get()
+//                                .addOnSuccessListener(userDoc -> {
+//                                    if (userDoc.exists()) {
+//                                        String fcmToken = userDoc.getString("fcmToken");
+//                                        if (fcmToken != null && !fcmToken.isEmpty()) {
+//                                            sendPushNotification(fcmToken, context, "Semnătură nouă", "Cineva a semnat problema ta.");
+//                                        }
+//                                    }
+//                                });
+//                    }
+//                });
+//    }
+//
+//    private void sendPushNotification(String fcmToken, Context context, String title, String body) {
+//        try {
+//            JSONObject notification = new JSONObject();
+//            JSONObject notifBody = new JSONObject();
+//
+//            notifBody.put("title", title);
+//            notifBody.put("body", body);
+//
+//            notification.put("to", fcmToken);
+//            notification.put("notification", notifBody);
+//
+//            JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST,
+//                    "https://fcm.googleapis.com/fcm/send",
+//                    notification,
+//                    response -> Log.d("FCM", "Notificare trimisă: " + response),
+//                    error -> Log.e("FCM", "Eroare notificare: " + error.getMessage())
+//            ) {
+//                @Override
+//                public Map<String, String> getHeaders() {
+//                    Map<String, String> headers = new HashMap<>();
+//                    headers.put("Authorization", "key=AAAA..."); // ⚠️ Server key de la Firebase Console
+//                    headers.put("Content-Type", "application/json");
+//                    return headers;
+//                }
+//            };
+//
+//            Volley.newRequestQueue(context).add(request);
+//
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        } catch (JSONException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
+
+
 
     public void removeSignature(String problemId, String userId, Consumer<Boolean> callback){
         db.collection("problem_signatures")
