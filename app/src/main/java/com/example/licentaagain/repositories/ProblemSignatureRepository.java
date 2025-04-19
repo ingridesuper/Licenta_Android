@@ -1,13 +1,17 @@
 package com.example.licentaagain.repositories;
 
+import android.content.Context;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.example.licentaagain.models.Problem;
 import com.example.licentaagain.models.ProblemSignature;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import java.util.List;
 import java.util.function.Consumer;
 
 public class ProblemSignatureRepository {
@@ -16,18 +20,42 @@ public class ProblemSignatureRepository {
         this.db = FirebaseFirestore.getInstance();
     }
 
-    public void addProblemSignature(String problemdId, String uid, Consumer<Boolean> callback){
-        ProblemSignature newSignature=new ProblemSignature(problemdId, uid);
-        db.collection("problem_signatures")
-                .add(newSignature)
-                .addOnSuccessListener(documentReference -> {
-                    Log.i("Firestore", "Semnatura adaugata: " + documentReference.getId());
-                    callback.accept(true);
-                })
-                .addOnFailureListener(e -> {
-                    Log.e("Firestore", "Eroare la adaugarea semnaturii", e);
-                    callback.accept(false);
+    public void problemBelongsToUser(String problemId, String uid, Consumer<Boolean> callback){
+        db.collection("problems")
+                .document(problemId)
+                .get()
+                .addOnSuccessListener(documentTask -> {
+                    DocumentSnapshot problem = documentTask;
+                    if (problem.exists() && problem.getString("authorUid").equals(uid)) {
+                        callback.accept(true);
+                    }
+                    else {
+                        callback.accept(false);
+                    }
                 });
+    }
+
+    public void addProblemSignature(String problemdId, String uid, Context context, Consumer<Boolean> callback){
+        ProblemSignature newSignature=new ProblemSignature(problemdId, uid);
+        problemBelongsToUser(problemdId, uid, belongs->{
+            if(!belongs){
+                db.collection("problem_signatures")
+                        .add(newSignature)
+                        .addOnSuccessListener(documentReference -> {
+                            Log.i("Firestore", "Semnatura adaugata: " + documentReference.getId());
+                            callback.accept(true);
+                        })
+                        .addOnFailureListener(e -> {
+                            Log.e("Firestore", "Eroare la adaugarea semnaturii", e);
+                            callback.accept(false);
+                        });
+            }
+            else {
+                callback.accept(false);
+                Toast.makeText(context, "Această problemă vă aparține - deja sunteți pe lista semnatarilor", Toast.LENGTH_LONG).show();
+                //here i want some sort of message to write in toast
+            }
+        });
     }
 
     public void removeSignature(String problemId, String userId, Consumer<Boolean> callback){

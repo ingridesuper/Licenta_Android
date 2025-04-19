@@ -88,11 +88,19 @@ public class ProblemCardAdapter extends RecyclerView.Adapter<ProblemCardAdapter.
 
     private void setButtonListeners(ProblemViewHolder holder, Problem problem) {
         holder.btnSign.setOnClickListener(v ->
-                addSignature(problem, success -> updateButtonVisibility(holder, true))
+                addSignature(problem, success -> {
+                    if(success){
+                        updateButtonVisibility(holder, true);
+                    }
+                })
         );
 
         holder.btnSigned.setOnClickListener(v ->
-                removeSignature(problem, success -> updateButtonVisibility(holder, false))
+                removeSignature(problem, success -> {
+                    if(success){
+                        updateButtonVisibility(holder, true);
+                    }
+                })
         );
     }
 
@@ -124,7 +132,7 @@ public class ProblemCardAdapter extends RecyclerView.Adapter<ProblemCardAdapter.
         new UserRepository().checkIfUserHasNameSurnameSectorData(FirebaseAuth.getInstance().getCurrentUser().getUid(), result->{
             if(result){
 
-                problemSignatureRepository.addProblemSignature(problem.getId(), FirebaseAuth.getInstance().getCurrentUser().getUid(), addingResult->{
+                problemSignatureRepository.addProblemSignature(problem.getId(), FirebaseAuth.getInstance().getCurrentUser().getUid(), context, addingResult->{
                     if(addingResult){
                         callback.accept(true);
                     }

@@ -148,11 +148,19 @@ public class ProblemDetailsFragment extends Fragment implements OnMapReadyCallba
 
     private void subscribeSigningButtonsToEvents() {
         btnSign.setOnClickListener(v ->
-                addSignature(problem, success -> updateButtonVisibility(true))
+                addSignature(problem, success -> {
+                    if(success){
+                        updateButtonVisibility(true);
+                    }
+                })
         );
 
         btnSigned.setOnClickListener(v ->
-                removeSignature(problem, success -> updateButtonVisibility(false))
+                removeSignature(problem, success -> {
+                    if(success){
+                        updateButtonVisibility(true);
+                    }
+                })
         );
     }
 
@@ -160,7 +168,7 @@ public class ProblemDetailsFragment extends Fragment implements OnMapReadyCallba
         new UserRepository().checkIfUserHasNameSurnameSectorData(FirebaseAuth.getInstance().getCurrentUser().getUid(), result->{
             if(result){
 
-                problemSignatureRepository.addProblemSignature(problem.getId(), FirebaseAuth.getInstance().getCurrentUser().getUid(), addingResult->{
+                problemSignatureRepository.addProblemSignature(problem.getId(), FirebaseAuth.getInstance().getCurrentUser().getUid(), getContext(), addingResult->{
                     if(addingResult){
                         callback.accept(true);
                     }
