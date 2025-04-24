@@ -1,5 +1,6 @@
 package com.example.licentaagain.problem;
 
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -41,6 +42,11 @@ import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.button.MaterialButton;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,6 +56,7 @@ public class ProblemOfCurrentUserDetailsFragment extends Fragment implements OnM
     private Problem problem;
     private GoogleMap myMap;
     private Button btnClose, btnOpenInGoogleMaps;
+    private MaterialButton btnTakeAction;
     private SemnatariViewModel viewModel;
     SearchUserAdapter adapter;
 
@@ -92,7 +99,63 @@ public class ProblemOfCurrentUserDetailsFragment extends Fragment implements OnM
     private void subscribeButtonsToEvents() {
         subscribeBtnCloseToEvent();
         subscribeOpenInGoogleMaps();
+        subscribeBtnTakeActionToEvent();
     }
+
+    private void subscribeBtnTakeActionToEvent() {
+        btnTakeAction.setOnClickListener(v -> {
+            new UserRepository().getUsersWhoSignedProblem(problem.getId(), semnatari -> {
+                StringBuilder body = new StringBuilder();
+                body.append("Bună ziua,\n\n");
+                body.append("Aș dori să semnalez următoarea problemă: ").append(problem.getTitle()).append("\n\n");
+                body.append("Detalii: ").append(problem.getDescription()).append("\n\n");
+
+                DocumentReference documentReference = FirebaseFirestore.getInstance()
+                        .collection("users")
+                        .document(FirebaseAuth.getInstance().getCurrentUser().getUid());
+
+                documentReference.get().addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                            String currentUserFullName = document.getString("name") + " " + document.getString("surname") + "\n";
+                            String currentUserAddress = "Sectorul "+document.getLong("sector").intValue() + "\n"; //de adaugat aici toata adresa!!
+                            body.append("Va rog sa imi trimiteti numarul de inregistrare la adresa "+document.getString("email")+"\n\n");
+                            body.append(currentUserFullName);
+                            body.append(currentUserAddress);
+
+                            body.append("\n\nSemnatari:\n");
+                            for (User user : semnatari) {
+                                body.append("- ").append(user.getName()).append(" ")
+                                        .append(user.getSurname()).append(": ")
+                                        .append(user.getEmail()).append("\n");
+                            }
+
+                            Intent emailIntent = new Intent(Intent.ACTION_SENDTO);
+                            emailIntent.setData(Uri.parse("mailto:"));
+                            emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Sesizare: " + problem.getTitle());
+                            emailIntent.putExtra(Intent.EXTRA_TEXT, body.toString());
+
+                            try {
+                                getContext().startActivity(Intent.createChooser(emailIntent, "Trimite email cu..."));
+                            } catch (ActivityNotFoundException e) {
+                                Toast.makeText(getContext(), "Nu s-a găsit o aplicație de email.", Toast.LENGTH_SHORT).show();
+                            }
+
+                            // TODO: schimbă starea problemei în "email trimis"
+                        } else {
+                            Log.d("Firestore", "Documentul nu există!");
+                        }
+                    } else {
+                        Log.d("Firestore", "Eroare la obținerea documentului: " + task.getException());
+                    }
+                });
+            });
+        });
+    }
+
+
+
 
     private void subscribeOpenInGoogleMaps() {
         btnOpenInGoogleMaps.setOnClickListener(v->{
@@ -130,6 +193,7 @@ public class ProblemOfCurrentUserDetailsFragment extends Fragment implements OnM
         TextView tvNrSemnatariHeading=view.findViewById(R.id.tvNrSemnatariHeading);
         btnClose=view.findViewById(R.id.btnClose);
         btnOpenInGoogleMaps=view.findViewById(R.id.btnOpenInGoogleMaps);
+        btnTakeAction=view.findViewById(R.id.btnTakeAction);
 
         tvProblemTitle.setText(problem.getTitle());
         tvProblemDescription.setText(problem.getDescription());
