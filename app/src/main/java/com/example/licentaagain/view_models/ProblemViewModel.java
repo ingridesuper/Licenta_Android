@@ -44,13 +44,14 @@ public class ProblemViewModel extends ViewModel implements ProblemRepository.Pro
         problemsLiveData.setValue(problems);
     }
 
+    //only for problems gathering signatures
     private void applyFilter() {
         Log.d("FilterCheck", "applyFilter() called with: " + filterState.getValue());
 
         if (filterState.getValue().getSortOrder() == ProblemFilterState.SortOrder.NONE
                 && filterState.getValue().getSelectedSectors().isEmpty()
                 && filterState.getValue().getSelectedCategories().isEmpty()) {
-            problemRepository.fetchAllProblems(this);
+            problemRepository.fetchAllProblemsGatheringSignatures(this);
         }
         //doar sector
         else if (filterState.getValue().getSortOrder() == ProblemFilterState.SortOrder.NONE
@@ -104,7 +105,7 @@ public class ProblemViewModel extends ViewModel implements ProblemRepository.Pro
     }
 
     public void fetchAllProblems() {
-        problemRepository.fetchAllProblems(this);
+        problemRepository.fetchAllProblemsGatheringSignatures(this);
     }
 
     @Override

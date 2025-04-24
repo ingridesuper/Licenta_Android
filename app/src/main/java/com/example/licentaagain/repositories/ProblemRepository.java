@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.example.licentaagain.enums.CategorieProblema;
 import com.example.licentaagain.enums.Sector;
+import com.example.licentaagain.enums.StareProblema;
 import com.example.licentaagain.models.Problem;
 import com.example.licentaagain.utils.ProblemFilterState;
 import com.google.android.gms.tasks.Task;
@@ -75,13 +76,39 @@ public class ProblemRepository {
                 });
     }
 
+    public void fetchAllProblemsGatheringSignatures(ProblemFetchCallback callback){
+        db.collection("problems").whereEqualTo("stareProblema", StareProblema.CURS_STRANGERE_SEMNATURI.getStare()).get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        List<Problem> fetchedProblems = new ArrayList<>();
+                        for (QueryDocumentSnapshot problem : task.getResult()) {
+                            Problem newProblem = new Problem(
+                                    problem.getString("address"),
+                                    problem.getString("authorUid"),
+                                    problem.getString("description"),
+                                    problem.getDouble("latitude"),
+                                    problem.getDouble("longitude"),
+                                    problem.getDouble("sector").intValue(),
+                                    problem.getString("title"),
+                                    problem.getString("categorieProblema"),
+                                    (List<String>) problem.get("imageUrls")
+                            );
+                            newProblem.setId(problem.getId());
+                            fetchedProblems.add(newProblem);
+                        }
+                        callback.onFetchComplete(fetchedProblems);
+                    }
+                });
+    }
+
+    //in curs strangere semnaturi->
     public void orderByAge(boolean byNewest, ProblemFetchCallback callback) {
         Query query;
 
         if (byNewest) {
-            query = db.collection("problems").orderBy("createDate", Query.Direction.DESCENDING);
+            query = db.collection("problems").whereEqualTo("stareProblema", StareProblema.CURS_STRANGERE_SEMNATURI.getStare()).orderBy("createDate", Query.Direction.DESCENDING);
         } else {
-            query = db.collection("problems").orderBy("createDate", Query.Direction.ASCENDING);
+            query = db.collection("problems").whereEqualTo("stareProblema", StareProblema.CURS_STRANGERE_SEMNATURI.getStare()).orderBy("createDate", Query.Direction.ASCENDING);
         }
 
         query.get().addOnCompleteListener(task -> {
@@ -106,6 +133,7 @@ public class ProblemRepository {
         }
 
         db.collection("problems")
+                .whereEqualTo("stareProblema", StareProblema.CURS_STRANGERE_SEMNATURI.getStare())
                 .whereIn("sector", sectorNumbers)
                 .get()
                 .addOnCompleteListener(task -> {
@@ -130,6 +158,7 @@ public class ProblemRepository {
         }
 
         FirebaseFirestore.getInstance().collection("problems")
+                .whereEqualTo("stareProblema", StareProblema.CURS_STRANGERE_SEMNATURI.getStare())
                 .whereIn("categorieProblema", categorieProblemaString)
                 .get()
                 .addOnCompleteListener(task -> {
@@ -154,7 +183,7 @@ public class ProblemRepository {
         }
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        Query query = db.collection("problems").whereIn("sector", sectorNumbers);
+        Query query = db.collection("problems").whereIn("sector", sectorNumbers).whereEqualTo("stareProblema", StareProblema.CURS_STRANGERE_SEMNATURI.getStare());
 
         if (sortOrder == ProblemFilterState.SortOrder.NEWEST) {
             query = query.orderBy("createDate", Query.Direction.DESCENDING);
@@ -183,7 +212,7 @@ public class ProblemRepository {
             categorieProblemaString.add(categorieProblema.getCategorie());
         }
 
-        Query query = db.collection("problems").whereIn("categorieProblema", categorieProblemaString);
+        Query query = db.collection("problems").whereEqualTo("stareProblema", StareProblema.CURS_STRANGERE_SEMNATURI.getStare()).whereIn("categorieProblema", categorieProblemaString);
 
         if (sortOrder == ProblemFilterState.SortOrder.NEWEST) {
             query = query.orderBy("createDate", Query.Direction.DESCENDING);
@@ -219,6 +248,7 @@ public class ProblemRepository {
         }
 
         db.collection("problems")
+                .whereEqualTo("stareProblema", StareProblema.CURS_STRANGERE_SEMNATURI.getStare())
                 .whereIn("categorieProblema", categorieProblemaString)
                 .whereIn("sector", sectorNumbers)
                 .get()
@@ -249,6 +279,7 @@ public class ProblemRepository {
         }
 
         Query query = db.collection("problems")
+                .whereEqualTo("stareProblema", StareProblema.CURS_STRANGERE_SEMNATURI.getStare())
                 .whereIn("categorieProblema", categorieProblemaString)
                 .whereIn("sector", sectorNumbers);
 
@@ -297,8 +328,10 @@ public class ProblemRepository {
                         for (DocumentSnapshot doc : result.getDocuments()) {
                             Problem problem = doc.toObject(Problem.class);
                             problem.setId(doc.getId());
-                            if (!searchedList.contains(problem)) { //based on id
-                                searchedList.add(problem);
+                            if(problem.getStareProblema().equals(StareProblema.CURS_STRANGERE_SEMNATURI.getStare())){
+                                if (!searchedList.contains(problem)) { //based on id
+                                    searchedList.add(problem);
+                                }
                             }
                         }
                     }
@@ -310,6 +343,9 @@ public class ProblemRepository {
             }
         });
     }
+
+
+    //<-in curs strangere semnaturi
 
     public void fetchAllProblemsByUser(String uid, ProblemFetchCallback callback) {
         db.collection("problems").whereEqualTo("authorUid", uid).get()
