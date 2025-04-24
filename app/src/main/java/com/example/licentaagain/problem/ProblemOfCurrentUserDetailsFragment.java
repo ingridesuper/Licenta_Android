@@ -47,7 +47,17 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.squareup.okhttp.MediaType;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -105,11 +115,6 @@ public class ProblemOfCurrentUserDetailsFragment extends Fragment implements OnM
     private void subscribeBtnTakeActionToEvent() {
         btnTakeAction.setOnClickListener(v -> {
             new UserRepository().getUsersWhoSignedProblem(problem.getId(), semnatari -> {
-                StringBuilder body = new StringBuilder();
-                body.append("Bună ziua,\n\n");
-                body.append("Aș dori să semnalez următoarea problemă: ").append(problem.getTitle()).append("\n\n");
-                body.append("Detalii: ").append(problem.getDescription()).append("\n\n");
-
                 DocumentReference documentReference = FirebaseFirestore.getInstance()
                         .collection("users")
                         .document(FirebaseAuth.getInstance().getCurrentUser().getUid());
@@ -118,42 +123,113 @@ public class ProblemOfCurrentUserDetailsFragment extends Fragment implements OnM
                     if (task.isSuccessful()) {
                         DocumentSnapshot document = task.getResult();
                         if (document.exists()) {
-                            String currentUserFullName = document.getString("name") + " " + document.getString("surname") + "\n";
-                            String currentUserAddress = "Sectorul "+document.getLong("sector").intValue() + "\n"; //de adaugat aici toata adresa!!
-                            body.append("Va rog sa imi trimiteti numarul de inregistrare la adresa "+document.getString("email")+"\n\n");
-                            body.append(currentUserFullName);
-                            body.append(currentUserAddress);
+                            String currentUserFullName = document.getString("name") + " " + document.getString("surname");
+                            String currentUserSector = "Sectorul " + document.getLong("sector").intValue();
+                            String userEmail = document.getString("email");
 
-                            body.append("\n\nSemnatari:\n");
+                            StringBuilder prompt = new StringBuilder();
+                            prompt.append("Scrie un email oficial în limba română pentru autorități, ");
+                            prompt.append("în care o persoană numită ").append(currentUserFullName)
+                                    .append(" din ").append(currentUserSector).append(", dorește să sesizeze următoarea problemă: ");
+                            prompt.append(problem.getTitle()).append(".\n");
+                            prompt.append("Descriere: ").append(problem.getDescription()).append("\n");
+                            prompt.append("Adresa: ").append(problem.getAddress()).append("\n\n");
+                            prompt.append("Persoana cere un număr de înregistrare și vrea să primească răspuns la adresa ").append(userEmail).append(".\n");
+                            prompt.append("Include și o listă de susținători cu nume și email.\n\n");
+
                             for (User user : semnatari) {
-                                body.append("- ").append(user.getName()).append(" ")
+                                prompt.append("- ").append(user.getName()).append(" ")
                                         .append(user.getSurname()).append(": ")
                                         .append(user.getEmail()).append("\n");
                             }
 
-                            Intent emailIntent = new Intent(Intent.ACTION_SENDTO);
-                            emailIntent.setData(Uri.parse("mailto:"));
-                            emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Sesizare: " + problem.getTitle());
-                            emailIntent.putExtra(Intent.EXTRA_TEXT, body.toString());
+                            generateEmailWithAI(prompt.toString(), new com.squareup.okhttp.Callback() {
+                                @Override
+                                public void onFailure(Request request, IOException e) {
+                                    requireActivity().runOnUiThread(() ->
+                                            Toast.makeText(getContext(), "Eroare la generarea emailului.", Toast.LENGTH_SHORT).show()
+                                    );
+                                }
 
-                            try {
-                                getContext().startActivity(Intent.createChooser(emailIntent, "Trimite email cu..."));
-                            } catch (ActivityNotFoundException e) {
-                                Toast.makeText(getContext(), "Nu s-a găsit o aplicație de email.", Toast.LENGTH_SHORT).show();
-                            }
+                                @Override
+                                public void onResponse(com.squareup.okhttp.Response response) throws IOException {
+                                    if (!response.isSuccessful()) {
+                                        String errorMessage = "Error: " + response.code() + " - " + response.message();
+                                        Log.e("OpenAI API", errorMessage);
+                                        requireActivity().runOnUiThread(() -> {
+                                            Toast.makeText(getContext(), "Eroare API OpenAI: " + errorMessage, Toast.LENGTH_SHORT).show();
+                                        });
+                                        return;
+                                    }
 
-                            // TODO: schimbă starea problemei în "email trimis"
-                        } else {
-                            Log.d("Firestore", "Documentul nu există!");
+
+                                    String responseData = response.body().string();
+                                    try {
+                                        JSONObject json = new JSONObject(responseData);
+                                        String generatedEmail = json.getJSONArray("choices")
+                                                .getJSONObject(0)
+                                                .getJSONObject("message")
+                                                .getString("content");
+
+                                        requireActivity().runOnUiThread(() -> {
+                                            Intent emailIntent = new Intent(Intent.ACTION_SENDTO);
+                                            emailIntent.setData(Uri.parse("mailto:"));
+                                            emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Sesizare: " + problem.getTitle());
+                                            emailIntent.putExtra(Intent.EXTRA_TEXT, generatedEmail);
+
+                                            try {
+                                                startActivity(Intent.createChooser(emailIntent, "Trimite email cu..."));
+                                            } catch (ActivityNotFoundException e) {
+                                                Toast.makeText(getContext(), "Nu s-a găsit o aplicație de email.", Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
+
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            });
+
                         }
-                    } else {
-                        Log.d("Firestore", "Eroare la obținerea documentului: " + task.getException());
                     }
                 });
             });
         });
     }
 
+    public void generateEmailWithAI(String prompt, com.squareup.okhttp.Callback callback) {
+        OkHttpClient client = new OkHttpClient();
+
+        JSONObject json = new JSONObject();
+        try {
+            json.put("model", "gpt-3.5-turbo");
+
+            JSONArray messages = new JSONArray();
+            JSONObject userMessage = new JSONObject();
+            userMessage.put("role", "user");
+            userMessage.put("content", prompt);
+
+            messages.put(userMessage);
+            json.put("messages", messages);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return;
+        }
+
+        MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+
+        RequestBody body = RequestBody.create(JSON, json.toString().getBytes(StandardCharsets.UTF_8));
+
+        String apiKey = getResources().getString(R.string.open_ai_api_key);
+
+        Request request = new Request.Builder()
+                .url("https://api.openai.com/v1/chat/completions")
+                .header("Authorization", "Bearer " + apiKey)
+                .post(body)
+                .build();
+
+        client.newCall(request).enqueue(callback);
+    }
 
 
 
