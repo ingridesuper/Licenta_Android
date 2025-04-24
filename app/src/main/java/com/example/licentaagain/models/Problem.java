@@ -1,5 +1,6 @@
 package com.example.licentaagain.models;
 
+import com.example.licentaagain.enums.StareProblema;
 import com.google.firebase.Timestamp;
 
 import java.io.Serializable;
@@ -19,6 +20,7 @@ public class Problem implements Serializable {
     private String categorieProblema;
     private Timestamp createDate;
     private List<String> imageUrls;
+    private String stareProblema;
 
     private Problem(){
         //for Firebase
@@ -34,6 +36,7 @@ public class Problem implements Serializable {
         this.title = title;
         this.categorieProblema=categorieProblema;
         this.imageUrls=new ArrayList<>();
+        this.stareProblema= StareProblema.CURS_STRANGERE_SEMNATURI.getStare();
     }
 
     public Problem(String address, String authorUid, String description, double latitude, double longitude, int sector, String title, String categorieProblema, List<String> imageUrls) {
@@ -46,6 +49,7 @@ public class Problem implements Serializable {
         this.title = title;
         this.categorieProblema = categorieProblema;
         this.imageUrls = imageUrls;
+        this.stareProblema= StareProblema.CURS_STRANGERE_SEMNATURI.getStare();
     }
 
     public String getId() {
@@ -108,6 +112,14 @@ public class Problem implements Serializable {
         return longitude;
     }
 
+    public String getStareProblema() {
+        return stareProblema;
+    }
+
+    public void setStareProblema(String stareProblema) {
+        this.stareProblema = stareProblema;
+    }
+
     public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
@@ -149,6 +161,8 @@ public class Problem implements Serializable {
                 ", longitude=" + longitude +
                 ", categorieProblema='" + categorieProblema + '\'' +
                 ", createDate=" + createDate +
+                ", imageUrls=" + imageUrls +
+                ", stareProblema='" + stareProblema + '\'' +
                 '}';
     }
 
