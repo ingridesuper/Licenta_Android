@@ -199,7 +199,8 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
                 sector,
                 title,
                 category,
-                StareProblema.CURS_STRANGERE_SEMNATURI
+                StareProblema.CURS_STRANGERE_SEMNATURI,
+                facebookGroupLink
         );
 
         problemRepository.addProblem(problem, selectedImageUris, new ProblemRepository.ProblemCreationCallback() {

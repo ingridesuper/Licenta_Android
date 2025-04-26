@@ -67,7 +67,8 @@ public class ProblemRepository {
                                     problem.getString("title"),
                                     problem.getString("categorieProblema"),
                                     (List<String>) problem.get("imageUrls"),
-                                    StareProblema.fromString(problem.getString("stareProblema"))
+                                    StareProblema.fromString(problem.getString("stareProblema")),
+                                    problem.getString("facebookGroupLink")
                                     );
                             newProblem.setId(problem.getId());
                             fetchedProblems.add(newProblem);
@@ -93,7 +94,8 @@ public class ProblemRepository {
                                     problem.getString("title"),
                                     problem.getString("categorieProblema"),
                                     (List<String>) problem.get("imageUrls"),
-                                    StareProblema.fromString(problem.getString("stareProblema"))
+                                    StareProblema.fromString(problem.getString("stareProblema")),
+                                    problem.getString("facebookGroupLink")
                             );
                             newProblem.setId(problem.getId());
                             fetchedProblems.add(newProblem);
@@ -365,7 +367,8 @@ public class ProblemRepository {
                                     problem.getString("title"),
                                     problem.getString("categorieProblema"),
                                     (List<String>) problem.get("imageUrls"),
-                                    StareProblema.fromString(problem.getString("stareProblema"))
+                                    StareProblema.fromString(problem.getString("stareProblema")),
+                                    problem.getString("facebookGroupLink")
                             );
                             newProblem.setId(problem.getId());
                             fetchedProblems.add(newProblem);
@@ -632,7 +635,8 @@ public class ProblemRepository {
                                                         problem.getString("title"),
                                                         problem.getString("categorieProblema"),
                                                         (List<String>) problem.get("imageUrls"),
-                                                        StareProblema.fromString(problem.getString("stareProblema"))
+                                                        StareProblema.fromString(problem.getString("stareProblema")),
+                                                        problem.getString("facebookGroupLink")
                                                 );
                                                 newProblem.setId(problem.getId());
                                                 fetchedProblems.add(newProblem);

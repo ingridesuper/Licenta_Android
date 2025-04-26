@@ -21,9 +21,18 @@ public class Problem implements Serializable {
     private Timestamp createDate;
     private List<String> imageUrls;
     private String stareProblema;
+    private String facebookGroupLink;
 
     private Problem(){
         //for Firebase
+    }
+
+    public String getFacebookGroupLink() {
+        return facebookGroupLink;
+    }
+
+    public void setFacebookGroupLink(String facebookGroupLink) {
+        this.facebookGroupLink = facebookGroupLink;
     }
 
     public Problem(String address, String authorUid, String description, double latitude, double longitude, int sector, String title, String categorieProblema, StareProblema stareProblema) {
@@ -39,6 +48,34 @@ public class Problem implements Serializable {
         this.stareProblema=stareProblema.getStare();
     }
 
+    //cu link fb
+    public Problem(String address, String authorUid, String description, double latitude, double longitude, int sector, String title, String categorieProblema, List<String> imageUrls, StareProblema stareProblema, String facebookGroupLink) {
+        this.address = address;
+        this.authorUid = authorUid;
+        this.description = description;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.sector = sector;
+        this.title = title;
+        this.categorieProblema = categorieProblema;
+        this.stareProblema = stareProblema.getStare();
+        this.imageUrls = imageUrls;
+        this.facebookGroupLink = facebookGroupLink;
+    }
+
+    public Problem(String address, String authorUid, String description, double latitude, double longitude, int sector, String title, String categorieProblema, StareProblema stareProblema, String facebookGroupLink) {
+        this.address = address;
+        this.authorUid = authorUid;
+        this.description = description;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.sector = sector;
+        this.title = title;
+        this.categorieProblema = categorieProblema;
+        this.stareProblema = stareProblema.getStare();
+        this.facebookGroupLink = facebookGroupLink;
+    }
+
     public Problem(String address, String authorUid, String description, double latitude, double longitude, int sector, String title, String categorieProblema, List<String> imageUrls, StareProblema stareProblema) {
         this.address = address;
         this.authorUid = authorUid;
@@ -50,6 +87,7 @@ public class Problem implements Serializable {
         this.categorieProblema = categorieProblema;
         this.imageUrls = imageUrls;
         this.stareProblema=stareProblema.getStare();
+
     }
 
     public String getId() {
