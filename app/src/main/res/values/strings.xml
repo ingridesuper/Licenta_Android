@@ -1,6 +1,6 @@
 <resources>
     <string name="default_web_client_id">739276874828-g6c7cvvmcgm8a7jn9oek57ejcg6tigem.apps.googleusercontent.com</string>
-    <string name="open_ai_api_key">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</string>
+    <string name="gemini_ai_api_key">AIzaSyD41CAJ94hOAx7Aato-gyiSJaCdfWn4Z60</string>
 
     <string name="app_name">Conectat la București</string>
 

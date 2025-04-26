@@ -32,6 +32,7 @@ import com.example.licentaagain.models.Problem;
 import com.example.licentaagain.models.User;
 import com.example.licentaagain.repositories.ProblemSignatureRepository;
 import com.example.licentaagain.repositories.UserRepository;
+import com.example.licentaagain.utils.GeminiHelper;
 import com.example.licentaagain.view_models.SearchedUserViewModel;
 import com.example.licentaagain.view_models.SemnatariViewModel;
 import com.example.licentaagain.views.WorkaroundMapFragment;
@@ -62,13 +63,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
+
 public class ProblemOfCurrentUserDetailsFragment extends Fragment implements OnMapReadyCallback {
     private Problem problem;
     private GoogleMap myMap;
     private Button btnClose, btnOpenInGoogleMaps;
     private MaterialButton btnTakeAction;
     private SemnatariViewModel viewModel;
-    SearchUserAdapter adapter;
+    private SearchUserAdapter adapter;
+
 
 
     @Override
@@ -143,92 +149,24 @@ public class ProblemOfCurrentUserDetailsFragment extends Fragment implements OnM
                                         .append(user.getEmail()).append("\n");
                             }
 
-                            generateEmailWithAI(prompt.toString(), new com.squareup.okhttp.Callback() {
+                            GeminiHelper geminiHelper=new GeminiHelper();
+                            String query="Tell me a joke";
+                            geminiHelper.getResponse(getContext(), query, new GeminiHelper.ResponseCallback() {
                                 @Override
-                                public void onFailure(Request request, IOException e) {
-                                    requireActivity().runOnUiThread(() ->
-                                            Toast.makeText(getContext(), "Eroare la generarea emailului.", Toast.LENGTH_SHORT).show()
-                                    );
+                                public void onResponse(String response) {
+                                    Log.i("Gemini", response);
                                 }
 
                                 @Override
-                                public void onResponse(com.squareup.okhttp.Response response) throws IOException {
-                                    if (!response.isSuccessful()) {
-                                        String errorMessage = "Error: " + response.code() + " - " + response.message();
-                                        Log.e("OpenAI API", errorMessage);
-                                        requireActivity().runOnUiThread(() -> {
-                                            Toast.makeText(getContext(), "Eroare API OpenAI: " + errorMessage, Toast.LENGTH_SHORT).show();
-                                        });
-                                        return;
-                                    }
-
-
-                                    String responseData = response.body().string();
-                                    try {
-                                        JSONObject json = new JSONObject(responseData);
-                                        String generatedEmail = json.getJSONArray("choices")
-                                                .getJSONObject(0)
-                                                .getJSONObject("message")
-                                                .getString("content");
-
-                                        requireActivity().runOnUiThread(() -> {
-                                            Intent emailIntent = new Intent(Intent.ACTION_SENDTO);
-                                            emailIntent.setData(Uri.parse("mailto:"));
-                                            emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Sesizare: " + problem.getTitle());
-                                            emailIntent.putExtra(Intent.EXTRA_TEXT, generatedEmail);
-
-                                            try {
-                                                startActivity(Intent.createChooser(emailIntent, "Trimite email cu..."));
-                                            } catch (ActivityNotFoundException e) {
-                                                Toast.makeText(getContext(), "Nu s-a găsit o aplicație de email.", Toast.LENGTH_SHORT).show();
-                                            }
-                                        });
-
-                                    } catch (JSONException e) {
-                                        e.printStackTrace();
-                                    }
+                                public void onError(Throwable throwable) {
+                                    Log.e("Gemini", throwable.getMessage());
                                 }
                             });
-
                         }
                     }
                 });
             });
         });
-    }
-
-    public void generateEmailWithAI(String prompt, com.squareup.okhttp.Callback callback) {
-        OkHttpClient client = new OkHttpClient();
-
-        JSONObject json = new JSONObject();
-        try {
-            json.put("model", "gpt-3.5-turbo");
-
-            JSONArray messages = new JSONArray();
-            JSONObject userMessage = new JSONObject();
-            userMessage.put("role", "user");
-            userMessage.put("content", prompt);
-
-            messages.put(userMessage);
-            json.put("messages", messages);
-        } catch (JSONException e) {
-            e.printStackTrace();
-            return;
-        }
-
-        MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-
-        RequestBody body = RequestBody.create(JSON, json.toString().getBytes(StandardCharsets.UTF_8));
-
-        String apiKey = getResources().getString(R.string.open_ai_api_key);
-
-        Request request = new Request.Builder()
-                .url("https://api.openai.com/v1/chat/completions")
-                .header("Authorization", "Bearer " + apiKey)
-                .post(body)
-                .build();
-
-        client.newCall(request).enqueue(callback);
     }
 
 
