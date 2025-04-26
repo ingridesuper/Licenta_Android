@@ -26,7 +26,7 @@ public class Problem implements Serializable {
         //for Firebase
     }
 
-    public Problem(String address, String authorUid, String description, double latitude, double longitude, int sector, String title, String categorieProblema) {
+    public Problem(String address, String authorUid, String description, double latitude, double longitude, int sector, String title, String categorieProblema, StareProblema stareProblema) {
         this.address = address;
         this.authorUid = authorUid;
         this.description = description;
@@ -36,10 +36,10 @@ public class Problem implements Serializable {
         this.title = title;
         this.categorieProblema=categorieProblema;
         this.imageUrls=new ArrayList<>();
-        this.stareProblema= StareProblema.CURS_STRANGERE_SEMNATURI.getStare();
+        this.stareProblema=stareProblema.getStare();
     }
 
-    public Problem(String address, String authorUid, String description, double latitude, double longitude, int sector, String title, String categorieProblema, List<String> imageUrls) {
+    public Problem(String address, String authorUid, String description, double latitude, double longitude, int sector, String title, String categorieProblema, List<String> imageUrls, StareProblema stareProblema) {
         this.address = address;
         this.authorUid = authorUid;
         this.description = description;
@@ -49,7 +49,7 @@ public class Problem implements Serializable {
         this.title = title;
         this.categorieProblema = categorieProblema;
         this.imageUrls = imageUrls;
-        this.stareProblema= StareProblema.CURS_STRANGERE_SEMNATURI.getStare();
+        this.stareProblema=stareProblema.getStare();
     }
 
     public String getId() {

@@ -17,6 +17,15 @@ public enum StareProblema {
         return stare;
     }
 
+    public static StareProblema fromString(String text) {
+        for (StareProblema s : StareProblema.values()) {
+            if (s.stare.equalsIgnoreCase(text)) {
+                return s;
+            }
+        }
+        throw new IllegalArgumentException("Nu exista starea: " + text);
+    }
+
     @Override
     public String toString() {
         return "StareProblema{" +

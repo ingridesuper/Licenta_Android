@@ -26,6 +26,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.licentaagain.R;
+import com.example.licentaagain.enums.StareProblema;
 import com.example.licentaagain.view_models.ProblemByCurrentUserViewModel;
 import com.example.licentaagain.custom_adapters.SelectedImagesAdapter;
 import com.example.licentaagain.enums.CategorieProblema;
@@ -183,7 +184,8 @@ public class EditProblemFragment extends Fragment implements OnMapReadyCallback 
                                 latLng.longitude,
                                 sector,
                                 title,
-                                category
+                                category,
+                                StareProblema.fromString(problem.getStareProblema())
                         );
                         List<String> currentUrls = new ArrayList<>(); //current urls still being used
                         List<Uri> newLocalUris = new ArrayList<>(); //totally new urls

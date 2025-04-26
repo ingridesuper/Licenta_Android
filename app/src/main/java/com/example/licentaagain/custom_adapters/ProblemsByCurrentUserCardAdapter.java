@@ -1,11 +1,13 @@
 package com.example.licentaagain.custom_adapters;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -14,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.licentaagain.HomePageActivity;
 import com.example.licentaagain.R;
+import com.example.licentaagain.enums.StareProblema;
 import com.example.licentaagain.models.Problem;
 import com.example.licentaagain.problem.EditProblemFragment;
 import com.example.licentaagain.problem.ProblemOfCurrentUserDetailsFragment;
@@ -21,22 +24,20 @@ import com.example.licentaagain.repositories.ProblemRepository;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.imageview.ShapeableImageView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ProblemsByCurrentUserCardAdapter extends RecyclerView.Adapter<ProblemsByCurrentUserCardAdapter.ProblemByUserViewHolder> {
     private Context context;
 
     private List<Problem> problemList;
-    private ProblemRepository problemRepository;
 
     public ProblemsByCurrentUserCardAdapter(Context context, List<Problem> problemList) {
         this.context = context;
         this.problemList = problemList;
-        problemRepository=new ProblemRepository();
     }
 
     public ProblemByUserViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        // Inflate the item layout for each problem
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.problem_by_current_user_card_item, parent, false);
         return new ProblemsByCurrentUserCardAdapter.ProblemByUserViewHolder(view);
     }
@@ -45,7 +46,6 @@ public class ProblemsByCurrentUserCardAdapter extends RecyclerView.Adapter<Probl
     public void onBindViewHolder(@NonNull ProblemsByCurrentUserCardAdapter.ProblemByUserViewHolder holder, int position) {
         Problem problem = problemList.get(position);
         fillUiWithData(holder, problem);
-        Log.i("bind", String.valueOf(position));
         setButtonListeners(holder, problem);
         setOnProblemClickListener(holder, problem);
     }
@@ -90,6 +90,34 @@ public class ProblemsByCurrentUserCardAdapter extends RecyclerView.Adapter<Probl
                         .commit();
             }
         });
+
+        holder.btnUpdateStare.setOnClickListener(v -> {
+            List<String> stari = new ArrayList<>();
+            for (StareProblema stare : StareProblema.values()) {
+                stari.add(stare.getStare());
+            }
+            final int[] selectedItem = {stari.indexOf(problem.getStareProblema())};
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
+            builder.setTitle("Schimbă starea acestei probleme")
+                    .setSingleChoiceItems(stari.toArray(new String[0]), selectedItem[0], (dialog, which) -> {
+                        selectedItem[0] = which;
+                    })
+                    .setPositiveButton("Confirmă", (dialog, which) -> {
+                        String stareSelectata = stari.get(selectedItem[0]);
+                        problem.setStareProblema(stareSelectata);
+                        StareProblema stareProblemaNoua = StareProblema.fromString(stareSelectata);
+                        new ProblemRepository().updateStareProblema(problem.getId(), stareProblemaNoua);
+                        dialog.dismiss();
+                    })
+
+                    .setNegativeButton("Anulează", (dialog, which) -> {
+                        dialog.dismiss();
+                    })
+                    .create()
+                    .show();
+        });
+
     }
 
     private void fillUiWithData(@NonNull ProblemsByCurrentUserCardAdapter.ProblemByUserViewHolder holder, Problem problem) {
@@ -117,6 +145,7 @@ public class ProblemsByCurrentUserCardAdapter extends RecyclerView.Adapter<Probl
         TextView titleTextView, addressTextView, categoryTextView;
         ShapeableImageView imageView;
         MaterialButton btnEdit;
+        Button btnUpdateStare;
 
         public ProblemByUserViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -124,6 +153,7 @@ public class ProblemsByCurrentUserCardAdapter extends RecyclerView.Adapter<Probl
             addressTextView=itemView.findViewById(R.id.tvAddress);
             categoryTextView=itemView.findViewById(R.id.tvCategory);
             btnEdit=itemView.findViewById(R.id.btnEdit);
+            btnUpdateStare=itemView.findViewById(R.id.btnUpdateStare);
             imageView=itemView.findViewById(R.id.ivProblem);
         }
     }

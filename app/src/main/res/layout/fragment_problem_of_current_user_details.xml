@@ -41,6 +41,14 @@
             android:text="This is the description of the problem." />
 
         <TextView
+            android:id="@+id/tvStare"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Stare curenta: "
+            android:layout_marginBottom="8dp"
+            android:textSize="12sp"/>
+
+        <TextView
             android:id="@+id/tvProblemCategory"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

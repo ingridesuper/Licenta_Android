@@ -81,6 +81,17 @@
                 android:paddingLeft="12dp"
                 android:paddingRight="12dp" />
 
+            <Button
+                android:id="@+id/btnUpdateStare"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:text="Update stare"
+                android:textSize="11sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/btnEdit"
+                />
+
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

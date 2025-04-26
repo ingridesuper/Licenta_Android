@@ -27,9 +27,11 @@ import com.example.licentaagain.R;
 import com.example.licentaagain.account.TopProfileFragment;
 import com.example.licentaagain.custom_adapters.ImageAdapterProblemDetails;
 import com.example.licentaagain.custom_adapters.SearchUserAdapter;
+import com.example.licentaagain.enums.StareProblema;
 import com.example.licentaagain.mainpage.MainPageFragment;
 import com.example.licentaagain.models.Problem;
 import com.example.licentaagain.models.User;
+import com.example.licentaagain.repositories.ProblemRepository;
 import com.example.licentaagain.repositories.ProblemSignatureRepository;
 import com.example.licentaagain.repositories.UserRepository;
 import com.example.licentaagain.utils.GeminiHelper;
@@ -56,6 +58,7 @@ import com.squareup.okhttp.RequestBody;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -156,6 +159,8 @@ public class ProblemOfCurrentUserDetailsFragment extends Fragment implements OnM
                                 public void onResponse(String response) {
                                     Intent emailIntent = new Intent(Intent.ACTION_SENDTO);
                                     emailIntent.setData(Uri.parse("mailto:"));
+                                    //aici vreau sa adaug o clasa care sa faca logica de destinatie mail
+
                                     emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Sesizare: " + problem.getTitle());
                                     emailIntent.putExtra(Intent.EXTRA_TEXT, response);
                                     try {
@@ -176,8 +181,6 @@ public class ProblemOfCurrentUserDetailsFragment extends Fragment implements OnM
             });
         });
     }
-
-
 
     private void subscribeOpenInGoogleMaps() {
         btnOpenInGoogleMaps.setOnClickListener(v->{
@@ -211,6 +214,7 @@ public class ProblemOfCurrentUserDetailsFragment extends Fragment implements OnM
         TextView tvProblemDescription=view.findViewById(R.id.tvProblemDescription);
         TextView tvProblemCategory=view.findViewById(R.id.tvProblemCategory);
         TextView tvProblemAddressSector=view.findViewById(R.id.tvProblemAddressSector);
+        TextView tvStare=view.findViewById(R.id.tvStare);
         RecyclerView recyclerViewPictures=view.findViewById(R.id.recyclerViewPictures);
         TextView tvNrSemnatariHeading=view.findViewById(R.id.tvNrSemnatariHeading);
         btnClose=view.findViewById(R.id.btnClose);
@@ -220,6 +224,7 @@ public class ProblemOfCurrentUserDetailsFragment extends Fragment implements OnM
         tvProblemTitle.setText(problem.getTitle());
         tvProblemDescription.setText(problem.getDescription());
         tvProblemCategory.setText("Categorie: "+problem.getCategorieProblema());
+        tvStare.setText("Stare problema: "+problem.getStareProblema());
         tvProblemAddressSector.setText(problem.getAddress()+", Sectorul "+problem.getSector());
 
         new ProblemSignatureRepository().numberSignaturesOfProblem(problem.getId(), result-> tvNrSemnatariHeading.setText("Semnatari ("+result.toString()+"): "));

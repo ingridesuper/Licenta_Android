@@ -27,6 +27,7 @@ import com.example.licentaagain.R;
 import com.example.licentaagain.custom_adapters.SelectedImagesAdapter;
 import com.example.licentaagain.enums.CategorieProblema;
 import com.example.licentaagain.enums.Sector;
+import com.example.licentaagain.enums.StareProblema;
 import com.example.licentaagain.mainpage.MainPageFragment;
 import com.example.licentaagain.models.Problem;
 import com.example.licentaagain.repositories.ProblemRepository;
@@ -167,7 +168,8 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
                 latLng.longitude,
                 sector,
                 title,
-                category
+                category,
+                StareProblema.CURS_STRANGERE_SEMNATURI
         );
 
         problemRepository.addProblem(problem, selectedImageUris, new ProblemRepository.ProblemCreationCallback() {

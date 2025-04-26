@@ -66,8 +66,9 @@ public class ProblemRepository {
                                     problem.getDouble("sector").intValue(),
                                     problem.getString("title"),
                                     problem.getString("categorieProblema"),
-                                    (List<String>) problem.get("imageUrls")
-                            );
+                                    (List<String>) problem.get("imageUrls"),
+                                    StareProblema.fromString(problem.getString("stareProblema"))
+                                    );
                             newProblem.setId(problem.getId());
                             fetchedProblems.add(newProblem);
                         }
@@ -91,7 +92,8 @@ public class ProblemRepository {
                                     problem.getDouble("sector").intValue(),
                                     problem.getString("title"),
                                     problem.getString("categorieProblema"),
-                                    (List<String>) problem.get("imageUrls")
+                                    (List<String>) problem.get("imageUrls"),
+                                    StareProblema.fromString(problem.getString("stareProblema"))
                             );
                             newProblem.setId(problem.getId());
                             fetchedProblems.add(newProblem);
@@ -362,7 +364,8 @@ public class ProblemRepository {
                                     problem.getDouble("sector").intValue(),
                                     problem.getString("title"),
                                     problem.getString("categorieProblema"),
-                                    (List<String>) problem.get("imageUrls")
+                                    (List<String>) problem.get("imageUrls"),
+                                    StareProblema.fromString(problem.getString("stareProblema"))
                             );
                             newProblem.setId(problem.getId());
                             fetchedProblems.add(newProblem);
@@ -628,7 +631,8 @@ public class ProblemRepository {
                                                         problem.getDouble("sector").intValue(),
                                                         problem.getString("title"),
                                                         problem.getString("categorieProblema"),
-                                                        (List<String>) problem.get("imageUrls")
+                                                        (List<String>) problem.get("imageUrls"),
+                                                        StareProblema.fromString(problem.getString("stareProblema"))
                                                 );
                                                 newProblem.setId(problem.getId());
                                                 fetchedProblems.add(newProblem);
@@ -659,6 +663,13 @@ public class ProblemRepository {
                     callback.accept(0);
                     Log.e("Firestore", "Error getting signed problems", e);
                 });
+    }
+
+
+    public void updateStareProblema(String problemId, StareProblema newStare){
+        db.collection("problems")
+                .document(problemId)
+                .update("stareProblema", newStare.getStare());
     }
 
 }
