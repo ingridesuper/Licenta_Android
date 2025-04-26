@@ -34,8 +34,9 @@ import com.example.licentaagain.models.User;
 import com.example.licentaagain.repositories.ProblemRepository;
 import com.example.licentaagain.repositories.ProblemSignatureRepository;
 import com.example.licentaagain.repositories.UserRepository;
+import com.example.licentaagain.utils.EmailHelper;
 import com.example.licentaagain.utils.GeminiHelper;
-import com.example.licentaagain.view_models.SearchedUserViewModel;
+import com.example.licentaagain.utils.StorageHelper;
 import com.example.licentaagain.view_models.SemnatariViewModel;
 import com.example.licentaagain.views.WorkaroundMapFragment;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -44,31 +45,17 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.squareup.okhttp.MediaType;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.RequestBody;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.w3c.dom.Text;
-
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.Response;
 
 public class ProblemOfCurrentUserDetailsFragment extends Fragment implements OnMapReadyCallback {
     private Problem problem;
@@ -157,17 +144,24 @@ public class ProblemOfCurrentUserDetailsFragment extends Fragment implements OnM
                             geminiHelper.getResponse(getContext(), prompt.toString(), new GeminiHelper.ResponseCallback() {
                                 @Override
                                 public void onResponse(String response) {
-                                    Intent emailIntent = new Intent(Intent.ACTION_SENDTO);
-                                    emailIntent.setData(Uri.parse("mailto:"));
-                                    //aici vreau sa adaug o clasa care sa faca logica de destinatie mail
+                                    //email permite atasamente existente pe local storage => le descarcam
+                                    StorageHelper.downloadFiles(getContext(), problem.getImageUrls(), new StorageHelper.OnDownloadCompleteListener() {
+                                        @Override
+                                        public void onDownloadComplete(List<File> downloadedFiles) {
+                                            EmailHelper.sendEmailWithAttachments(
+                                                    getContext(),
+                                                    "Sesizare: " + problem.getTitle(),
+                                                    response, // textul răspunsului generat
+                                                    downloadedFiles
+                                            );
+                                        }
 
-                                    emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Sesizare: " + problem.getTitle());
-                                    emailIntent.putExtra(Intent.EXTRA_TEXT, response);
-                                    try {
-                                        getContext().startActivity(Intent.createChooser(emailIntent, "Trimite email cu..."));
-                                    } catch (ActivityNotFoundException e) {
-                                        Toast.makeText(getContext(), "Nu s-a găsit o aplicație de email.", Toast.LENGTH_SHORT).show();
-                                    }
+                                        @Override
+                                        public void onDownloadFailed(Exception e) {
+                                            Toast.makeText(getContext(), "Eroare la descărcarea imaginilor.", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+
                                 }
 
                                 @Override
