@@ -142,7 +142,6 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
             final EditText input = new EditText(view.getContext());
             input.setHint("Link grup Facebook...");
             builder.setView(input);
-
             builder.setPositiveButton("Salvează", (dialog, which) -> {
                 String groupLink = input.getText().toString().trim();
                 if (!groupLink.isEmpty()) {

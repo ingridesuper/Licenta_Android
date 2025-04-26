@@ -520,6 +520,7 @@ public class ProblemRepository {
         updatedFields.put("latitude", newProblem.getLatitude());
         updatedFields.put("longitude", newProblem.getLongitude());
         updatedFields.put("address", newProblem.getAddress());
+        updatedFields.put("facebookGroupLink", newProblem.getFacebookGroupLink());
         db.collection("problems")
                 .document(problemId)
                 .update(updatedFields)
