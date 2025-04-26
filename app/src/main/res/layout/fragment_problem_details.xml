@@ -106,6 +106,18 @@
             style="@style/Widget.Material3.Button.TextButton.Icon"
             app:icon="@drawable/ic_google_maps"/>
 
+        <Button
+            android:id="@+id/btnJoinGrupInitiativa"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            style="@style/Widget.Material3.Button.TextButton.Icon"
+            app:icon="@drawable/ic_facebook"
+            android:textColor="@color/black"
+            android:textSize="13sp"
+            app:iconPadding="5dp"
+            app:iconTint="#0866FF"
+            android:text="Join grup de inițiativă"/>
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

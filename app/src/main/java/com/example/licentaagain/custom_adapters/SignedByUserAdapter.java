@@ -1,6 +1,7 @@
 package com.example.licentaagain.custom_adapters;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,9 +12,12 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.licentaagain.HomePageActivity;
 import com.example.licentaagain.R;
 import com.example.licentaagain.models.Problem;
 import com.example.licentaagain.models.ProblemSignature;
+import com.example.licentaagain.problem.ProblemDetailsFragment;
+import com.example.licentaagain.problem.ProblemOfCurrentUserDetailsFragment;
 import com.example.licentaagain.repositories.ProblemSignatureRepository;
 import com.example.licentaagain.view_models.SignaturesOfUserViewModel;
 import com.google.android.material.button.MaterialButton;
@@ -48,6 +52,29 @@ public class SignedByUserAdapter extends RecyclerView.Adapter<SignedByUserAdapte
         Problem problem = problemList.get(position);
         fillUiWithData(holder, problem);
         setButtonListeners(holder, problem);
+        setOnProblemClickListener(holder, problem);
+    }
+
+    private void setOnProblemClickListener(SignedByUserAdapter.ProblemViewHolder holder, Problem problem) {
+        holder.itemView.setOnClickListener(v->{
+            Context context = v.getContext();
+
+            if (context instanceof HomePageActivity) {
+                HomePageActivity activity = (HomePageActivity) context;
+
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("problem", problem);
+
+                ProblemDetailsFragment problemDetailsFragment = new ProblemDetailsFragment();
+                problemDetailsFragment.setArguments(bundle);
+
+                activity.getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.fragment_container_view, problemDetailsFragment)
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
     }
 
 

@@ -1,5 +1,6 @@
 package com.example.licentaagain.problem;
 
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -81,11 +82,16 @@ public class ProblemDetailsFragment extends Fragment implements OnMapReadyCallba
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        if(problem.getFacebookGroupLink()==null || problem.getFacebookGroupLink().isEmpty()){
+            Button btnJoinGrupInitiativa=view.findViewById(R.id.btnJoinGrupInitiativa);
+            btnJoinGrupInitiativa.setVisibility(View.INVISIBLE);
+        }
+
         new UserRepository().getUserBasedOnId(problem.getAuthorUid(), result -> {
             author = result;
             if (author != null) {
                 fillUiWithProblemData(view);
-                subscribeButtonsToEvents();
+                subscribeButtonsToEvents(view);
             }
         });
 
@@ -105,11 +111,29 @@ public class ProblemDetailsFragment extends Fragment implements OnMapReadyCallba
         }
     }
 
-    private void subscribeButtonsToEvents() {
+    private void subscribeButtonsToEvents(View view) {
         subscribeBtnCloseToEvent();
         subscribeSigningButtonsToEvents();
         subscribeOpenInGoogleMaps();
         subscribeAuthorClickToEvent();
+        subscribeBtnJoinGroupToEvent(view);
+    }
+
+    private void subscribeBtnJoinGroupToEvent(View view) {
+        Button btnJoinGrupInitiativa=view.findViewById(R.id.btnJoinGrupInitiativa);
+        btnJoinGrupInitiativa.setOnClickListener(v -> {
+            String facebookGroupLink = problem.getFacebookGroupLink();
+            if (facebookGroupLink != null && !facebookGroupLink.isEmpty()) {
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(facebookGroupLink));
+                try {
+                    v.getContext().startActivity(intent);
+                } catch (ActivityNotFoundException e) {
+                    Toast.makeText(v.getContext(), "Link-ul nu este valid", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Toast.makeText(v.getContext(), "Nu există link de grup asociat.", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void subscribeAuthorClickToEvent() {
