@@ -149,12 +149,20 @@ public class ProblemOfCurrentUserDetailsFragment extends Fragment implements OnM
                                         .append(user.getEmail()).append("\n");
                             }
 
+                            //start loading bar here!
                             GeminiHelper geminiHelper=new GeminiHelper();
-                            String query="Tell me a joke";
-                            geminiHelper.getResponse(getContext(), query, new GeminiHelper.ResponseCallback() {
+                            geminiHelper.getResponse(getContext(), prompt.toString(), new GeminiHelper.ResponseCallback() {
                                 @Override
                                 public void onResponse(String response) {
-                                    Log.i("Gemini", response);
+                                    Intent emailIntent = new Intent(Intent.ACTION_SENDTO);
+                                    emailIntent.setData(Uri.parse("mailto:"));
+                                    emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Sesizare: " + problem.getTitle());
+                                    emailIntent.putExtra(Intent.EXTRA_TEXT, response);
+                                    try {
+                                        getContext().startActivity(Intent.createChooser(emailIntent, "Trimite email cu..."));
+                                    } catch (ActivityNotFoundException e) {
+                                        Toast.makeText(getContext(), "Nu s-a găsit o aplicație de email.", Toast.LENGTH_SHORT).show();
+                                    }
                                 }
 
                                 @Override
