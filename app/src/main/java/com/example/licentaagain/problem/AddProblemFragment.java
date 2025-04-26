@@ -1,6 +1,7 @@
 package com.example.licentaagain.problem;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -17,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.Spinner;
@@ -55,6 +57,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -65,6 +69,7 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
     private ImagePickerHelper imagePickerHelper;
     private Place selectedPlace;
     private ScrollView scrollView;
+    private String facebookGroupLink;
     private FirebaseFirestore db;
     private Button btnSave;
     private RelativeLayout loadingOverlay;
@@ -124,7 +129,32 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
         setUpAutocompleteFragment();
         btnSaveSubscribeToEvent(view);
         btnAddPicturesSubscribeToEvent(view);
+        tvAddFacebookGroupSubscribeToClick(view);
         btnOpenCameraSubscribeToEvent(view);
+    }
+
+    private void tvAddFacebookGroupSubscribeToClick(View view) {
+        TextView tvAddFacebookGroup=view.findViewById(R.id.tvAddFacebookGroup);
+        tvAddFacebookGroup.setOnClickListener(v->{
+            AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+            builder.setTitle("Adaugă un grup de Facebook asociat problemei");
+
+            final EditText input = new EditText(view.getContext());
+            input.setHint("Link grup Facebook...");
+            builder.setView(input);
+
+            builder.setPositiveButton("Salvează", (dialog, which) -> {
+                String groupLink = input.getText().toString().trim();
+                if (!groupLink.isEmpty()) {
+                    facebookGroupLink=groupLink;
+                }
+            });
+
+            builder.setNegativeButton("Anulează", (dialog, which) -> dialog.dismiss());
+
+            builder.show();
+
+        });
     }
 
     private void btnOpenCameraSubscribeToEvent(View view) {
