@@ -24,6 +24,7 @@ import android.widget.Toast;
 
 import com.example.licentaagain.HomePageActivity;
 import com.example.licentaagain.R;
+import com.example.licentaagain.account.TopProfileFragment;
 import com.example.licentaagain.custom_adapters.ImageAdapterProblemDetails;
 import com.example.licentaagain.mainpage.MainPageFragment;
 import com.example.licentaagain.models.Problem;
@@ -139,21 +140,36 @@ public class ProblemDetailsFragment extends Fragment implements OnMapReadyCallba
     private void subscribeAuthorClickToEvent() {
         tvProblemAuthor.setOnClickListener(v->{
                 Context context=v.getContext();
-                if (context instanceof HomePageActivity) {
-                    HomePageActivity activity = (HomePageActivity) context;
+                if(!author.getUid().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())){
+                    if (context instanceof HomePageActivity) {
+                        HomePageActivity activity = (HomePageActivity) context;
 
-                    Bundle bundle = new Bundle();
-                    bundle.putSerializable("user", author);
+                        Bundle bundle = new Bundle();
+                        bundle.putSerializable("user", author);
 
-                    OtherUserFragment otherUserFragment = new OtherUserFragment();
-                    otherUserFragment.setArguments(bundle);
+                        OtherUserFragment otherUserFragment = new OtherUserFragment();
+                        otherUserFragment.setArguments(bundle);
 
-                    activity.getSupportFragmentManager()
-                            .beginTransaction()
-                            .replace(R.id.fragment_container_view, otherUserFragment)
-                            .addToBackStack(null)
-                            .commit();
+                        activity.getSupportFragmentManager()
+                                .beginTransaction()
+                                .replace(R.id.fragment_container_view, otherUserFragment)
+                                .addToBackStack(null)
+                                .commit();
+                    }
                 }
+                else {
+                    if (context instanceof HomePageActivity) {
+                        HomePageActivity activity = (HomePageActivity) context;
+                        TopProfileFragment topProfileFragment = new TopProfileFragment();
+
+                        activity.getSupportFragmentManager()
+                                .beginTransaction()
+                                .replace(R.id.fragment_container_view, topProfileFragment)
+                                .addToBackStack(null)
+                                .commit();
+                    }
+                }
+
             });
     }
 
@@ -253,7 +269,12 @@ public class ProblemDetailsFragment extends Fragment implements OnMapReadyCallba
         });
 
         tvProblemTitle.setText(problem.getTitle());
-        tvProblemAuthor.setText(author.getName()+" "+author.getSurname());
+        if(author.getUid().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())){
+            tvProblemAuthor.setText("Dvs");
+        }
+        else {
+            tvProblemAuthor.setText(author.getName()+" "+author.getSurname());
+        }
         tvProblemDescription.setText(problem.getDescription());
         tvProblemCategory.setText("Categorie: "+problem.getCategorieProblema());
         tvProblemAddressSector.setText(problem.getAddress()+", Sectorul "+problem.getSector());
