@@ -176,6 +176,12 @@ public class EditProblemFragment extends Fragment implements OnMapReadyCallback 
                             Toast.makeText(getContext(), "Va rugam atasati cel putin o imagine", Toast.LENGTH_SHORT).show();
                             return;
                         }
+
+                        if(facebookGroupLink!=null && !facebookGroupLink.isEmpty() && !isValidFacebookGroupLink(facebookGroupLink)){
+                            Toast.makeText(getContext(), "Vă rugăm să introduceți un link de grup valid.", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
                         showLoadingOverlay(true);
                         ScrollView scrollView=view.findViewById(R.id.scrollView);
                         disableAllViews(scrollView);
@@ -229,6 +235,19 @@ public class EditProblemFragment extends Fragment implements OnMapReadyCallback 
     private void showLoadingOverlay(boolean show) {
         loadingOverlay.setVisibility(show ? View.VISIBLE : View.GONE);
     }
+
+    public boolean isValidFacebookGroupLink(String facebookGroupLink) {
+        if (facebookGroupLink == null || facebookGroupLink.isEmpty()) {
+            return false;
+        }
+        String groupPrefix = "https://www.facebook.com/groups/";
+        if (!facebookGroupLink.startsWith(groupPrefix)) {
+            return false;
+        }
+        String afterPrefix = facebookGroupLink.substring(groupPrefix.length());
+        return !afterPrefix.isEmpty();
+    }
+
 
     public void disableAllViews(ViewGroup group) {
         for (int i = 0; i < group.getChildCount(); i++) {

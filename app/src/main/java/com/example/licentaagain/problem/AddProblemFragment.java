@@ -154,6 +154,11 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
             Toast.makeText(getContext(), "Nu ati completat tot ce este necesar", Toast.LENGTH_SHORT).show();
             return;
         }
+        if(facebookGroupLink!=null && !facebookGroupLink.isEmpty() && !isValidFacebookGroupLink(facebookGroupLink)){
+            Toast.makeText(getContext(), "Vă rugăm să introduceți un link de grup valid.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         if(selectedImageUris.isEmpty()){
             showToast("Va rugam atasati cel putin o imagine");
             return;
@@ -195,6 +200,19 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
         Button btnSave = view.findViewById(R.id.btnSave);
         btnSave.setOnClickListener(v-> addProblemToFirebase());
     }
+
+    public boolean isValidFacebookGroupLink(String facebookGroupLink) {
+        if (facebookGroupLink == null || facebookGroupLink.isEmpty()) {
+            return false;
+        }
+        String groupPrefix = "https://www.facebook.com/groups/";
+        if (!facebookGroupLink.startsWith(groupPrefix)) {
+            return false;
+        }
+        String afterPrefix = facebookGroupLink.substring(groupPrefix.length());
+        return !afterPrefix.isEmpty();
+    }
+
 
     private void setUpAutocompleteFragment() {
         AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment)
