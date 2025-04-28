@@ -1,6 +1,8 @@
 <resources>
     <string name="default_web_client_id">739276874828-g6c7cvvmcgm8a7jn9oek57ejcg6tigem.apps.googleusercontent.com</string>
     <string name="gemini_ai_api_key">AIzaSyD41CAJ94hOAx7Aato-gyiSJaCdfWn4Z60</string>
+    <string name="algolia_search_api_key">9a2c1138d3f385ee3c93b69082f9f487</string>
+    <string name="algolia_application_id">QKURZB5XNA</string>
 
     <string name="app_name">Conectat la București</string>
 

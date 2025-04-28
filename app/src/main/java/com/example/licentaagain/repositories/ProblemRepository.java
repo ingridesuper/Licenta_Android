@@ -34,7 +34,6 @@ public class ProblemRepository {
     private final FirebaseStorage storage;
 
 
-
     public interface ProblemFetchCallback {
         void onFetchComplete(List<Problem> problems);
     }
@@ -313,41 +312,68 @@ public class ProblemRepository {
 
     //Firestore -> doesn't support OR operator
     public void searchDataTitleDescription(String searchText, ProblemFetchCallback callback) {
-        CollectionReference ref = FirebaseFirestore.getInstance().collection("problems");
-        List<Problem> searchedList = new ArrayList<>();
+//        CollectionReference ref = FirebaseFirestore.getInstance().collection("problems");
+//        List<Problem> searchedList = new ArrayList<>();
+//
+//        Task<QuerySnapshot> titleQuery = ref.whereGreaterThanOrEqualTo("title", searchText)
+//                .whereLessThanOrEqualTo("title", searchText + "\uf8ff")
+//                .get();
+//
+//        Task<QuerySnapshot> descriptionQuery = ref.whereGreaterThanOrEqualTo("description", searchText)
+//                .whereLessThanOrEqualTo("description", searchText + "\uf8ff")
+//                .get();
+//
+//        Tasks.whenAllComplete(titleQuery, descriptionQuery).addOnCompleteListener(task -> {
+//            if (task.isSuccessful()) {
+//                for (Task<?> individualTask : task.getResult()) {
+//                    if (individualTask.isSuccessful()) {
+//                        QuerySnapshot result = (QuerySnapshot) individualTask.getResult();
+//                        for (DocumentSnapshot doc : result.getDocuments()) {
+//                            Problem problem = doc.toObject(Problem.class);
+//                            problem.setId(doc.getId());
+//                            if(problem.getStareProblema().equals(StareProblema.CURS_STRANGERE_SEMNATURI.getStare())){
+//                                if (!searchedList.contains(problem)) { //based on id
+//                                    searchedList.add(problem);
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
+//                callback.onFetchComplete(searchedList);
+//
+//            } else {
+//                Log.e("FirestoreSearch", "Error retrieving search results", task.getException());
+//            }
+//        });
 
-        Task<QuerySnapshot> titleQuery = ref.whereGreaterThanOrEqualTo("title", searchText)
-                .whereLessThanOrEqualTo("title", searchText + "\uf8ff")
-                .get();
-
-        Task<QuerySnapshot> descriptionQuery = ref.whereGreaterThanOrEqualTo("description", searchText)
-                .whereLessThanOrEqualTo("description", searchText + "\uf8ff")
-                .get();
-
-        Tasks.whenAllComplete(titleQuery, descriptionQuery).addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                for (Task<?> individualTask : task.getResult()) {
-                    if (individualTask.isSuccessful()) {
-                        QuerySnapshot result = (QuerySnapshot) individualTask.getResult();
-                        for (DocumentSnapshot doc : result.getDocuments()) {
-                            Problem problem = doc.toObject(Problem.class);
-                            problem.setId(doc.getId());
-                            if(problem.getStareProblema().equals(StareProblema.CURS_STRANGERE_SEMNATURI.getStare())){
-                                if (!searchedList.contains(problem)) { //based on id
-                                    searchedList.add(problem);
-                                }
+        db.collection("problems").whereEqualTo("stareProblema", StareProblema.CURS_STRANGERE_SEMNATURI.getStare()).get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        List<Problem> fetchedProblems = new ArrayList<>();
+                        for (QueryDocumentSnapshot problem : task.getResult()) {
+                            if(problem.getString("title").toLowerCase().contains(searchText.toLowerCase()) || problem.getString("description").toLowerCase().contains(searchText.toLowerCase())) {
+                                Problem newProblem = new Problem(
+                                        problem.getString("address"),
+                                        problem.getString("authorUid"),
+                                        problem.getString("description"),
+                                        problem.getDouble("latitude"),
+                                        problem.getDouble("longitude"),
+                                        problem.getDouble("sector").intValue(),
+                                        problem.getString("title"),
+                                        problem.getString("categorieProblema"),
+                                        (List<String>) problem.get("imageUrls"),
+                                        StareProblema.fromString(problem.getString("stareProblema")),
+                                        problem.getString("facebookGroupLink")
+                                );
+                                newProblem.setId(problem.getId());
+                                fetchedProblems.add(newProblem);
                             }
                         }
+                        callback.onFetchComplete(fetchedProblems);
                     }
-                }
-                callback.onFetchComplete(searchedList);
+                });
 
-            } else {
-                Log.e("FirestoreSearch", "Error retrieving search results", task.getException());
-            }
-        });
     }
-
 
     //<-in curs strangere semnaturi
 

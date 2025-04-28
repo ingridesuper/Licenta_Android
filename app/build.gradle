@@ -44,37 +44,39 @@ dependencies {
     implementation libs.googleid
     implementation libs.firebase.storage
     implementation libs.firebase.messaging
+    implementation libs.firebase.functions
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core
     implementation(libs.firebase.bom)
 
-    implementation 'com.github.bumptech.glide:glide:4.16.0'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.16.0'
+    implementation libs.glide
+    annotationProcessor libs.compiler
 
 
     implementation libs.material
-    implementation 'com.google.android.gms:play-services-maps:19.1.0'
+    implementation libs.play.services.maps.v1910
 
-    implementation("androidx.credentials:credentials:1.5.0")
-    implementation("androidx.credentials:credentials-play-services-auth:1.5.0")
-    implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
+    implementation(libs.credentials)
+    implementation(libs.credentials.play.services.auth)
+    implementation(libs.googleid)
 
-    implementation 'com.google.android.gms:play-services-auth:21.3.0'
+    implementation libs.play.services.auth
     implementation(libs.gms.play.services.maps)
     implementation libs.play.services.location
     implementation libs.dexter
-    implementation 'com.google.android.libraries.places:places:4.2.0'
+    implementation libs.places
 
 
     implementation libs.fragment
 
-    implementation 'com.squareup.okhttp3:okhttp:4.9.3'
-    implementation 'org.json:json:20210307'
+    implementation libs.okhttp
+    implementation libs.json
 
     implementation(libs.generativeai)
     implementation(libs.guava)
     implementation(libs.reactive.streams)
+
 }
 
 secrets {

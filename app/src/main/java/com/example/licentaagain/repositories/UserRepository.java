@@ -3,6 +3,7 @@ package com.example.licentaagain.repositories;
 import android.telecom.Call;
 import android.util.Log;
 
+import com.example.licentaagain.enums.StareProblema;
 import com.example.licentaagain.models.Problem;
 import com.example.licentaagain.models.User;
 import com.google.android.gms.tasks.Task;
@@ -23,43 +24,74 @@ public class UserRepository {
 
     //obs current user does not appear in searches
     public void searchUserByEmailOrNameSurname(String searchText, String currentUserId ,UserFetchCallback callback) {
-        CollectionReference ref = FirebaseFirestore.getInstance().collection("users");
-        List<User> fetchedUsers=new ArrayList<>();
+//        CollectionReference ref = FirebaseFirestore.getInstance().collection("users");
+//        List<User> fetchedUsers=new ArrayList<>();
+//
+//        Task<QuerySnapshot> emailQuery = ref.whereGreaterThanOrEqualTo("email", searchText)
+//                .whereLessThanOrEqualTo("email", searchText + "\uf8ff")
+//                .get();
+//
+//        Task<QuerySnapshot> nameQuery = ref.whereGreaterThanOrEqualTo("name", searchText)
+//                .whereLessThanOrEqualTo("name", searchText + "\uf8ff")
+//                .get();
+//
+//        Task<QuerySnapshot> surnameQuery = ref.whereGreaterThanOrEqualTo("surname", searchText)
+//                .whereLessThanOrEqualTo("surname", searchText + "\uf8ff")
+//                .get();
+//
+//        //sau name si surname idk cum
+//
+//        Tasks.whenAllComplete(emailQuery, nameQuery, surnameQuery).addOnCompleteListener(task -> {
+//            if (task.isSuccessful()) {
+//                for (Task<?> individualTask : task.getResult()) {
+//                    if (individualTask.isSuccessful()) {
+//                        QuerySnapshot result = (QuerySnapshot) individualTask.getResult();
+//                        for (DocumentSnapshot doc : result.getDocuments()) {
+//                            User user = doc.toObject(User.class);
+//                            if (!fetchedUsers.contains(user) && !user.getUid().equals(currentUserId)) { //based on uid
+//                                fetchedUsers.add(user);
+//                            }
+//                        }
+//                    }
+//                }
+//                Log.i("fetchedUsers", String.valueOf(fetchedUsers.size())+": "+fetchedUsers.toString());
+//                callback.onFetchComplete(fetchedUsers);
+//
+//            } else {
+//                Log.e("FirestoreSearch", "Error retrieving search results", task.getException());
+//            }
+//        });
 
-        Task<QuerySnapshot> emailQuery = ref.whereGreaterThanOrEqualTo("email", searchText)
-                .whereLessThanOrEqualTo("email", searchText + "\uf8ff")
-                .get();
-
-        Task<QuerySnapshot> nameQuery = ref.whereGreaterThanOrEqualTo("name", searchText)
-                .whereLessThanOrEqualTo("name", searchText + "\uf8ff")
-                .get();
-
-        Task<QuerySnapshot> surnameQuery = ref.whereGreaterThanOrEqualTo("surname", searchText)
-                .whereLessThanOrEqualTo("surname", searchText + "\uf8ff")
-                .get();
-
-        //sau name si surname idk cum
-
-        Tasks.whenAllComplete(emailQuery, nameQuery, surnameQuery).addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                for (Task<?> individualTask : task.getResult()) {
-                    if (individualTask.isSuccessful()) {
-                        QuerySnapshot result = (QuerySnapshot) individualTask.getResult();
-                        for (DocumentSnapshot doc : result.getDocuments()) {
-                            User user = doc.toObject(User.class);
-                            if (!fetchedUsers.contains(user) && !user.getUid().equals(currentUserId)) { //based on uid
-                                fetchedUsers.add(user);
+        db.collection("users")
+                .get()
+                .addOnCompleteListener(task -> {
+                    if(task.isSuccessful()){
+                        List<User> fetchedUsers = new ArrayList<>();
+                        for (QueryDocumentSnapshot user : task.getResult()) {
+                            String name=user.getString("name"); //un user poate sa nu le aiba setate
+                            String surname=user.getString("surname");
+                            String email=user.getString("email");
+                            String nameSurname=name+ " "+surname;
+                            String surnameName=surname+" "+name;
+                            if(name!=null && surname!=null && email!=null){
+                                if(name.toLowerCase().contains(searchText.toLowerCase()) ||
+                                        surname.toLowerCase().contains(searchText.toLowerCase()) ||
+                                        email.toLowerCase().contains(searchText.toLowerCase()) ||
+                                        nameSurname.toLowerCase().contains(searchText) ||
+                                        surnameName.toLowerCase().contains(searchText)
+                                ) {
+                                    User newUser = user.toObject(User.class);
+                                    fetchedUsers.add(newUser);
+                                }
                             }
-                        }
-                    }
-                }
-                Log.i("fetchedUsers", String.valueOf(fetchedUsers.size())+": "+fetchedUsers.toString());
-                callback.onFetchComplete(fetchedUsers);
 
-            } else {
-                Log.e("FirestoreSearch", "Error retrieving search results", task.getException());
-            }
-        });
+                        }
+                        callback.onFetchComplete(fetchedUsers);
+                    }
+                    else {
+                        Log.e("User Search Error", "user search error");
+                    }
+                });
     }
 
     public void getUserBasedOnId(String uid, Consumer<User> callback) {
