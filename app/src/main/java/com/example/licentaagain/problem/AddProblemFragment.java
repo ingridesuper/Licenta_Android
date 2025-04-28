@@ -69,18 +69,14 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
     private ImagePickerHelper imagePickerHelper;
     private Place selectedPlace;
     private ScrollView scrollView;
-    private String facebookGroupLink;
-    private FirebaseFirestore db;
-    private Button btnSave;
     private RelativeLayout loadingOverlay;
-    private TextInputEditText etTitle, etDescription;
+    private TextInputEditText etTitle, etDescription, etFacebookLink;
     private Spinner spnSector, spnCategorie;
     private RecyclerView rvSelectedImages;
     private SelectedImagesAdapter selectedImagesAdapter;
 
     private List<Uri> selectedImageUris = new ArrayList<>();
     private ProblemRepository problemRepository;
-    private String currentProblemId;
 
 
     public AddProblemFragment() {
@@ -129,31 +125,7 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
         setUpAutocompleteFragment();
         btnSaveSubscribeToEvent(view);
         btnAddPicturesSubscribeToEvent(view);
-        tvAddFacebookGroupSubscribeToClick(view);
         btnOpenCameraSubscribeToEvent(view);
-    }
-
-    private void tvAddFacebookGroupSubscribeToClick(View view) {
-        TextView tvAddFacebookGroup=view.findViewById(R.id.tvAddFacebookGroup);
-        tvAddFacebookGroup.setOnClickListener(v->{
-            AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
-            builder.setTitle("Adaugă un grup de Facebook asociat problemei");
-
-            final EditText input = new EditText(view.getContext());
-            input.setHint("Link grup Facebook...");
-            builder.setView(input);
-            builder.setPositiveButton("Salvează", (dialog, which) -> {
-                String groupLink = input.getText().toString().trim();
-                if (!groupLink.isEmpty()) {
-                    facebookGroupLink=groupLink;
-                }
-            });
-
-            builder.setNegativeButton("Anulează", (dialog, which) -> dialog.dismiss());
-
-            builder.show();
-
-        });
     }
 
     private void btnOpenCameraSubscribeToEvent(View view) {
@@ -176,6 +148,7 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
         String title = etTitle.getText().toString();
         int sector = ((Sector) spnSector.getSelectedItem()).getNumar();
         String category = String.valueOf(spnCategorie.getSelectedItem());
+        String facebookGroupLink=etFacebookLink.getText().toString().isEmpty()?null:etFacebookLink.getText().toString();
 
         if (!checkUserInput(description, title, sector, category, selectedPlace)) {
             Toast.makeText(getContext(), "Nu ati completat tot ce este necesar", Toast.LENGTH_SHORT).show();
@@ -219,7 +192,7 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
 
     }
     private void btnSaveSubscribeToEvent(@NonNull View view) {
-        btnSave= view.findViewById(R.id.btnSave);
+        Button btnSave = view.findViewById(R.id.btnSave);
         btnSave.setOnClickListener(v-> addProblemToFirebase());
     }
 
@@ -277,13 +250,14 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
     }
 
     private void initializeVariables(@NonNull View view) {
-        db=FirebaseFirestore.getInstance();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
         problemRepository=new ProblemRepository();
         spnCategorie=view.findViewById(R.id.spnCategorie);
         spnSector=view.findViewById(R.id.spnSector);
         etDescription=view.findViewById(R.id.etDescription);
         etTitle=view.findViewById(R.id.etTitle);
         rvSelectedImages = view.findViewById(R.id.rvSelectedImages);
+        etFacebookLink=view.findViewById(R.id.etFacebookLink);
         rvSelectedImages.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         selectedImagesAdapter = new SelectedImagesAdapter(getContext(), selectedImageUris);
         rvSelectedImages.setAdapter(selectedImagesAdapter);

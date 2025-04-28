@@ -72,7 +72,7 @@ public class EditProblemFragment extends Fragment implements OnMapReadyCallback 
     private List<String> originalImageUrls = new ArrayList<>();
     private String facebookGroupLink;
 
-    private TextInputEditText etTitle, etDescription;
+    private TextInputEditText etTitle, etDescription, etFacebookLink;
     private Spinner spnSector, spnCategorie;
     private RelativeLayout loadingOverlay;
     private SelectedImagesAdapter selectedImagesAdapter;
@@ -126,6 +126,7 @@ public class EditProblemFragment extends Fragment implements OnMapReadyCallback 
         spnSector=view.findViewById(R.id.spnSector);
         etDescription=view.findViewById(R.id.etDescription);
         etTitle=view.findViewById(R.id.etTitle);
+        etFacebookLink=view.findViewById(R.id.etFacebookLink);
         rvSelectedImages = view.findViewById(R.id.rvSelectedImages);
         rvSelectedImages.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         selectedImagesAdapter = new SelectedImagesAdapter(getContext(), selectedImageUris);
@@ -152,36 +153,6 @@ public class EditProblemFragment extends Fragment implements OnMapReadyCallback 
         btnCancelSubscribeToEvent(view);
         btnDeleteProblemSubscribeToEvent(view);
         btnEditProblemSubscribeToEvent(view);
-        btnFacebookGroupLinkSubscribeToEvent(view);
-    }
-
-    private void btnFacebookGroupLinkSubscribeToEvent(View view) {
-        Button btnfacebookGroupLink=view.findViewById(R.id.btnfacebookGroupLink);
-        btnfacebookGroupLink.setOnClickListener(v->{
-            AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
-            final EditText input = new EditText(view.getContext());
-            input.setHint("Link grup Facebook...");
-            builder.setView(input);
-            if(problem.getFacebookGroupLink()!=null && !problem.getFacebookGroupLink().isEmpty()){
-                builder.setTitle("Schimbă grupul de Facebook asociat problemei");
-                input.setText(problem.getFacebookGroupLink());
-            }
-            else {
-                builder.setTitle("Adaugă un grup de Facebook asociat problemei");
-            }
-
-
-            builder.setPositiveButton("Salvează", (dialog, which) -> {
-                String groupLink = input.getText().toString().trim();
-                if (!groupLink.isEmpty()) {
-                    facebookGroupLink=groupLink;
-                }
-            });
-
-            builder.setNegativeButton("Anulează", (dialog, which) -> dialog.dismiss());
-
-            builder.show();
-        });
     }
 
     private void btnEditProblemSubscribeToEvent(View view) {
@@ -196,6 +167,7 @@ public class EditProblemFragment extends Fragment implements OnMapReadyCallback 
                         String title = etTitle.getText().toString();
                         int sector = ((Sector) spnSector.getSelectedItem()).getNumar();
                         String category = String.valueOf(spnCategorie.getSelectedItem());
+                        facebookGroupLink=etFacebookLink.getText().toString().isEmpty()?null:etFacebookLink.getText().toString();
                         if (!checkUserInput(description, title, sector, category, selectedPlace)) {
                             Toast.makeText(getContext(), "Nu ati completat tot ce este necesar", Toast.LENGTH_SHORT).show();
                             return;
@@ -329,6 +301,7 @@ public class EditProblemFragment extends Fragment implements OnMapReadyCallback 
     private void fillUiWithProblemData(View view) {
         etTitle.setText(problem.getTitle());
         etDescription.setText(problem.getDescription());
+        etFacebookLink.setText(facebookGroupLink==null?"":facebookGroupLink);
         int sectorNumar = problem.getSector();
         Sector selectedSector = null;
         for (Sector s : Sector.values()) {

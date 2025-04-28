@@ -51,6 +51,8 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import org.w3c.dom.Text;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -211,12 +213,19 @@ public class ProblemOfCurrentUserDetailsFragment extends Fragment implements OnM
         TextView tvStare=view.findViewById(R.id.tvStare);
         RecyclerView recyclerViewPictures=view.findViewById(R.id.recyclerViewPictures);
         TextView tvNrSemnatariHeading=view.findViewById(R.id.tvNrSemnatariHeading);
+        TextView tvFacebookLink=view.findViewById(R.id.tvFacebookLink);
         btnClose=view.findViewById(R.id.btnClose);
         btnOpenInGoogleMaps=view.findViewById(R.id.btnOpenInGoogleMaps);
         btnTakeAction=view.findViewById(R.id.btnTakeAction);
 
         tvProblemTitle.setText(problem.getTitle());
         tvProblemDescription.setText(problem.getDescription());
+        if(problem.getFacebookGroupLink()==null || problem.getFacebookGroupLink().isEmpty()){
+            tvFacebookLink.setText("Această problemă nu are un grup de Facebook asociat.");
+        }
+        else {
+            tvFacebookLink.setText("Grup de inițiativă: "+problem.getFacebookGroupLink());
+        }
         tvProblemCategory.setText("Categorie: "+problem.getCategorieProblema());
         tvStare.setText("Stare problema: "+problem.getStareProblema());
         tvProblemAddressSector.setText(problem.getAddress()+", Sectorul "+problem.getSector());

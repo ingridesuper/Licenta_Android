@@ -85,8 +85,15 @@
             app:icon="@drawable/ic_google_maps"/>
 
         <TextView
+            android:id="@+id/tvFacebookLink"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Grup de inițiativă Facebook: "
+            android:layout_marginBottom="20dp"/>
+
+        <TextView
             android:id="@+id/tvNrSemnatariHeading"
-            android:text="Semnatari ():"
+            android:text="Semnatari:"
             android:layout_marginBottom="15dp"
             android:fontFamily="@font/manrope_bold"
             android:layout_width="match_parent"
