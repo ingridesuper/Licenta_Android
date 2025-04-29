@@ -64,4 +64,10 @@ public class MyReportedProblemsFragment extends Fragment {
             viewModel.startListening(uid);
         }
     }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        viewModel.stopListening();
+    }
 }

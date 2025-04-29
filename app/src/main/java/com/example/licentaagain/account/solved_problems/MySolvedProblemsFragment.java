@@ -25,12 +25,11 @@ public class MySolvedProblemsFragment extends Fragment {
     SolvedProblemsByCurrentUserCardAdapter adapter;
     SolvedProblemsByCurrentUserViewModel viewModel;
 
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        db=FirebaseFirestore.getInstance();
-        auth=FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
+        auth = FirebaseAuth.getInstance();
         viewModel = new ViewModelProvider(requireActivity()).get(SolvedProblemsByCurrentUserViewModel.class);
     }
 
@@ -42,12 +41,24 @@ public class MySolvedProblemsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        RecyclerView rvSolvedProblems=view.findViewById(R.id.rvSolvedProblems);
+
+        RecyclerView rvSolvedProblems = view.findViewById(R.id.rvSolvedProblems);
         rvSolvedProblems.setNestedScrollingEnabled(false);
         rvSolvedProblems.setLayoutManager(new LinearLayoutManager(getActivity()));
-        adapter=new SolvedProblemsByCurrentUserCardAdapter(getContext(), new ArrayList<>(), viewModel);
+
+        adapter = new SolvedProblemsByCurrentUserCardAdapter(getContext(), new ArrayList<>(), viewModel);
         rvSolvedProblems.setAdapter(adapter);
+
         viewModel.getProblems().observe(getViewLifecycleOwner(), problems -> adapter.updateData(problems));
-        viewModel.fetchProblems(auth.getCurrentUser().getUid());
+
+        if (auth.getCurrentUser() != null) {
+            viewModel.startListening(auth.getCurrentUser().getUid());
+        }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        viewModel.stopListening();
     }
 }

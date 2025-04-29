@@ -57,6 +57,17 @@ public class ProblemsByCurrentUserViewModel extends ViewModel {
         }
     }
 
+    public void stopListening() {
+        if (gatheringListener != null) {
+            gatheringListener.remove();
+            gatheringListener = null;
+        }
+        if (sentListener != null) {
+            sentListener.remove();
+            sentListener = null;
+        }
+    }
+
     public void deleteProblem(Problem problem) {
         problemRepository.deleteProblem(problem, result -> {
             if (result) {

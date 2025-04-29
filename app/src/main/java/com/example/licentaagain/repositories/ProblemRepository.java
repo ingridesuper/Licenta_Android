@@ -51,33 +51,6 @@ public class ProblemRepository {
         storage = FirebaseStorage.getInstance();
     }
 
-    public void fetchAllProblems(ProblemFetchCallback callback) {
-        db.collection("problems").get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        List<Problem> fetchedProblems = new ArrayList<>();
-                        for (QueryDocumentSnapshot problem : task.getResult()) {
-                            Problem newProblem = new Problem(
-                                    problem.getString("address"),
-                                    problem.getString("authorUid"),
-                                    problem.getString("description"),
-                                    problem.getDouble("latitude"),
-                                    problem.getDouble("longitude"),
-                                    problem.getDouble("sector").intValue(),
-                                    problem.getString("title"),
-                                    problem.getString("categorieProblema"),
-                                    (List<String>) problem.get("imageUrls"),
-                                    StareProblema.fromString(problem.getString("stareProblema")),
-                                    problem.getString("facebookGroupLink")
-                                    );
-                            newProblem.setId(problem.getId());
-                            fetchedProblems.add(newProblem);
-                        }
-                        callback.onFetchComplete(fetchedProblems);
-                    }
-                });
-    }
-
     public void fetchAllProblemsGatheringSignatures(ProblemFetchCallback callback){
         db.collection("problems").whereEqualTo("stareProblema", StareProblema.CURS_STRANGERE_SEMNATURI.getStare()).get()
                 .addOnCompleteListener(task -> {
@@ -536,8 +509,6 @@ public class ProblemRepository {
     }
 
 
-
-
     public void updateProblemWithoutPictureChange(String problemId, Problem newProblem, Consumer<Boolean> callback) {
         Map<String, Object> updatedFields = new HashMap<>();
         updatedFields.put("title", newProblem.getTitle());
@@ -718,41 +689,6 @@ public class ProblemRepository {
                 });
     }
 
-    public void getSolvedProblemsOfUser(String uid, ProblemFetchCallback callback){
-        db.collection("problems")
-                .whereEqualTo("authorUid", uid)
-                .whereEqualTo("stareProblema", StareProblema.SOLVED.getStare())
-                .get()
-                .addOnCompleteListener(task -> {
-                    if(task.isSuccessful()){
-                        List<Problem> fetchedProblems = new ArrayList<>();
-                        for (QueryDocumentSnapshot problem : task.getResult()) {
-                            Problem newProblem = new Problem(
-                                    problem.getString("address"),
-                                    problem.getString("authorUid"),
-                                    problem.getString("description"),
-                                    problem.getDouble("latitude"),
-                                    problem.getDouble("longitude"),
-                                    problem.getDouble("sector").intValue(),
-                                    problem.getString("title"),
-                                    problem.getString("categorieProblema"),
-                                    (List<String>) problem.get("imageUrls"),
-                                    StareProblema.fromString(problem.getString("stareProblema")),
-                                    problem.getString("facebookGroupLink")
-                            );
-                            newProblem.setId(problem.getId());
-                            fetchedProblems.add(newProblem);
-                        }
-                        callback.onFetchComplete(fetchedProblems);
-                    }
-                    else {
-                        Log.e("Problem Repo Error", "Error fetching solved problems");
-                    }
-                });
-    }
-
-
-
     public ListenerRegistration listenToProblemsByUserGatheringSignatures(String uid, Consumer<List<Problem>> callback) {
         return db.collection("problems")
                 .whereEqualTo("authorUid", uid)
@@ -797,6 +733,39 @@ public class ProblemRepository {
                 .addSnapshotListener((snapshots, e) -> {
                     if (e != null) {
                         Log.w("FirestoreListen", "Listen failed.", e);
+                        return;
+                    }
+
+                    List<Problem> problems = new ArrayList<>();
+                    for (QueryDocumentSnapshot doc : snapshots) {
+                        Problem newProblem = new Problem(
+                                doc.getString("address"),
+                                doc.getString("authorUid"),
+                                doc.getString("description"),
+                                doc.getDouble("latitude"),
+                                doc.getDouble("longitude"),
+                                doc.getDouble("sector").intValue(),
+                                doc.getString("title"),
+                                doc.getString("categorieProblema"),
+                                (List<String>) doc.get("imageUrls"),
+                                StareProblema.fromString(doc.getString("stareProblema")),
+                                doc.getString("facebookGroupLink")
+                        );
+                        newProblem.setId(doc.getId());
+                        problems.add(newProblem);
+                    }
+
+                    callback.accept(problems);
+                });
+    }
+
+    public ListenerRegistration listenToSolvedProblemsOfUser(String uid, Consumer<List<Problem>> callback) {
+        return db.collection("problems")
+                .whereEqualTo("authorUid", uid)
+                .whereEqualTo("stareProblema", StareProblema.SOLVED.getStare())
+                .addSnapshotListener((snapshots, e) -> {
+                    if (e != null) {
+                        Log.e("Firestore", "Listen failed.", e);
                         return;
                     }
 
