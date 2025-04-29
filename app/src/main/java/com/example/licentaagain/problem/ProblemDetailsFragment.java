@@ -56,7 +56,7 @@ public class ProblemDetailsFragment extends Fragment implements OnMapReadyCallba
     private User author;
     private GoogleMap myMap;
     private Button btnClose, btnSign, btnSigned, btnOpenInGoogleMaps;
-    private TextView tvProblemAuthor;
+    private TextView tvProblemAuthor, tvStareProblema;
     private ProblemSignatureRepository problemSignatureRepository;
 
 
@@ -254,6 +254,7 @@ public class ProblemDetailsFragment extends Fragment implements OnMapReadyCallba
     private void fillUiWithProblemData(@NonNull View view) {
         TextView tvProblemTitle= view.findViewById(R.id.tvProblemTitle);
         TextView tvNrSemnaturi=view.findViewById(R.id.tvNrSemnaturi);
+        TextView tvStareProblema=view.findViewById(R.id.tvStareProblema);
         tvProblemAuthor=view.findViewById(R.id.tvProblemAuthor);
         TextView tvProblemDescription=view.findViewById(R.id.tvProblemDescription);
         TextView tvProblemCategory=view.findViewById(R.id.tvProblemCategory);
@@ -278,6 +279,7 @@ public class ProblemDetailsFragment extends Fragment implements OnMapReadyCallba
         tvProblemDescription.setText(problem.getDescription());
         tvProblemCategory.setText("Categorie: "+problem.getCategorieProblema());
         tvProblemAddressSector.setText(problem.getAddress()+", Sectorul "+problem.getSector());
+        tvStareProblema.setText("Stare problemă: "+problem.getStareProblema());
 
         problemSignatureRepository.numberSignaturesOfProblem(problem.getId(), count->{
             tvNrSemnaturi.setText("Număr semnături: "+count);
