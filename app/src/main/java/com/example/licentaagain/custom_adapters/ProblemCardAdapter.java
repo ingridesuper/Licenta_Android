@@ -24,6 +24,7 @@ import com.example.licentaagain.models.User;
 import com.example.licentaagain.problem.ProblemDetailsFragment;
 import com.example.licentaagain.repositories.ProblemSignatureRepository;
 import com.example.licentaagain.repositories.UserRepository;
+import com.example.licentaagain.utils.GDPRDialog;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -129,21 +130,26 @@ public class ProblemCardAdapter extends RecyclerView.Adapter<ProblemCardAdapter.
 }
 
     private void addSignature(Problem problem, Consumer<Boolean> callback) {
-        new UserRepository().checkIfUserHasNameSurnameSectorData(FirebaseAuth.getInstance().getCurrentUser().getUid(), result->{
-            if(result){
-
-                problemSignatureRepository.addProblemSignature(problem.getId(), FirebaseAuth.getInstance().getCurrentUser().getUid(), context, addingResult->{
-                    if(addingResult){
-                        callback.accept(true);
-                        //here i want to message the user who owns the priblem that someone signed for his problem
+        problemSignatureRepository.problemBelongsToUser(problem.getId(), FirebaseAuth.getInstance().getCurrentUser().getUid(), belongs->{
+            if(belongs){
+                Toast.makeText(context, "Problema vă aparține - sunteți deja pe lista semnatarilor!", Toast.LENGTH_SHORT).show();
+            }
+            else {
+                new UserRepository().checkIfUserHasNameSurnameSectorData(FirebaseAuth.getInstance().getCurrentUser().getUid(), result->{
+                    if(result){
+                        GDPRDialog.showGDPRDialog(context, () -> problemSignatureRepository.addProblemSignature(problem.getId(), FirebaseAuth.getInstance().getCurrentUser().getUid(), context, addingResult->{
+                            if(addingResult){
+                                callback.accept(true);
+                            }
+                            else {
+                                callback.accept(false);
+                            }
+                        }));
                     }
-                    else {
-                        callback.accept(false);
+                    else{
+                        Toast.makeText(context, "Completați-vă profilul pentru a putea semna!", Toast.LENGTH_SHORT).show();
                     }
                 });
-            }
-            else{
-                Toast.makeText(context, "Completati-va profilul pentru a putea semna!", Toast.LENGTH_SHORT).show();
             }
         });
 

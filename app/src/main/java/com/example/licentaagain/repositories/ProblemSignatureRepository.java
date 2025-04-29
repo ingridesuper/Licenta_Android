@@ -9,6 +9,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.licentaagain.models.Problem;
 import com.example.licentaagain.models.ProblemSignature;
+import com.example.licentaagain.utils.GDPRDialog;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -65,61 +66,6 @@ public class ProblemSignatureRepository {
             }
         });
     }
-
-//    private void sendNotificationToProblemOwner(String problemId, Context context) {
-//        FirebaseFirestore db = FirebaseFirestore.getInstance();
-//        db.collection("problems").document(problemId).get()
-//                .addOnSuccessListener(problemDoc -> {
-//                    if (problemDoc.exists()) {
-//                        String authorUid = problemDoc.getString("authorUid");
-//
-//                        db.collection("users").document(authorUid).get()
-//                                .addOnSuccessListener(userDoc -> {
-//                                    if (userDoc.exists()) {
-//                                        String fcmToken = userDoc.getString("fcmToken");
-//                                        if (fcmToken != null && !fcmToken.isEmpty()) {
-//                                            sendPushNotification(fcmToken, context, "Semnătură nouă", "Cineva a semnat problema ta.");
-//                                        }
-//                                    }
-//                                });
-//                    }
-//                });
-//    }
-//
-//    private void sendPushNotification(String fcmToken, Context context, String title, String body) {
-//        try {
-//            JSONObject notification = new JSONObject();
-//            JSONObject notifBody = new JSONObject();
-//
-//            notifBody.put("title", title);
-//            notifBody.put("body", body);
-//
-//            notification.put("to", fcmToken);
-//            notification.put("notification", notifBody);
-//
-//            JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST,
-//                    "https://fcm.googleapis.com/fcm/send",
-//                    notification,
-//                    response -> Log.d("FCM", "Notificare trimisă: " + response),
-//                    error -> Log.e("FCM", "Eroare notificare: " + error.getMessage())
-//            ) {
-//                @Override
-//                public Map<String, String> getHeaders() {
-//                    Map<String, String> headers = new HashMap<>();
-//                    headers.put("Authorization", "key=AAAA..."); // ⚠️ Server key de la Firebase Console
-//                    headers.put("Content-Type", "application/json");
-//                    return headers;
-//                }
-//            };
-//
-//            Volley.newRequestQueue(context).add(request);
-//
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        } catch (JSONException e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
 
 
 
@@ -185,6 +131,60 @@ public class ProblemSignatureRepository {
                 });
     }
 
+    //    private void sendNotificationToProblemOwner(String problemId, Context context) {
+//        FirebaseFirestore db = FirebaseFirestore.getInstance();
+//        db.collection("problems").document(problemId).get()
+//                .addOnSuccessListener(problemDoc -> {
+//                    if (problemDoc.exists()) {
+//                        String authorUid = problemDoc.getString("authorUid");
+//
+//                        db.collection("users").document(authorUid).get()
+//                                .addOnSuccessListener(userDoc -> {
+//                                    if (userDoc.exists()) {
+//                                        String fcmToken = userDoc.getString("fcmToken");
+//                                        if (fcmToken != null && !fcmToken.isEmpty()) {
+//                                            sendPushNotification(fcmToken, context, "Semnătură nouă", "Cineva a semnat problema ta.");
+//                                        }
+//                                    }
+//                                });
+//                    }
+//                });
+//    }
+//
+//    private void sendPushNotification(String fcmToken, Context context, String title, String body) {
+//        try {
+//            JSONObject notification = new JSONObject();
+//            JSONObject notifBody = new JSONObject();
+//
+//            notifBody.put("title", title);
+//            notifBody.put("body", body);
+//
+//            notification.put("to", fcmToken);
+//            notification.put("notification", notifBody);
+//
+//            JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST,
+//                    "https://fcm.googleapis.com/fcm/send",
+//                    notification,
+//                    response -> Log.d("FCM", "Notificare trimisă: " + response),
+//                    error -> Log.e("FCM", "Eroare notificare: " + error.getMessage())
+//            ) {
+//                @Override
+//                public Map<String, String> getHeaders() {
+//                    Map<String, String> headers = new HashMap<>();
+//                    headers.put("Authorization", "key=AAAA..."); // Server key de la Firebase Console
+//                    headers.put("Content-Type", "application/json");
+//                    return headers;
+//                }
+//            };
+//
+//            Volley.newRequestQueue(context).add(request);
+//
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        } catch (JSONException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
 
 
 
