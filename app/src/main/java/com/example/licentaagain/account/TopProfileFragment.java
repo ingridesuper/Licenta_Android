@@ -17,8 +17,8 @@ import com.google.android.material.button.MaterialButton;
 
 public class TopProfileFragment extends Fragment {
     FragmentManager fragmentManager;
-    MaterialButton btnAccount, btnMyProblems, btnMyIdeas, btnMySignatures;
-    View indicatorMyProblems, indicatorMyIdeas, indicatorAccount, indicatorMySignatures;
+    MaterialButton btnAccount, btnMyProblems, btnMySolvedProblems, btnMySignatures;
+    View indicatorMyProblems, indicatorMySolvedProblems, indicatorAccount, indicatorMySignatures;
 
 
     public TopProfileFragment() {
@@ -43,30 +43,30 @@ public class TopProfileFragment extends Fragment {
         initializeVariables(view);
 
         //initial fragment set to my problems
-        loadSubFragment(new MyReportedProblemsFragment(), btnMyProblems, indicatorMyProblems, btnAccount, btnMyIdeas, btnMySignatures, indicatorAccount, indicatorMyIdeas, indicatorMySignatures);
+        loadSubFragment(new MyReportedProblemsFragment(), btnMyProblems, indicatorMyProblems, btnAccount, btnMySolvedProblems, btnMySignatures, indicatorAccount, indicatorMySolvedProblems, indicatorMySignatures);
         setUpMenuButtonEvents();
     }
 
     private void initializeVariables(View view) {
         btnAccount=view.findViewById(R.id.btnMyAccountSettings);
         btnMyProblems=view.findViewById(R.id.btnMyProblems);
-        btnMyIdeas=view.findViewById(R.id.btnMyIdeas);
+        btnMySolvedProblems=view.findViewById(R.id.btnMySolvedProblems);
         btnMySignatures=view.findViewById(R.id.btnMySignatures);
         indicatorMyProblems=view.findViewById(R.id.indicatorMyProblems);
-        indicatorMyIdeas=view.findViewById(R.id.indicatorMyIdeas);
+        indicatorMySolvedProblems=view.findViewById(R.id.indicatorMySolvedProblems);
         indicatorAccount=view.findViewById(R.id.indicatorAccount);
         indicatorMySignatures=view.findViewById(R.id.indicatorMySignatures);
     }
 
     private void setUpMenuButtonEvents() {
         btnAccount.setOnClickListener(v -> loadSubFragment(new AccountFragment(), btnAccount, indicatorAccount,
-                btnMyProblems, btnMyIdeas, btnMySignatures, indicatorMyProblems, indicatorMyIdeas, indicatorMySignatures));
+                btnMyProblems, btnMySolvedProblems, btnMySignatures, indicatorMyProblems, indicatorMySolvedProblems, indicatorMySignatures));
         btnMyProblems.setOnClickListener(v -> loadSubFragment(new MyReportedProblemsFragment(), btnMyProblems, indicatorMyProblems,
-                btnAccount, btnMyIdeas, btnMySignatures, indicatorAccount, indicatorMyIdeas, indicatorMySignatures));
-        btnMyIdeas.setOnClickListener(v -> loadSubFragment(new MyIdeasFragment(), btnMyIdeas, indicatorMyIdeas,
+                btnAccount, btnMySolvedProblems, btnMySignatures, indicatorAccount, indicatorMySolvedProblems, indicatorMySignatures));
+        btnMySolvedProblems.setOnClickListener(v -> loadSubFragment(new MySolvedProblemsFragment(), btnMySolvedProblems, indicatorMySolvedProblems,
                 btnMyProblems, btnAccount, btnMySignatures, indicatorMyProblems, indicatorAccount, indicatorMySignatures));
         btnMySignatures.setOnClickListener(v->loadSubFragment(new MySignaturesFragment(), btnMySignatures, indicatorMySignatures,
-                btnAccount, btnMyIdeas, btnMyProblems ,indicatorAccount, indicatorMyIdeas, indicatorMyProblems));
+                btnAccount, btnMySolvedProblems, btnMyProblems ,indicatorAccount, indicatorMySolvedProblems, indicatorMyProblems));
     }
 
     private void loadSubFragment(Fragment fragment,  MaterialButton selectedButton, View selectedIndicator, MaterialButton btn2, MaterialButton btn3, MaterialButton btn4 , View ind2, View ind3, View ind4) {

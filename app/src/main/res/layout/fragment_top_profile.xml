@@ -41,17 +41,17 @@
         <View
             android:id="@+id/indicatorMyProblems"
             android:layout_width="0dp"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"
+            android:layout_marginStart="30dp"
+            android:layout_marginEnd="20dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@color/darkGray" />
 
         <View
-            android:id="@+id/indicatorMyIdeas"
+            android:id="@+id/indicatorMySolvedProblems"
             android:layout_width="0dp"
             android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"
+            android:layout_marginEnd="30dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@android:color/transparent" />
@@ -60,7 +60,7 @@
             android:id="@+id/indicatorMySignatures"
             android:layout_width="0dp"
             android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"
+            android:layout_marginEnd="20dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@android:color/transparent" />
@@ -68,8 +68,8 @@
         <View
             android:id="@+id/indicatorAccount"
             android:layout_width="0dp"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@android:color/transparent" />
@@ -100,16 +100,16 @@
             app:icon="@drawable/ic_problem_file" />
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnMyIdeas"
+            android:id="@+id/btnMySolvedProblems"
             app:iconGravity="textTop"
             style="@style/Widget.Material3.Button.TextButton.Icon"
             android:textSize="12sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Your ideas"
+            android:text="Solved"
             app:iconTint="@color/darkGray"
             android:textColor="@color/darkGray"
-            app:icon="@drawable/ic_lightbulb" />
+            app:icon="@drawable/ic_solved_problem_check" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnMySignatures"

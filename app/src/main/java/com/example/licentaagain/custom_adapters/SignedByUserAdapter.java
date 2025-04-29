@@ -92,10 +92,6 @@ public class SignedByUserAdapter extends RecyclerView.Adapter<SignedByUserAdapte
             Glide.with(holder.itemView.getContext())
                     .load(imageUrl)
                     .into(holder.imageView);
-            Log.i("image",problem.getImageUrls().get(0));
-        }
-        else {
-            Log.i("image","empty");
         }
     }
 

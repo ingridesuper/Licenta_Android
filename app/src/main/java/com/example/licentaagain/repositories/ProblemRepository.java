@@ -703,4 +703,51 @@ public class ProblemRepository {
                 .update("stareProblema", newStare.getStare());
     }
 
+    public void updateStareProblemaWithCallback(String problemId, StareProblema newStare, Consumer<Boolean> callback){
+        db.collection("problems")
+                .document(problemId)
+                .update("stareProblema", newStare.getStare())
+                .addOnCompleteListener(task -> {
+                    if(task.isSuccessful()){
+                        callback.accept(true);
+                    }
+                    else {
+                        callback.accept(false);
+                    }
+                });
+    }
+
+    public void getSolvedProblemsOfUser(String uid, ProblemFetchCallback callback){
+        db.collection("problems")
+                .whereEqualTo("authorUid", uid)
+                .whereEqualTo("stareProblema", StareProblema.SOLVED.getStare())
+                .get()
+                .addOnCompleteListener(task -> {
+                    if(task.isSuccessful()){
+                        List<Problem> fetchedProblems = new ArrayList<>();
+                        for (QueryDocumentSnapshot problem : task.getResult()) {
+                            Problem newProblem = new Problem(
+                                    problem.getString("address"),
+                                    problem.getString("authorUid"),
+                                    problem.getString("description"),
+                                    problem.getDouble("latitude"),
+                                    problem.getDouble("longitude"),
+                                    problem.getDouble("sector").intValue(),
+                                    problem.getString("title"),
+                                    problem.getString("categorieProblema"),
+                                    (List<String>) problem.get("imageUrls"),
+                                    StareProblema.fromString(problem.getString("stareProblema")),
+                                    problem.getString("facebookGroupLink")
+                            );
+                            newProblem.setId(problem.getId());
+                            fetchedProblems.add(newProblem);
+                        }
+                        callback.onFetchComplete(fetchedProblems);
+                    }
+                    else {
+                        Log.e("Problem Repo Error", "Error fetching solved problems");
+                    }
+                });
+    }
+
 }
