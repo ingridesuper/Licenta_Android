@@ -7,6 +7,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.example.licentaagain.enums.StareProblema;
 import com.example.licentaagain.models.Problem;
 import com.example.licentaagain.repositories.ProblemRepository;
 import com.google.firebase.firestore.ListenerRegistration;
@@ -90,6 +91,14 @@ public class ProblemsByCurrentUserViewModel extends ViewModel {
         problemRepository.updateProblemWithPictureChange(oldProblem, newProblem, newLocalUris, existingRemoteUrls, result -> {
             if (!result) {
                 Log.e("updateProblemWithPic", "ERROR");
+            }
+        });
+    }
+
+    public void updateStareProblema(Problem problem, StareProblema newStare) {
+        problemRepository.updateStareProblemaWithCallback(problem.getId(), newStare, result -> {
+            if (!result) {
+                Log.e("SolvedViewModel", "Failed to update problem status");
             }
         });
     }

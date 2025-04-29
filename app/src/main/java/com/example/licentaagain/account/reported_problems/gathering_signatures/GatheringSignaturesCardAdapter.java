@@ -1,4 +1,4 @@
-package com.example.licentaagain.custom_adapters;
+package com.example.licentaagain.account.reported_problems.gathering_signatures;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -19,7 +19,6 @@ import com.example.licentaagain.R;
 import com.example.licentaagain.enums.StareProblema;
 import com.example.licentaagain.models.Problem;
 import com.example.licentaagain.problem.EditProblemFragment;
-import com.example.licentaagain.problem.ProblemOfCurrentUserDetailsFragment;
 import com.example.licentaagain.repositories.ProblemRepository;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.imageview.ShapeableImageView;
@@ -27,23 +26,23 @@ import com.google.android.material.imageview.ShapeableImageView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProblemsByCurrentUserCardAdapter extends RecyclerView.Adapter<ProblemsByCurrentUserCardAdapter.ProblemByUserViewHolder> {
+public class GatheringSignaturesCardAdapter extends RecyclerView.Adapter<GatheringSignaturesCardAdapter.ProblemByUserViewHolder> {
     private Context context;
 
     private List<Problem> problemList;
 
-    public ProblemsByCurrentUserCardAdapter(Context context, List<Problem> problemList) {
+    public GatheringSignaturesCardAdapter(Context context, List<Problem> problemList) {
         this.context = context;
         this.problemList = problemList;
     }
 
     public ProblemByUserViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.problem_by_current_user_card_item, parent, false);
-        return new ProblemsByCurrentUserCardAdapter.ProblemByUserViewHolder(view);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.problem_gathering_signatures_by_current_user_card_item, parent, false);
+        return new GatheringSignaturesCardAdapter.ProblemByUserViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ProblemsByCurrentUserCardAdapter.ProblemByUserViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull GatheringSignaturesCardAdapter.ProblemByUserViewHolder holder, int position) {
         Problem problem = problemList.get(position);
         fillUiWithData(holder, problem);
         setButtonListeners(holder, problem);
@@ -60,7 +59,7 @@ public class ProblemsByCurrentUserCardAdapter extends RecyclerView.Adapter<Probl
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("problem", problem);
 
-                ProblemOfCurrentUserDetailsFragment problemDetailsFragment = new ProblemOfCurrentUserDetailsFragment();
+                ProblemDetailsFragment problemDetailsFragment = new ProblemDetailsFragment();
                 problemDetailsFragment.setArguments(bundle);
 
                 activity.getSupportFragmentManager()
@@ -120,7 +119,7 @@ public class ProblemsByCurrentUserCardAdapter extends RecyclerView.Adapter<Probl
 
     }
 
-    private void fillUiWithData(@NonNull ProblemsByCurrentUserCardAdapter.ProblemByUserViewHolder holder, Problem problem) {
+    private void fillUiWithData(@NonNull GatheringSignaturesCardAdapter.ProblemByUserViewHolder holder, Problem problem) {
         holder.titleTextView.setText(problem.getTitle());
         holder.addressTextView.setText(problem.getAddress()+", Sector "+problem.getSector());
         holder.categoryTextView.setText("Categorie: "+problem.getCategorieProblema());

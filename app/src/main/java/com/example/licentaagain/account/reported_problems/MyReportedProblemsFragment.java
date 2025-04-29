@@ -14,15 +14,16 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.licentaagain.R;
-import com.example.licentaagain.custom_adapters.ProblemsByCurrentUserCardAdapter;
+import com.example.licentaagain.account.reported_problems.gathering_signatures.GatheringSignaturesCardAdapter;
+import com.example.licentaagain.account.reported_problems.sent.SentCardAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 
 public class MyReportedProblemsFragment extends Fragment {
     private FirebaseAuth auth;
-    private ProblemsByCurrentUserCardAdapter adapterGatheringSignatures;
-    private ProblemsByCurrentUserCardAdapter adapterSentProblems;
+    private GatheringSignaturesCardAdapter adapterGatheringSignatures;
+    private SentCardAdapter adapterSentProblems;
     private ProblemsByCurrentUserViewModel viewModel;
 
     public MyReportedProblemsFragment() {
@@ -46,12 +47,12 @@ public class MyReportedProblemsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         RecyclerView rvProblemsGatheringSignatures = view.findViewById(R.id.rvProblemsGatheringSignatures);
-        adapterGatheringSignatures = new ProblemsByCurrentUserCardAdapter(getContext(), new ArrayList<>());
+        adapterGatheringSignatures = new GatheringSignaturesCardAdapter(getContext(), new ArrayList<>());
         rvProblemsGatheringSignatures.setLayoutManager(new LinearLayoutManager(requireContext()));
         rvProblemsGatheringSignatures.setAdapter(adapterGatheringSignatures);
 
         RecyclerView rvProblemsSent = view.findViewById(R.id.rvProblemsSent);
-        adapterSentProblems = new ProblemsByCurrentUserCardAdapter(getContext(), new ArrayList<>());
+        adapterSentProblems = new SentCardAdapter(getContext(), new ArrayList<>());
         rvProblemsSent.setLayoutManager(new LinearLayoutManager(requireContext()));
         rvProblemsSent.setAdapter(adapterSentProblems);
 

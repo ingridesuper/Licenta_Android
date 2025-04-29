@@ -1,7 +1,8 @@
-package com.example.licentaagain.account.solved_problems;
+package com.example.licentaagain.account.reported_problems.sent;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,43 +14,67 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.licentaagain.HomePageActivity;
 import com.example.licentaagain.R;
+import com.example.licentaagain.account.reported_problems.gathering_signatures.ProblemDetailsFragment;
 import com.example.licentaagain.enums.StareProblema;
 import com.example.licentaagain.models.Problem;
+import com.example.licentaagain.repositories.ProblemRepository;
 import com.google.android.material.imageview.ShapeableImageView;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class SolvedProblemsByCurrentUserCardAdapter extends RecyclerView.Adapter<SolvedProblemsByCurrentUserCardAdapter.ProblemViewHolder> {
+public class SentCardAdapter extends RecyclerView.Adapter<SentCardAdapter.ProblemViewHolder>{
 
     private Context context;
 
     private List<Problem> problemList;
-    SolvedProblemsByCurrentUserViewModel viewModel;
 
 
-    public SolvedProblemsByCurrentUserCardAdapter(Context context, List<Problem> problemList, SolvedProblemsByCurrentUserViewModel viewModel) {
+    public SentCardAdapter(Context context, List<Problem> problemList) {
         this.context = context;
         this.problemList = problemList;
-        this.viewModel=viewModel;
     }
 
     @NonNull
     @Override
-    public ProblemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public SentCardAdapter.ProblemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view= LayoutInflater.from(parent.getContext()).inflate(R.layout.solved_or_sent_problem_by_current_user_card, parent, false);
-        return new SolvedProblemsByCurrentUserCardAdapter.ProblemViewHolder(view);
+        return new SentCardAdapter.ProblemViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ProblemViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull SentCardAdapter.ProblemViewHolder holder, int position) {
         Problem problem=problemList.get(position);
         fillUiWithData(holder, problem);
         setChangeStareButtonClickListener(holder, problem);
+        setOnProblemClickListener(holder, problem);
     }
 
-    private void setChangeStareButtonClickListener(ProblemViewHolder holder, Problem problem) {
+    private void setOnProblemClickListener(ProblemViewHolder holder, Problem problem) {
+        holder.itemView.setOnClickListener(v->{
+            Context context = v.getContext();
+
+            if (context instanceof HomePageActivity) {
+                HomePageActivity activity = (HomePageActivity) context;
+
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("problem", problem);
+
+                ProblemDetailsFragment problemDetailsFragment = new ProblemDetailsFragment();
+                problemDetailsFragment.setArguments(bundle);
+
+                activity.getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.fragment_container_view, problemDetailsFragment)
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
+    }
+
+    private void setChangeStareButtonClickListener(SentCardAdapter.ProblemViewHolder holder, Problem problem) {
         holder.btnUpdateStare.setOnClickListener(v -> {
             List<String> stari = new ArrayList<>();
             for (StareProblema stare : StareProblema.values()) {
@@ -66,7 +91,7 @@ public class SolvedProblemsByCurrentUserCardAdapter extends RecyclerView.Adapter
                         String stareSelectata = stari.get(selectedItem[0]);
                         problem.setStareProblema(stareSelectata);
                         StareProblema stareProblemaNoua = StareProblema.fromString(stareSelectata);
-                        viewModel.updateStareProblema(problem, stareProblemaNoua);
+                        new ProblemRepository().updateStareProblema(problem.getId(), stareProblemaNoua);
                         dialog.dismiss();
                     })
 
@@ -78,7 +103,7 @@ public class SolvedProblemsByCurrentUserCardAdapter extends RecyclerView.Adapter
         });
     }
 
-    private void fillUiWithData(ProblemViewHolder holder, Problem problem) {
+    private void fillUiWithData(SentCardAdapter.ProblemViewHolder holder, Problem problem) {
         holder.titleTextView.setText(problem.getTitle());
         holder.addressTextView.setText(problem.getAddress()+", Sector "+problem.getSector());
         holder.categoryTextView.setText("Categorie: "+problem.getCategorieProblema());
@@ -98,7 +123,6 @@ public class SolvedProblemsByCurrentUserCardAdapter extends RecyclerView.Adapter
     public int getItemCount() {
         return problemList.size();
     }
-
 
     public static class ProblemViewHolder extends RecyclerView.ViewHolder {
         TextView titleTextView, addressTextView, categoryTextView;
