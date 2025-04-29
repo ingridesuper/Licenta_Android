@@ -59,7 +59,7 @@ public class GatheringSignaturesCardAdapter extends RecyclerView.Adapter<Gatheri
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("problem", problem);
 
-                ProblemDetailsFragment problemDetailsFragment = new ProblemDetailsFragment();
+                GSProblemDetailsFragment problemDetailsFragment = new GSProblemDetailsFragment();
                 problemDetailsFragment.setArguments(bundle);
 
                 activity.getSupportFragmentManager()

@@ -52,7 +52,7 @@ import java.util.List;
 import java.util.Locale;
 
 
-public class ProblemDetailsFragment extends Fragment implements OnMapReadyCallback {
+public class GSProblemDetailsFragment extends Fragment implements OnMapReadyCallback {
     private Problem problem;
     private GoogleMap myMap;
     private Button btnClose, btnOpenInGoogleMaps;

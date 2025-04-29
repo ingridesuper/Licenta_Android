@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.licentaagain.HomePageActivity;
 import com.example.licentaagain.R;
-import com.example.licentaagain.account.reported_problems.gathering_signatures.ProblemDetailsFragment;
+import com.example.licentaagain.account.reported_problems.gathering_signatures.GSProblemDetailsFragment;
 import com.example.licentaagain.enums.StareProblema;
 import com.example.licentaagain.models.Problem;
 import com.example.licentaagain.repositories.ProblemRepository;
@@ -62,7 +62,7 @@ public class SentCardAdapter extends RecyclerView.Adapter<SentCardAdapter.Proble
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("problem", problem);
 
-                ProblemDetailsFragment problemDetailsFragment = new ProblemDetailsFragment();
+                SentProblemDetailsFragment problemDetailsFragment = new SentProblemDetailsFragment();
                 problemDetailsFragment.setArguments(bundle);
 
                 activity.getSupportFragmentManager()

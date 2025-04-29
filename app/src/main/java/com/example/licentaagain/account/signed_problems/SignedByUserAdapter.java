@@ -73,6 +73,7 @@ public class SignedByUserAdapter extends RecyclerView.Adapter<SignedByUserAdapte
     }
 
 
+
     private void setButtonListeners(SignedByUserAdapter.ProblemViewHolder holder, Problem problem) {
         holder.btnSigned.setOnClickListener(v ->
                 viewModel.unSignProblem(problem, FirebaseAuth.getInstance().getCurrentUser().getUid())

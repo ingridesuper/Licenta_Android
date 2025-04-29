@@ -2,6 +2,7 @@ package com.example.licentaagain.account.solved_problems;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,7 +14,9 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.licentaagain.HomePageActivity;
 import com.example.licentaagain.R;
+import com.example.licentaagain.account.reported_problems.sent.SentProblemDetailsFragment;
 import com.example.licentaagain.enums.StareProblema;
 import com.example.licentaagain.models.Problem;
 import com.google.android.material.imageview.ShapeableImageView;
@@ -47,6 +50,7 @@ public class SolvedProblemsByCurrentUserCardAdapter extends RecyclerView.Adapter
         Problem problem=problemList.get(position);
         fillUiWithData(holder, problem);
         setChangeStareButtonClickListener(holder, problem);
+        setOnProblemClickListener(holder, problem);
     }
 
     private void setChangeStareButtonClickListener(ProblemViewHolder holder, Problem problem) {
@@ -75,6 +79,28 @@ public class SolvedProblemsByCurrentUserCardAdapter extends RecyclerView.Adapter
                     })
                     .create()
                     .show();
+        });
+    }
+
+    private void setOnProblemClickListener(ProblemViewHolder holder, Problem problem) {
+        holder.itemView.setOnClickListener(v->{
+            Context context = v.getContext();
+
+            if (context instanceof HomePageActivity) {
+                HomePageActivity activity = (HomePageActivity) context;
+
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("problem", problem);
+
+                SentProblemDetailsFragment problemDetailsFragment = new SentProblemDetailsFragment();
+                problemDetailsFragment.setArguments(bundle);
+
+                activity.getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.fragment_container_view, problemDetailsFragment)
+                        .addToBackStack(null)
+                        .commit();
+            }
         });
     }
 
