@@ -19,7 +19,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 
-
 public class MySignaturesFragment extends Fragment {
     FirebaseFirestore db;
     FirebaseAuth auth;
@@ -33,9 +32,9 @@ public class MySignaturesFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        db=FirebaseFirestore.getInstance();
-        auth=FirebaseAuth.getInstance();
-        viewModel=new ViewModelProvider(requireActivity()).get(SignaturesOfUserViewModel.class);
+        db = FirebaseFirestore.getInstance();
+        auth = FirebaseAuth.getInstance();
+        viewModel = new ViewModelProvider(requireActivity()).get(SignaturesOfUserViewModel.class);
     }
 
     @Override
@@ -46,12 +45,23 @@ public class MySignaturesFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
         RecyclerView recyclerView = view.findViewById(R.id.rvProblems);
         recyclerView.setNestedScrollingEnabled(false);
-        adapter=new SignedByUserAdapter(getContext(), new ArrayList<>(), viewModel);
+        adapter = new SignedByUserAdapter(getContext(), new ArrayList<>(), viewModel);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(adapter);
+
         viewModel.getProblems().observe(getViewLifecycleOwner(), problems -> adapter.updateData(problems));
-        viewModel.fetchSignedProblemsOfUser(auth.getCurrentUser().getUid());
+
+        if (auth.getCurrentUser() != null) {
+            viewModel.startListening(auth.getCurrentUser().getUid());
+        }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        viewModel.stopListening();
     }
 }

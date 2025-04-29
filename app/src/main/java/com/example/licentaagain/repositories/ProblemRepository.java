@@ -600,60 +600,6 @@ public class ProblemRepository {
         void onFailure(Exception e);
     }
 
-    public void fetchSignedProblemsOfUser(String uid, ProblemFetchCallback callback) {
-        List<Problem> fetchedProblems = new ArrayList<>();
-
-        db.collection("problem_signatures")
-                .whereEqualTo("userId", uid)
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        QuerySnapshot querySnapshot = task.getResult();
-                        int totalProblems = querySnapshot.size();
-                        final int[] problemsFetched = {0};  // Wrapped for lambda use
-                        if(querySnapshot.isEmpty()){
-                            callback.onFetchComplete(fetchedProblems);
-                        }
-                        else {
-                            for (QueryDocumentSnapshot signature : querySnapshot) {
-                                String problemId = signature.getString("problemId");
-
-                                db.collection("problems")
-                                        .document(problemId)
-                                        .get()
-                                        .addOnSuccessListener(documentTask -> {
-                                            DocumentSnapshot problem = documentTask;
-                                            if (problem.exists()) {
-                                                Problem newProblem = new Problem(
-                                                        problem.getString("address"),
-                                                        problem.getString("authorUid"),
-                                                        problem.getString("description"),
-                                                        problem.getDouble("latitude"),
-                                                        problem.getDouble("longitude"),
-                                                        problem.getDouble("sector").intValue(),
-                                                        problem.getString("title"),
-                                                        problem.getString("categorieProblema"),
-                                                        (List<String>) problem.get("imageUrls"),
-                                                        StareProblema.fromString(problem.getString("stareProblema")),
-                                                        problem.getString("facebookGroupLink")
-                                                );
-                                                newProblem.setId(problem.getId());
-                                                fetchedProblems.add(newProblem);
-                                            }
-
-                                            problemsFetched[0]++;
-                                            if (problemsFetched[0] == totalProblems) {
-                                                callback.onFetchComplete(fetchedProblems);
-                                            }
-                                        });
-                            }
-
-                        }
-
-                    }
-                });
-    }
-
     public void numberOfProblemsReporteddByUser(String userId, Consumer<Integer> callback) {
         db.collection("problems")
                 .whereEqualTo("authorUid", userId)
@@ -792,5 +738,66 @@ public class ProblemRepository {
                 });
     }
 
+    public ListenerRegistration listenToSignedProblemsOfUser(String uid, Consumer<List<Problem>> callback) {
+        Query query = db.collection("problem_signatures")
+                .whereEqualTo("userId", uid);
+
+        ListenerRegistration listenerRegistration = query.addSnapshotListener((snapshot, error) -> {
+            if (error != null) {
+                Log.e("listenToSignedProblems", "Error listening for signed problems", error);
+                return;
+            }
+
+            if (snapshot == null || snapshot.isEmpty()) {
+                callback.accept(new ArrayList<>());
+                return;
+            }
+
+            List<Task<DocumentSnapshot>> problemTasks = new ArrayList<>();
+
+            for (QueryDocumentSnapshot signature : snapshot) {
+                String problemId = signature.getString("problemId");
+
+                Task<DocumentSnapshot> problemTask = db.collection("problems")
+                        .document(problemId)
+                        .get();
+
+                problemTasks.add(problemTask);
+            }
+
+            Tasks.whenAllComplete(problemTasks).addOnCompleteListener(tasks -> {
+                List<Problem> fetchedProblems = new ArrayList<>();
+
+                for (Task<DocumentSnapshot> taskItem : problemTasks) {
+                    if (taskItem.isSuccessful()) {
+                        DocumentSnapshot problem = taskItem.getResult();
+                        if (problem.exists()) {
+                            Problem newProblem = new Problem(
+                                    problem.getString("address"),
+                                    problem.getString("authorUid"),
+                                    problem.getString("description"),
+                                    problem.getDouble("latitude"),
+                                    problem.getDouble("longitude"),
+                                    problem.getDouble("sector").intValue(),
+                                    problem.getString("title"),
+                                    problem.getString("categorieProblema"),
+                                    (List<String>) problem.get("imageUrls"),
+                                    StareProblema.fromString(problem.getString("stareProblema")),
+                                    problem.getString("facebookGroupLink")
+                            );
+                            newProblem.setId(problem.getId());
+                            fetchedProblems.add(newProblem);
+                        }
+                    } else {
+                        Log.e("listenToSignedProblems", "Error fetching problem details", taskItem.getException());
+                    }
+                }
+
+                callback.accept(fetchedProblems);
+            });
+        });
+
+        return listenerRegistration;
+    }
 
 }
