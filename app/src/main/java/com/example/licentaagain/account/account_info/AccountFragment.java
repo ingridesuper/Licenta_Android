@@ -1,4 +1,4 @@
-package com.example.licentaagain.account;
+package com.example.licentaagain.account.account_info;
 
 import android.content.Intent;
 import android.os.Bundle;

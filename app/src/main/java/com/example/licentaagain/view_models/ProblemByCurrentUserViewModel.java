@@ -36,6 +36,10 @@ public class ProblemByCurrentUserViewModel extends ViewModel implements ProblemR
         problemRepository.fetchAllProblemsByUser(uid, this);
     }
 
+    public void fetchAllProblemsByUserGatheringSignatures(String uid){
+        problemRepository.fetchAllProblemsByUserGatheringSignatures(uid, this);
+    }
+
     @Override
     public void onFetchComplete(List<Problem> problems) {
         problemsLiveData.setValue(problems);

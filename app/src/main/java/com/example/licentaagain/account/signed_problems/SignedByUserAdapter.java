@@ -1,8 +1,7 @@
-package com.example.licentaagain.custom_adapters;
+package com.example.licentaagain.account.signed_problems;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,17 +14,13 @@ import com.bumptech.glide.Glide;
 import com.example.licentaagain.HomePageActivity;
 import com.example.licentaagain.R;
 import com.example.licentaagain.models.Problem;
-import com.example.licentaagain.models.ProblemSignature;
 import com.example.licentaagain.problem.ProblemDetailsFragment;
-import com.example.licentaagain.problem.ProblemOfCurrentUserDetailsFragment;
 import com.example.licentaagain.repositories.ProblemSignatureRepository;
-import com.example.licentaagain.view_models.SignaturesOfUserViewModel;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.List;
-import java.util.function.Consumer;
 
 public class SignedByUserAdapter extends RecyclerView.Adapter<SignedByUserAdapter.ProblemViewHolder> {
     private Context context;

@@ -8,6 +8,7 @@ import com.example.licentaagain.enums.Sector;
 import com.example.licentaagain.enums.StareProblema;
 import com.example.licentaagain.models.Problem;
 import com.example.licentaagain.utils.ProblemFilterState;
+import com.example.licentaagain.view_models.ProblemByCurrentUserViewModel;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.CollectionReference;
@@ -32,6 +33,33 @@ import java.util.function.Consumer;
 public class ProblemRepository {
     private final FirebaseFirestore db;
     private final FirebaseStorage storage;
+
+    public void fetchAllProblemsByUserGatheringSignatures(String uid, ProblemFetchCallback callback) {
+        db.collection("problems").whereEqualTo("authorUid", uid).whereEqualTo("stareProblema", StareProblema.CURS_STRANGERE_SEMNATURI.getStare()).get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        List<Problem> fetchedProblems = new ArrayList<>();
+                        for (QueryDocumentSnapshot problem : task.getResult()) {
+                            Problem newProblem = new Problem(
+                                    problem.getString("address"),
+                                    problem.getString("authorUid"),
+                                    problem.getString("description"),
+                                    problem.getDouble("latitude"),
+                                    problem.getDouble("longitude"),
+                                    problem.getDouble("sector").intValue(),
+                                    problem.getString("title"),
+                                    problem.getString("categorieProblema"),
+                                    (List<String>) problem.get("imageUrls"),
+                                    StareProblema.fromString(problem.getString("stareProblema")),
+                                    problem.getString("facebookGroupLink")
+                            );
+                            newProblem.setId(problem.getId());
+                            fetchedProblems.add(newProblem);
+                        }
+                        callback.onFetchComplete(fetchedProblems);
+                    }
+                });
+    }
 
 
     public interface ProblemFetchCallback {

@@ -1,4 +1,4 @@
-package com.example.licentaagain.custom_adapters;
+package com.example.licentaagain.account.solved_problems;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -16,9 +16,6 @@ import com.bumptech.glide.Glide;
 import com.example.licentaagain.R;
 import com.example.licentaagain.enums.StareProblema;
 import com.example.licentaagain.models.Problem;
-import com.example.licentaagain.repositories.ProblemRepository;
-import com.example.licentaagain.view_models.SolvedProblemsByCurrentUserViewModel;
-import com.google.android.material.button.MaterialButton;
 import com.google.android.material.imageview.ShapeableImageView;
 
 import java.util.ArrayList;

@@ -1,4 +1,4 @@
-package com.example.licentaagain.account;
+package com.example.licentaagain.account.solved_problems;
 
 import android.os.Bundle;
 
@@ -14,47 +14,40 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.licentaagain.R;
-import com.example.licentaagain.custom_adapters.ProblemCardAdapter;
-import com.example.licentaagain.custom_adapters.SignedByUserAdapter;
-import com.example.licentaagain.view_models.SignaturesOfUserViewModel;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 
-
-public class MySignaturesFragment extends Fragment {
-    FirebaseFirestore db;
+public class MySolvedProblemsFragment extends Fragment {
     FirebaseAuth auth;
-    SignedByUserAdapter adapter;
-    SignaturesOfUserViewModel viewModel;
+    FirebaseFirestore db;
+    SolvedProblemsByCurrentUserCardAdapter adapter; //maybe use a diff adapter
+    SolvedProblemsByCurrentUserViewModel viewModel;
 
-    public MySignaturesFragment() {
-        // Required empty public constructor
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         db=FirebaseFirestore.getInstance();
         auth=FirebaseAuth.getInstance();
-        viewModel=new ViewModelProvider(requireActivity()).get(SignaturesOfUserViewModel.class);
+        viewModel = new ViewModelProvider(requireActivity()).get(SolvedProblemsByCurrentUserViewModel.class);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_my_signatures, container, false);
+        return inflater.inflate(R.layout.fragment_my_solved_problems, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        RecyclerView recyclerView = view.findViewById(R.id.rvProblems);
-        recyclerView.setNestedScrollingEnabled(false);
-        adapter=new SignedByUserAdapter(getContext(), new ArrayList<>(), viewModel);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        recyclerView.setAdapter(adapter);
+        RecyclerView rvSolvedProblems=view.findViewById(R.id.rvSolvedProblems);
+        rvSolvedProblems.setNestedScrollingEnabled(false);
+        rvSolvedProblems.setLayoutManager(new LinearLayoutManager(getActivity()));
+        adapter=new SolvedProblemsByCurrentUserCardAdapter(getContext(), new ArrayList<>(), viewModel);
+        rvSolvedProblems.setAdapter(adapter);
         viewModel.getProblems().observe(getViewLifecycleOwner(), problems -> adapter.updateData(problems));
-        viewModel.fetchSignedProblemsOfUser(auth.getCurrentUser().getUid());
+        viewModel.fetchProblems(auth.getCurrentUser().getUid());
     }
 }

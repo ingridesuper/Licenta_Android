@@ -106,7 +106,7 @@ public class ProblemsByCurrentUserCardAdapter extends RecyclerView.Adapter<Probl
                     .setPositiveButton("Confirmă", (dialog, which) -> {
                         String stareSelectata = stari.get(selectedItem[0]);
                         problem.setStareProblema(stareSelectata);
-                        StareProblema stareProblemaNoua = StareProblema.fromString(stareSelectata);
+                        StareProblema stareProblemaNoua = StareProblema.fromString(stareSelectata); //view model aici
                         new ProblemRepository().updateStareProblema(problem.getId(), stareProblemaNoua);
                         dialog.dismiss();
                     })

@@ -13,6 +13,10 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.licentaagain.R;
+import com.example.licentaagain.account.account_info.AccountFragment;
+import com.example.licentaagain.account.reported_problems.MyReportedProblemsFragment;
+import com.example.licentaagain.account.signed_problems.MySignaturesFragment;
+import com.example.licentaagain.account.solved_problems.MySolvedProblemsFragment;
 import com.google.android.material.button.MaterialButton;
 
 public class TopProfileFragment extends Fragment {
