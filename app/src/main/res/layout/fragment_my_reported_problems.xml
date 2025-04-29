@@ -16,22 +16,26 @@
            android:text="Problems gathering signatures:"
            app:layout_constraintTop_toTopOf="parent"
            app:layout_constraintStart_toStartOf="parent"
+           android:layout_marginStart="20dp"
+           android:textSize="16dp"
            android:layout_width="match_parent"
            android:layout_height="wrap_content"
            android:fontFamily="@font/manrope_bold"/>
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvProblems"
+            android:id="@+id/rvProblemsGatheringSignatures"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toBottomOf="@+id/tvHeadingGatheringSignatures"
             app:layout_constraintStart_toStartOf="parent"
             android:scrollbars="vertical"
-            android:paddingBottom="200dp"/>
+            android:paddingBottom="50dp"/>
 
         <TextView
             android:id="@+id/tvHeadingSentProblems"
             android:text="Problems sent to authorities:"
+            android:layout_marginStart="20dp"
+            android:textSize="16dp"
             app:layout_constraintTop_toBottomOf="@+id/rvProblems"
             app:layout_constraintStart_toStartOf="parent"
             android:layout_width="match_parent"
@@ -45,7 +49,7 @@
             app:layout_constraintTop_toBottomOf="@+id/tvHeadingSentProblems"
             app:layout_constraintStart_toStartOf="parent"
             android:scrollbars="vertical"
-            android:paddingBottom="200dp"/>
+            android:paddingBottom="150dp"/>
 
     </LinearLayout>
 

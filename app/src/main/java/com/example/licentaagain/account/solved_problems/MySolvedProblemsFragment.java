@@ -22,7 +22,7 @@ import java.util.ArrayList;
 public class MySolvedProblemsFragment extends Fragment {
     FirebaseAuth auth;
     FirebaseFirestore db;
-    SolvedProblemsByCurrentUserCardAdapter adapter; //maybe use a diff adapter
+    SolvedProblemsByCurrentUserCardAdapter adapter;
     SolvedProblemsByCurrentUserViewModel viewModel;
 
 

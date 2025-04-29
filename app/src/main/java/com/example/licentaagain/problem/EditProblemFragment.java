@@ -19,7 +19,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.Spinner;
@@ -28,7 +27,7 @@ import android.widget.Toast;
 
 import com.example.licentaagain.R;
 import com.example.licentaagain.enums.StareProblema;
-import com.example.licentaagain.view_models.ProblemByCurrentUserViewModel;
+import com.example.licentaagain.account.reported_problems.ProblemsByCurrentUserViewModel;
 import com.example.licentaagain.custom_adapters.SelectedImagesAdapter;
 import com.example.licentaagain.enums.CategorieProblema;
 import com.example.licentaagain.enums.Sector;
@@ -61,7 +60,7 @@ public class EditProblemFragment extends Fragment implements OnMapReadyCallback 
     private GoogleMap myMap;
     private Place selectedPlace;
     private AutocompleteSupportFragment autocompleteFragment;
-    private ProblemByCurrentUserViewModel viewModel;
+    private ProblemsByCurrentUserViewModel viewModel;
     private ImagePickerHelper imagePickerHelper;
 
 
@@ -118,7 +117,7 @@ public class EditProblemFragment extends Fragment implements OnMapReadyCallback 
         });
         }
 
-        viewModel = new ViewModelProvider(requireActivity()).get(ProblemByCurrentUserViewModel.class);
+        viewModel = new ViewModelProvider(requireActivity()).get(ProblemsByCurrentUserViewModel.class);
     }
 
     private void initializeVariables(@NonNull View view) {

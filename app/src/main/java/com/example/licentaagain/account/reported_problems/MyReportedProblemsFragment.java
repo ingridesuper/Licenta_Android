@@ -15,17 +15,15 @@ import android.view.ViewGroup;
 
 import com.example.licentaagain.R;
 import com.example.licentaagain.custom_adapters.ProblemsByCurrentUserCardAdapter;
-import com.example.licentaagain.view_models.ProblemByCurrentUserViewModel;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 
 public class MyReportedProblemsFragment extends Fragment {
-    FirebaseFirestore db;
-    FirebaseAuth auth;
-    ProblemsByCurrentUserCardAdapter adapter;
-    ProblemByCurrentUserViewModel viewModel;
+    private FirebaseAuth auth;
+    private ProblemsByCurrentUserCardAdapter adapterGatheringSignatures;
+    private ProblemsByCurrentUserCardAdapter adapterSentProblems;
+    private ProblemsByCurrentUserViewModel viewModel;
 
     public MyReportedProblemsFragment() {
         // Required empty public constructor
@@ -34,9 +32,8 @@ public class MyReportedProblemsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        db=FirebaseFirestore.getInstance();
-        auth=FirebaseAuth.getInstance();
-        viewModel = new ViewModelProvider(requireActivity()).get(ProblemByCurrentUserViewModel.class);
+        auth = FirebaseAuth.getInstance();
+        viewModel = new ViewModelProvider(requireActivity()).get(ProblemsByCurrentUserViewModel.class);
     }
 
     @Override
@@ -48,12 +45,23 @@ public class MyReportedProblemsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        RecyclerView recyclerView = view.findViewById(R.id.rvProblems);
-        recyclerView.setNestedScrollingEnabled(false);
-        adapter=new ProblemsByCurrentUserCardAdapter(getContext(), new ArrayList<>());
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        recyclerView.setAdapter(adapter);
-        viewModel.getProblems().observe(getViewLifecycleOwner(), problems -> adapter.updateData(problems));
-        viewModel.fetchAllProblemsByUserGatheringSignatures(auth.getCurrentUser().getUid());
+        RecyclerView rvProblemsGatheringSignatures = view.findViewById(R.id.rvProblemsGatheringSignatures);
+        adapterGatheringSignatures = new ProblemsByCurrentUserCardAdapter(getContext(), new ArrayList<>());
+        rvProblemsGatheringSignatures.setLayoutManager(new LinearLayoutManager(requireContext()));
+        rvProblemsGatheringSignatures.setAdapter(adapterGatheringSignatures);
+
+        RecyclerView rvProblemsSent = view.findViewById(R.id.rvProblemsSent);
+        adapterSentProblems = new ProblemsByCurrentUserCardAdapter(getContext(), new ArrayList<>());
+        rvProblemsSent.setLayoutManager(new LinearLayoutManager(requireContext()));
+        rvProblemsSent.setAdapter(adapterSentProblems);
+
+        viewModel.getProblemsGatheringSignatures().observe(getViewLifecycleOwner(), adapterGatheringSignatures::updateData);
+        viewModel.getProblemsSent().observe(getViewLifecycleOwner(), adapterSentProblems::updateData);
+
+        // Start real-time listeners!!
+        String uid = auth.getCurrentUser() != null ? auth.getCurrentUser().getUid() : null;
+        if (uid != null) {
+            viewModel.startListening(uid);
+        }
     }
 }

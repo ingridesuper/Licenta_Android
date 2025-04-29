@@ -8,13 +8,12 @@ import com.example.licentaagain.enums.Sector;
 import com.example.licentaagain.enums.StareProblema;
 import com.example.licentaagain.models.Problem;
 import com.example.licentaagain.utils.ProblemFilterState;
-import com.example.licentaagain.view_models.ProblemByCurrentUserViewModel;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -22,6 +21,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,33 +33,6 @@ import java.util.function.Consumer;
 public class ProblemRepository {
     private final FirebaseFirestore db;
     private final FirebaseStorage storage;
-
-    public void fetchAllProblemsByUserGatheringSignatures(String uid, ProblemFetchCallback callback) {
-        db.collection("problems").whereEqualTo("authorUid", uid).whereEqualTo("stareProblema", StareProblema.CURS_STRANGERE_SEMNATURI.getStare()).get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        List<Problem> fetchedProblems = new ArrayList<>();
-                        for (QueryDocumentSnapshot problem : task.getResult()) {
-                            Problem newProblem = new Problem(
-                                    problem.getString("address"),
-                                    problem.getString("authorUid"),
-                                    problem.getString("description"),
-                                    problem.getDouble("latitude"),
-                                    problem.getDouble("longitude"),
-                                    problem.getDouble("sector").intValue(),
-                                    problem.getString("title"),
-                                    problem.getString("categorieProblema"),
-                                    (List<String>) problem.get("imageUrls"),
-                                    StareProblema.fromString(problem.getString("stareProblema")),
-                                    problem.getString("facebookGroupLink")
-                            );
-                            newProblem.setId(problem.getId());
-                            fetchedProblems.add(newProblem);
-                        }
-                        callback.onFetchComplete(fetchedProblems);
-                    }
-                });
-    }
 
 
     public interface ProblemFetchCallback {
@@ -777,5 +750,78 @@ public class ProblemRepository {
                     }
                 });
     }
+
+
+
+    public ListenerRegistration listenToProblemsByUserGatheringSignatures(String uid, Consumer<List<Problem>> callback) {
+        return db.collection("problems")
+                .whereEqualTo("authorUid", uid)
+                .whereEqualTo("stareProblema", StareProblema.CURS_STRANGERE_SEMNATURI.getStare())
+                .addSnapshotListener((snapshots, e) -> {
+                    if (e != null) {
+                        Log.w("FirestoreListen", "Listen failed.", e);
+                        return;
+                    }
+
+                    List<Problem> problems = new ArrayList<>();
+                    for (QueryDocumentSnapshot doc : snapshots) {
+                        Problem newProblem = new Problem(
+                                doc.getString("address"),
+                                doc.getString("authorUid"),
+                                doc.getString("description"),
+                                doc.getDouble("latitude"),
+                                doc.getDouble("longitude"),
+                                doc.getDouble("sector").intValue(),
+                                doc.getString("title"),
+                                doc.getString("categorieProblema"),
+                                (List<String>) doc.get("imageUrls"),
+                                StareProblema.fromString(doc.getString("stareProblema")),
+                                doc.getString("facebookGroupLink")
+                        );
+                        newProblem.setId(doc.getId());
+                        problems.add(newProblem);
+                    }
+
+                    callback.accept(problems);
+                });
+    }
+
+    public ListenerRegistration listenToProblemsByUserSent(String uid, Consumer<List<Problem>> callback) {
+        return db.collection("problems")
+                .whereEqualTo("authorUid", uid)
+                .whereIn("stareProblema", Arrays.asList(
+                        StareProblema.AWAITING_RESOLVATION.getStare(),
+                        StareProblema.AWAITING_RESPONSE.getStare(),
+                        StareProblema.UNSATISFACTORY.getStare()
+                ))
+                .addSnapshotListener((snapshots, e) -> {
+                    if (e != null) {
+                        Log.w("FirestoreListen", "Listen failed.", e);
+                        return;
+                    }
+
+                    List<Problem> problems = new ArrayList<>();
+                    for (QueryDocumentSnapshot doc : snapshots) {
+                        Problem newProblem = new Problem(
+                                doc.getString("address"),
+                                doc.getString("authorUid"),
+                                doc.getString("description"),
+                                doc.getDouble("latitude"),
+                                doc.getDouble("longitude"),
+                                doc.getDouble("sector").intValue(),
+                                doc.getString("title"),
+                                doc.getString("categorieProblema"),
+                                (List<String>) doc.get("imageUrls"),
+                                StareProblema.fromString(doc.getString("stareProblema")),
+                                doc.getString("facebookGroupLink")
+                        );
+                        newProblem.setId(doc.getId());
+                        problems.add(newProblem);
+                    }
+
+                    callback.accept(problems);
+                });
+    }
+
 
 }
