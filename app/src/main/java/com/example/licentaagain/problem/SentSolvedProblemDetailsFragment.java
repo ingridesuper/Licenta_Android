@@ -200,8 +200,6 @@ public class SentSolvedProblemDetailsFragment extends Fragment implements OnMapR
         TextView tvProblemAddressSector=view.findViewById(R.id.tvProblemAddressSector);
         RecyclerView recyclerViewPictures=view.findViewById(R.id.recyclerViewPictures);
         btnClose=view.findViewById(R.id.btnClose);
-        btnSign=view.findViewById(R.id.btnSign);
-        btnSigned=view.findViewById(R.id.btnSigned);
         btnOpenInGoogleMaps=view.findViewById(R.id.btnOpenInGoogleMaps);
 
 

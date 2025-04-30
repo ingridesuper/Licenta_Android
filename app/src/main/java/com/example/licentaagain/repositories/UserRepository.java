@@ -8,6 +8,7 @@ import com.example.licentaagain.models.Problem;
 import com.example.licentaagain.models.User;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -71,6 +72,8 @@ public class UserRepository {
                             String name=user.getString("name"); //un user poate sa nu le aiba setate
                             String surname=user.getString("surname");
                             String email=user.getString("email");
+                            String uid=user.getString("uid");
+                            boolean isAdmin=user.getBoolean("isAdmin");
                             String nameSurname=name+ " "+surname;
                             String surnameName=surname+" "+name;
                             if(name!=null && surname!=null && email!=null){
@@ -80,8 +83,11 @@ public class UserRepository {
                                         nameSurname.toLowerCase().contains(searchText) ||
                                         surnameName.toLowerCase().contains(searchText)
                                 ) {
-                                    User newUser = user.toObject(User.class);
-                                    fetchedUsers.add(newUser);
+                                    if(!uid.equals(FirebaseAuth.getInstance().getCurrentUser().getUid()) && !isAdmin){
+                                        User newUser = user.toObject(User.class);
+                                        fetchedUsers.add(newUser);
+                                    }
+
                                 }
                             }
 

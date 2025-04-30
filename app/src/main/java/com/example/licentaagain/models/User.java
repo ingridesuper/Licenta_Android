@@ -8,7 +8,8 @@ public class User implements Serializable {
     private String name;
     private String surname;
     private String email;
-    private int sector; //nu l-am pus for now de type sector pt ca firestore nu suporta enums
+    private boolean isAdmin;
+    private int sector;
 
     public User() {}
     //user for default sign up
@@ -18,6 +19,7 @@ public class User implements Serializable {
         this.name = name;
         this.surname = surname;
         this.sector=sector;
+        this.isAdmin=false;
     }
 
     //used for google signup
@@ -26,6 +28,7 @@ public class User implements Serializable {
         this.email=email;
         this.name=name;
         this.surname=surname;
+        this.isAdmin=false;
     }
 
     public String getUid() {
@@ -42,6 +45,18 @@ public class User implements Serializable {
 
     public String getName() {
         return name;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
+
+    public boolean isAdmin() {
+        return isAdmin;
+    }
+
+    public void setAdmin(boolean admin) {
+        isAdmin = admin;
     }
 
     public void setName(String name) {
@@ -64,8 +79,6 @@ public class User implements Serializable {
         this.sector = sector;
     }
 
-
-
     @Override
     public String toString() {
         return "User{" +
@@ -73,6 +86,7 @@ public class User implements Serializable {
                 ", uid='" + uid + '\'' +
                 ", name='" + name + '\'' +
                 ", surname='" + surname + '\'' +
+                ", isAdmin=" + isAdmin +
                 ", sector=" + sector +
                 '}';
     }
