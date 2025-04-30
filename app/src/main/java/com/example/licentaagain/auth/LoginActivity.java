@@ -27,6 +27,7 @@ import androidx.credentials.exceptions.GetCredentialException;
 
 import com.example.licentaagain.HomePageActivity;
 import com.example.licentaagain.R;
+import com.example.licentaagain.admin.AdminPage;
 import com.example.licentaagain.models.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -54,9 +55,27 @@ public class LoginActivity extends AppCompatActivity {
         super.onStart();
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if(currentUser != null){
-            goToHomePage();
+            String uid = currentUser.getUid();
+
+            db.collection("users").document(uid).get()
+                    .addOnSuccessListener(documentSnapshot -> {
+                        Boolean isAdmin = documentSnapshot.getBoolean("isAdmin");
+                        if (Boolean.TRUE.equals(isAdmin)) {
+                            goToAdminPage();
+                        } else if (currentUser.isEmailVerified()) {
+                            goToHomePage();
+                        } else {
+                            Toast.makeText(this, "Please verify your email before logging in.", Toast.LENGTH_LONG).show();
+                            mAuth.signOut();
+                        }
+                    })
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(this, "Could not check user role.", Toast.LENGTH_SHORT).show();
+                        mAuth.signOut();
+                    });
         }
     }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,20 +121,33 @@ public class LoginActivity extends AppCompatActivity {
             }
 
             mAuth.signInWithEmailAndPassword(email, password)
-                    .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            if (task.isSuccessful()) {
-                                FirebaseUser user = mAuth.getCurrentUser();
-                                if (user != null && user.isEmailVerified()) {
-                                    goToHomePage();
-                                } else {
-                                    Toast.makeText(getApplicationContext(), "Please verify your email before logging in.", Toast.LENGTH_LONG).show();
-                                    mAuth.signOut(); // sign out if not verified
-                                }
-                            } else {
-                                Toast.makeText(LoginActivity.this, "Authentication failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                            }
+                    .addOnCompleteListener(this, task -> {
+                        if (task.isSuccessful()) {
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            if (user == null) return;
+
+                            String uid = user.getUid();
+                            FirebaseFirestore.getInstance().collection("users")
+                                    .document(uid)
+                                    .get()
+                                    .addOnSuccessListener(documentSnapshot -> {
+                                        Boolean isAdmin = documentSnapshot.getBoolean("isAdmin");
+                                        if (Boolean.TRUE.equals(isAdmin)) {
+                                            goToAdminPage();
+                                        } else if (user.isEmailVerified()) {
+                                            goToHomePage();
+                                        } else {
+                                            Toast.makeText(getApplicationContext(), "Please verify your email before logging in.", Toast.LENGTH_LONG).show();
+                                            mAuth.signOut();
+                                        }
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        Toast.makeText(this, "Failed to fetch user role.", Toast.LENGTH_SHORT).show();
+                                        mAuth.signOut();
+                                    });
+
+                        } else {
+                            Toast.makeText(LoginActivity.this, "Authentication failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     });
         });
@@ -237,6 +269,12 @@ public class LoginActivity extends AppCompatActivity {
 
     private void goToHomePage(){
         Intent intent=new Intent(getApplicationContext(), HomePageActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
+    private void goToAdminPage(){
+        Intent intent=new Intent(getApplicationContext(), AdminPage.class);
         startActivity(intent);
         finish();
     }

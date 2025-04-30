@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/bmProblems"
+        android:icon="@drawable/ic_problem_file"
+        android:enabled="true"
+        android:title="Problems"
+        />
+
+    <item
+        android:id="@+id/bmUsers"
+        android:icon="@drawable/ic_profile"
+        android:enabled="true"
+        android:title="Users"
+        />
+
+</menu>
