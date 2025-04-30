@@ -15,10 +15,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.licentaagain.R;
-import com.example.licentaagain.mainpage.ProblemListFragment;
-import com.example.licentaagain.models.Problem;
 import com.example.licentaagain.models.User;
-import com.example.licentaagain.view_models.ProblemBySelectedUserViewModel;
 
 public class OtherUserFragment extends Fragment {
     private User user;
@@ -71,10 +68,14 @@ public class OtherUserFragment extends Fragment {
         tvEmail.setText(user.getEmail());
         tvSector.setText("Sectorul "+user.getSector());
         headingProblemsReported.setText("Problems reported by "+user.getName()+" "+user.getSurname()+":");
-        problemViewModel.getSignedProblemCount().observe(getViewLifecycleOwner(), count -> {
-            tvNrProblemeRaportate.setText(count.toString());
+
+        problemViewModel.getReportedProblemsCount().observe(getViewLifecycleOwner(), count -> {
+            if (count != null) {
+                tvNrProblemeRaportate.setText(String.valueOf(count));
+            } else {
+                tvNrProblemeRaportate.setText("0");
+            }
         });
-        problemViewModel.fetchSignedProblemCountByUser(user.getUid());
 
     }
 }

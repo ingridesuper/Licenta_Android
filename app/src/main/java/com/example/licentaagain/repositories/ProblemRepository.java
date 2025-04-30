@@ -800,4 +800,16 @@ public class ProblemRepository {
         return listenerRegistration;
     }
 
+    public ListenerRegistration listenToCountReportedProblemsByUser(String uid, Consumer<Integer> callback){
+        return db.collection("problems").whereEqualTo("authorUid", uid)
+                .addSnapshotListener((snapshots, e)->{
+                    if (e != null) {
+                        Log.e("Firestore", "Listen failed.", e);
+                        return;
+                    }
+                    assert snapshots != null;
+                    callback.accept(snapshots.size());
+                });
+    }
+
 }

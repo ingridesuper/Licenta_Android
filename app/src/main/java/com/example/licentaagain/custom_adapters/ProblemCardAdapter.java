@@ -1,7 +1,6 @@
 package com.example.licentaagain.custom_adapters;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,16 +10,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.licentaagain.HomePageActivity;
 import com.example.licentaagain.R;
 import com.example.licentaagain.models.Problem;
-import com.example.licentaagain.models.ProblemSignature;
-import com.example.licentaagain.models.User;
 import com.example.licentaagain.problem.ProblemDetailsFragment;
 import com.example.licentaagain.repositories.ProblemSignatureRepository;
 import com.example.licentaagain.repositories.UserRepository;
@@ -28,8 +23,6 @@ import com.example.licentaagain.utils.GDPRDialog;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -50,7 +43,7 @@ public class ProblemCardAdapter extends RecyclerView.Adapter<ProblemCardAdapter.
     @Override
     public ProblemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         // Inflate the item layout for each problem
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_item, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.gathering_signatures_card_item, parent, false);
         return new ProblemViewHolder(view);
     }
 

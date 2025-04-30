@@ -15,7 +15,6 @@ import android.view.ViewGroup;
 
 import com.example.licentaagain.R;
 import com.example.licentaagain.custom_adapters.ProblemCardAdapter;
-import com.example.licentaagain.view_models.ProblemBySelectedUserViewModel;
 
 import java.util.ArrayList;
 
@@ -23,8 +22,9 @@ public class ProblemListByUserFragment extends Fragment {
     private String selectedUserId;
 
     private ProblemBySelectedUserViewModel problemViewModel;
-    private ProblemCardAdapter adapter;
-
+    private ProblemCardAdapter gsCardAdapter;
+    private ProblemsSentSolvedCardAdapter sentCardAdapter;
+    private ProblemsSentSolvedCardAdapter solvedCardAdapter;
 
 
     public ProblemListByUserFragment() {
@@ -50,12 +50,36 @@ public class ProblemListByUserFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        RecyclerView recyclerView = view.findViewById(R.id.rvProblems);
-        recyclerView.setNestedScrollingEnabled(false);
-        adapter = new ProblemCardAdapter(getContext(), new ArrayList<>());
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        recyclerView.setAdapter(adapter);
-        problemViewModel.getProblems().observe(getViewLifecycleOwner(), problems -> adapter.updateData(problems));
-        problemViewModel.fetchAllProblemsByUser(selectedUserId);
+        RecyclerView rvProblemsGS = view.findViewById(R.id.rvProblemsGS);
+        rvProblemsGS.setNestedScrollingEnabled(false);
+        gsCardAdapter = new ProblemCardAdapter(getContext(), new ArrayList<>());
+        rvProblemsGS.setLayoutManager(new LinearLayoutManager(getActivity()));
+        rvProblemsGS.setAdapter(gsCardAdapter);
+
+        RecyclerView rvProblemsSent=view.findViewById(R.id.rvProblemsSent);
+        rvProblemsSent.setNestedScrollingEnabled(false);
+        sentCardAdapter=new ProblemsSentSolvedCardAdapter(getContext(), new ArrayList<>());
+        rvProblemsSent.setLayoutManager(new LinearLayoutManager(getActivity()));
+        rvProblemsSent.setAdapter(sentCardAdapter);
+
+        RecyclerView rvProblemsSolved=view.findViewById(R.id.rvProblemsSolved);
+        rvProblemsSolved.setNestedScrollingEnabled(false);
+        solvedCardAdapter=new ProblemsSentSolvedCardAdapter(getContext(), new ArrayList<>());
+        rvProblemsSolved.setLayoutManager(new LinearLayoutManager(getActivity()));
+        rvProblemsSolved.setAdapter(solvedCardAdapter);
+
+        problemViewModel.getProblemsGatheringSignatures().observe(getViewLifecycleOwner(), gsCardAdapter::updateData);
+        problemViewModel.getProblemsSent().observe(getViewLifecycleOwner(), sentCardAdapter::updateData);
+        problemViewModel.getProblemsSolved().observe(getViewLifecycleOwner(), solvedCardAdapter::updateData);
+
+        if (selectedUserId != null) {
+            problemViewModel.startListening(selectedUserId);
+        }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        problemViewModel.stopListening();
     }
 }

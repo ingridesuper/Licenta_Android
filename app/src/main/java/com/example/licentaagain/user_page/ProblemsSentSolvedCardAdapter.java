@@ -1,7 +1,8 @@
-package com.example.licentaagain.account.signed_problems;
+package com.example.licentaagain.user_page;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,44 +14,41 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.licentaagain.HomePageActivity;
 import com.example.licentaagain.R;
+import com.example.licentaagain.account.reported_problems.sent.SentProblemDetailsFragment;
 import com.example.licentaagain.models.Problem;
 import com.example.licentaagain.problem.ProblemDetailsFragment;
-import com.example.licentaagain.repositories.ProblemSignatureRepository;
+import com.example.licentaagain.problem.SentSolvedProblemDetailsFragment;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.imageview.ShapeableImageView;
-import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.List;
 
-public class SignedByUserAdapter extends RecyclerView.Adapter<SignedByUserAdapter.ProblemViewHolder> {
+public class ProblemsSentSolvedCardAdapter extends RecyclerView.Adapter<ProblemsSentSolvedCardAdapter.ProblemViewHolder> {
     private Context context;
 
     private List<Problem> problemList;
 
-    private SignaturesOfUserViewModel viewModel;
-    private ProblemSignatureRepository repository;
-
-    public SignedByUserAdapter(Context context, List<Problem> problemList, SignaturesOfUserViewModel viewModel) {
+    public ProblemsSentSolvedCardAdapter(Context context, List<Problem> problemList) {
         this.context = context;
         this.problemList = problemList;
-        repository=new ProblemSignatureRepository();
-        this.viewModel=viewModel;
     }
 
-    public SignedByUserAdapter.ProblemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.gathering_signatures_card_item, parent, false);
-        return new SignedByUserAdapter.ProblemViewHolder(view);
+    @NonNull
+    @Override
+    public ProblemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view= LayoutInflater.from(parent.getContext()).inflate(R.layout.sent_solved_card_item, parent, false);
+        return new ProblemsSentSolvedCardAdapter.ProblemViewHolder(view);
     }
+
 
     @Override
     public void onBindViewHolder(@NonNull ProblemViewHolder holder, int position) {
-        Problem problem = problemList.get(position);
+        Problem problem=problemList.get(position);
         fillUiWithData(holder, problem);
-        setButtonListeners(holder, problem);
         setOnProblemClickListener(holder, problem);
     }
 
-    private void setOnProblemClickListener(SignedByUserAdapter.ProblemViewHolder holder, Problem problem) {
+    private void setOnProblemClickListener(ProblemViewHolder holder, Problem problem) {
         holder.itemView.setOnClickListener(v->{
             Context context = v.getContext();
 
@@ -60,7 +58,7 @@ public class SignedByUserAdapter extends RecyclerView.Adapter<SignedByUserAdapte
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("problem", problem);
 
-                ProblemDetailsFragment problemDetailsFragment = new ProblemDetailsFragment();
+                SentSolvedProblemDetailsFragment problemDetailsFragment = new SentSolvedProblemDetailsFragment();
                 problemDetailsFragment.setArguments(bundle);
 
                 activity.getSupportFragmentManager()
@@ -73,13 +71,12 @@ public class SignedByUserAdapter extends RecyclerView.Adapter<SignedByUserAdapte
     }
 
 
-
-    private void setButtonListeners(SignedByUserAdapter.ProblemViewHolder holder, Problem problem) {
-        holder.btnSigned.setOnClickListener(v ->
-                viewModel.unSignProblem(problem, FirebaseAuth.getInstance().getCurrentUser().getUid())
-        );
+    @Override
+    public int getItemCount() {
+        return problemList.size();
     }
-    private void fillUiWithData(@NonNull SignedByUserAdapter.ProblemViewHolder holder, Problem problem) {
+
+    private void fillUiWithData(ProblemViewHolder holder, Problem problem) {
         holder.titleTextView.setText(problem.getTitle());
         holder.addressTextView.setText(problem.getAddress()+", Sector "+problem.getSector());
         holder.categoryTextView.setText("Categorie: "+problem.getCategorieProblema());
@@ -88,18 +85,14 @@ public class SignedByUserAdapter extends RecyclerView.Adapter<SignedByUserAdapte
             Glide.with(holder.itemView.getContext())
                     .load(imageUrl)
                     .into(holder.imageView);
+            Log.i("image",problem.getImageUrls().get(0));
+        }
+        else {
+            Log.i("image","empty");
         }
     }
 
-    @Override
-    public int getItemCount() {
-        return problemList.size();
-    }
-
     public static class ProblemViewHolder extends RecyclerView.ViewHolder {
-        //view holder e specific recycler view pt imbunatatire performanta
-        //e practic doar o cutie cu referintele astea, ca sa nu apelam la fiecare binding
-        //legat de onBindViewHolder de mai sus!
         TextView titleTextView, addressTextView, categoryTextView;
         ShapeableImageView imageView;
         MaterialButton btnSign, btnSigned;
