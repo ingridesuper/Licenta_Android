@@ -19,7 +19,7 @@
         android:theme="@style/ThemeWithoutActionBar"
         tools:targetApi="31">
         <activity
-            android:name=".admin.AdminPage"
+            android:name=".admin.AdminPageActivity"
             android:exported="false" />
 
         <meta-data

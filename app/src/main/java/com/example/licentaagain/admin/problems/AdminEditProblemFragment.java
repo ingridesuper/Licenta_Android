@@ -1,6 +1,5 @@
-package com.example.licentaagain.admin;
+package com.example.licentaagain.admin.problems;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.net.Uri;
 import android.os.Bundle;
@@ -26,7 +25,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.licentaagain.R;
-import com.example.licentaagain.account.reported_problems.ProblemsByCurrentUserViewModel;
 import com.example.licentaagain.custom_adapters.SelectedImagesAdapter;
 import com.example.licentaagain.enums.CategorieProblema;
 import com.example.licentaagain.enums.Sector;

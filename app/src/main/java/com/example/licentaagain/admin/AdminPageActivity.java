@@ -11,9 +11,11 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.example.licentaagain.R;
+import com.example.licentaagain.admin.problems.AdminProblemListFragment;
+import com.example.licentaagain.admin.users.AdminUserListFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-public class AdminPage extends AppCompatActivity {
+public class AdminPageActivity extends AppCompatActivity {
     FragmentManager fragmentManager;
     BottomNavigationView bottomNavigationView;
 

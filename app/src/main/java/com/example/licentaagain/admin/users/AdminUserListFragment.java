@@ -1,4 +1,4 @@
-package com.example.licentaagain.admin;
+package com.example.licentaagain.admin.users;
 
 import android.os.Bundle;
 

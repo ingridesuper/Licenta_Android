@@ -12,7 +12,6 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -27,16 +26,13 @@ import androidx.credentials.exceptions.GetCredentialException;
 
 import com.example.licentaagain.HomePageActivity;
 import com.example.licentaagain.R;
-import com.example.licentaagain.admin.AdminPage;
+import com.example.licentaagain.admin.AdminPageActivity;
 import com.example.licentaagain.models.User;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption;
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
@@ -274,7 +270,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void goToAdminPage(){
-        Intent intent=new Intent(getApplicationContext(), AdminPage.class);
+        Intent intent=new Intent(getApplicationContext(), AdminPageActivity.class);
         startActivity(intent);
         finish();
     }

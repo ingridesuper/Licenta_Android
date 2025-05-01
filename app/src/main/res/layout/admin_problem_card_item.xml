@@ -50,20 +50,21 @@
                 android:layout_marginTop="8dp"
                 app:layout_constraintTop_toBottomOf="@+id/tvTitle"
                 app:layout_constraintStart_toStartOf="parent"
+                android:id="@+id/tvStare"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Stare: "
+                android:textSize="12sp" />
+
+            <TextView
+                android:layout_marginTop="5dp"
+                app:layout_constraintTop_toBottomOf="@+id/tvStare"
+                app:layout_constraintStart_toStartOf="parent"
                 android:id="@+id/tvAddress"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Adresa, Sector"
-                android:textSize="12sp" />
-
-            <TextView
-                android:id="@+id/tvCategory"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Categorie: Gunoi"
-                android:textSize="10sp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvAddress" />
+                android:textSize="11sp" />
 
             <com.google.android.material.button.MaterialButton
                 style="@style/Widget.Material3.Button.IconButton.Filled"

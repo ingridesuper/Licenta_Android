@@ -1,4 +1,4 @@
-package com.example.licentaagain.admin;
+package com.example.licentaagain.admin.problems;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -7,19 +7,16 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.example.licentaagain.HomePageActivity;
 import com.example.licentaagain.R;
+import com.example.licentaagain.admin.AdminPageActivity;
 import com.example.licentaagain.models.Problem;
-import com.example.licentaagain.problem.EditProblemFragment;
 import com.example.licentaagain.repositories.ProblemRepository;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.imageview.ShapeableImageView;
@@ -65,8 +62,8 @@ public class AdminProblemCardAdapter extends RecyclerView.Adapter<AdminProblemCa
         });
 
         holder.btnEdit.setOnClickListener(v->{
-            if (context instanceof AdminPage) {
-                AdminPage activity = (AdminPage) context;
+            if (context instanceof AdminPageActivity) {
+                AdminPageActivity activity = (AdminPageActivity) context;
 
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("problem", problem);
@@ -86,7 +83,7 @@ public class AdminProblemCardAdapter extends RecyclerView.Adapter<AdminProblemCa
     private void fillUiWithData(ProblemViewHolder holder, Problem problem) {
         holder.titleTextView.setText(problem.getTitle());
         holder.addressTextView.setText(problem.getAddress()+", Sector "+problem.getSector());
-        holder.categoryTextView.setText("Categorie: "+problem.getCategorieProblema());
+        holder.stareTextView.setText("Stare: "+problem.getStareProblema());
         if(!problem.getImageUrls().isEmpty()){
             String imageUrl = problem.getImageUrls().get(0);
             Glide.with(holder.itemView.getContext())
@@ -116,7 +113,7 @@ public class AdminProblemCardAdapter extends RecyclerView.Adapter<AdminProblemCa
     }
 
     public static class ProblemViewHolder extends RecyclerView.ViewHolder {
-        TextView titleTextView, addressTextView, categoryTextView;
+        TextView titleTextView, addressTextView, stareTextView;
         ShapeableImageView imageView;
         MaterialButton btnEdit, btnDelete;
 
@@ -124,7 +121,7 @@ public class AdminProblemCardAdapter extends RecyclerView.Adapter<AdminProblemCa
             super(itemView);
             titleTextView = itemView.findViewById(R.id.tvTitle);
             addressTextView=itemView.findViewById(R.id.tvAddress);
-            categoryTextView=itemView.findViewById(R.id.tvCategory);
+            stareTextView=itemView.findViewById(R.id.tvStare);
             btnEdit=itemView.findViewById(R.id.btnEdit);
             btnDelete=itemView.findViewById(R.id.btnDelete);
             imageView=itemView.findViewById(R.id.ivProblem);

@@ -1,4 +1,4 @@
-package com.example.licentaagain.admin;
+package com.example.licentaagain.admin.problems;
 
 import android.util.Log;
 
@@ -8,11 +8,8 @@ import androidx.lifecycle.ViewModel;
 
 import com.example.licentaagain.models.Problem;
 import com.example.licentaagain.repositories.AdminRepository;
-import com.example.licentaagain.repositories.ProblemRepository;
 import com.example.licentaagain.utils.ProblemFilterState;
 import com.google.firebase.firestore.ListenerRegistration;
-
-import org.checkerframework.checker.units.qual.A;
 
 import java.util.List;
 
