@@ -1,5 +1,7 @@
 package com.example.licentaagain.enums;
 
+import androidx.annotation.NonNull;
+
 public enum StareProblema {
     CURS_STRANGERE_SEMNATURI("In curs de strangere de semnaturi"),
     AWAITING_RESPONSE("Trimisa catre autoritati - in asteptare raspuns"),
@@ -26,10 +28,9 @@ public enum StareProblema {
         throw new IllegalArgumentException("Nu exista starea: " + text);
     }
 
+    @NonNull
     @Override
     public String toString() {
-        return "StareProblema{" +
-                "stare='" + stare + '\'' +
-                '}';
+        return stare;
     }
 }

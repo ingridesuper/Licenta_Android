@@ -1,19 +1,26 @@
 package com.example.licentaagain.admin;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.licentaagain.HomePageActivity;
 import com.example.licentaagain.R;
 import com.example.licentaagain.models.Problem;
+import com.example.licentaagain.problem.EditProblemFragment;
+import com.example.licentaagain.repositories.ProblemRepository;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.imageview.ShapeableImageView;
 
@@ -42,6 +49,38 @@ public class AdminProblemCardAdapter extends RecyclerView.Adapter<AdminProblemCa
     }
 
     private void setButtonListeners(ProblemViewHolder holder, Problem problem) {
+        holder.btnDelete.setOnClickListener(v->{
+            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            builder.setTitle("Sunteți sigur că vreți să ștergeți această problemă?")
+                    .setMessage("Sunteți sigur că vreți să ștergeți această problemă? Ștergerea este ireversibilă.")
+                    .setPositiveButton("Șterge", (dialog, id) -> {
+                        new ProblemRepository().deleteProblem(problem, result ->{
+                            if(!result){
+                                Toast.makeText(context, "A apărut o eroare", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    })
+                    .setNegativeButton("Cancel", (dialog, id) -> dialog.dismiss());
+            builder.create().show();
+        });
+
+        holder.btnEdit.setOnClickListener(v->{
+            if (context instanceof AdminPage) {
+                AdminPage activity = (AdminPage) context;
+
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("problem", problem);
+
+                AdminEditProblemFragment editProblemFragment = new AdminEditProblemFragment();
+                editProblemFragment.setArguments(bundle);
+
+                activity.getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.fragment_container_view, editProblemFragment)
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
     }
 
     private void fillUiWithData(ProblemViewHolder holder, Problem problem) {
