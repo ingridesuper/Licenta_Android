@@ -27,6 +27,7 @@ import androidx.credentials.exceptions.GetCredentialException;
 import com.example.licentaagain.HomePageActivity;
 import com.example.licentaagain.R;
 import com.example.licentaagain.admin.AdminPageActivity;
+import com.example.licentaagain.disabled_user.DisabledUserActivity;
 import com.example.licentaagain.models.User;
 import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption;
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential;
@@ -50,13 +51,20 @@ public class LoginActivity extends AppCompatActivity {
     public void onStart() {
         super.onStart();
         FirebaseUser currentUser = mAuth.getCurrentUser();
-        if(currentUser != null){
+        if (currentUser != null) {
             String uid = currentUser.getUid();
 
             db.collection("users").document(uid).get()
                     .addOnSuccessListener(documentSnapshot -> {
-                        Boolean isAdmin = documentSnapshot.getBoolean("isAdmin");
-                        if (Boolean.TRUE.equals(isAdmin)) {
+                        boolean isAdmin = Boolean.TRUE.equals(documentSnapshot.getBoolean("isAdmin"));
+                        boolean isDisabled = Boolean.TRUE.equals(documentSnapshot.getBoolean("isDisabled"));
+
+                        if (isDisabled) {
+                            mAuth.signOut();
+                            Intent intent=new Intent(getApplicationContext(), DisabledUserActivity.class);
+                            startActivity(intent);
+                            finish();
+                        } else if (isAdmin) {
                             goToAdminPage();
                         } else if (currentUser.isEmailVerified()) {
                             goToHomePage();
@@ -71,6 +79,7 @@ public class LoginActivity extends AppCompatActivity {
                     });
         }
     }
+
 
 
     @Override
@@ -127,13 +136,20 @@ public class LoginActivity extends AppCompatActivity {
                                     .document(uid)
                                     .get()
                                     .addOnSuccessListener(documentSnapshot -> {
-                                        Boolean isAdmin = documentSnapshot.getBoolean("isAdmin");
-                                        if (Boolean.TRUE.equals(isAdmin)) {
+                                        boolean isAdmin = Boolean.TRUE.equals(documentSnapshot.getBoolean("isAdmin"));
+                                        boolean isDisabled = Boolean.TRUE.equals(documentSnapshot.getBoolean("isDisabled"));
+
+                                        if (isDisabled) {
+                                            mAuth.signOut();
+                                            Intent intent=new Intent(getApplicationContext(), DisabledUserActivity.class);
+                                            startActivity(intent);
+                                            finish();
+                                        } else if (isAdmin) {
                                             goToAdminPage();
                                         } else if (user.isEmailVerified()) {
                                             goToHomePage();
                                         } else {
-                                            Toast.makeText(getApplicationContext(), "Please verify your email before logging in.", Toast.LENGTH_LONG).show();
+                                            Toast.makeText(this, "Please verify your email before logging in.", Toast.LENGTH_LONG).show();
                                             mAuth.signOut();
                                         }
                                     })
@@ -240,8 +256,6 @@ public class LoginActivity extends AppCompatActivity {
                         Log.d(TAG, "signInWithCredential:success");
                         FirebaseUser user = mAuth.getCurrentUser();
                         //updateUI(user);
-                        Log.i("user", user.getEmail()+" "+user.getDisplayName());
-                        Toast.makeText(this, "Succes", Toast.LENGTH_SHORT).show();
                         boolean isNewUser = task.getResult().getAdditionalUserInfo().isNewUser();
                         if (isNewUser) { //verific pt ca altfel it is overwritten si asta nuuu ne dorim
                             Log.i("count logare", "prima logare" );
@@ -252,7 +266,26 @@ public class LoginActivity extends AppCompatActivity {
                         } else {
                             Log.i("count logare", "nu e prima logare");
                         }
-                        goToHomePage();
+
+                        FirebaseFirestore.getInstance().collection("users")
+                                .document(user.getUid())
+                                .get()
+                                .addOnSuccessListener(documentSnapshot -> {
+                                    boolean isDisabled = Boolean.TRUE.equals(documentSnapshot.getBoolean("isDisabled"));
+
+                                    if (isDisabled) {
+                                        mAuth.signOut();
+                                        Intent intent=new Intent(getApplicationContext(), DisabledUserActivity.class);
+                                        startActivity(intent);
+                                        finish();
+                                    } else  {
+                                        goToHomePage();
+                                    }
+                                })
+                                .addOnFailureListener(e -> {
+                                    Toast.makeText(this, "Failed to fetch user role.", Toast.LENGTH_SHORT).show();
+                                    mAuth.signOut();
+                                });
 
                     } else {
                         // If sign in fails, display a message to the user
@@ -262,6 +295,7 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 });
     }
+
 
     private void goToHomePage(){
         Intent intent=new Intent(getApplicationContext(), HomePageActivity.class);

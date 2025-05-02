@@ -1,5 +1,6 @@
 package com.example.licentaagain.admin.users;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -13,11 +14,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.licentaagain.R;
 import com.example.licentaagain.admin.problems.AdminProblemCardAdapter;
 import com.example.licentaagain.models.User;
+import com.example.licentaagain.repositories.AdminRepository;
 
 import java.util.ArrayList;
 
@@ -48,6 +52,28 @@ public class AdminUserDetailsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         fillUiWithUserData(view);
         setUpRecyclerView(view);
+        setUpButtonEvents(view);
+    }
+
+    private void setUpButtonEvents(View view) {
+        Button btnDisableUser=view.findViewById(R.id.btnDisableUser);
+        btnDisableUser.setOnClickListener(v->{
+            AlertDialog.Builder builder=new AlertDialog.Builder(getContext());
+            builder.setTitle("Suspendare utilizator")
+                    .setMessage("Sunteți sigur că doriți să suspendați temporar contul acestui utilizator?")
+                    .setPositiveButton("Da", (dialog, id) -> {
+                        new AdminRepository().disableUser(user.getUid(), result ->{
+                            if(result){
+                                Toast.makeText(getContext(), "Succes - utilizatorul are contul suspendat.", Toast.LENGTH_SHORT).show();
+                            }
+                            else {
+                                Toast.makeText(getContext(), "A aparut o eroare", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    })
+                    .setNegativeButton("Nu", (dialog, id) -> dialog.dismiss());
+            builder.create().show();
+        });
     }
 
     private void setUpRecyclerView(View view) {

@@ -11,6 +11,8 @@ public class User implements Serializable {
     private boolean isAdmin;
     private int sector;
 
+    private boolean isDisabled;
+
     public User() {}
     //user for default sign up
     public User(String uid, String email, String name, String surname, int sector) {
@@ -20,6 +22,7 @@ public class User implements Serializable {
         this.surname = surname;
         this.sector=sector;
         this.isAdmin=false;
+        this.isDisabled=false;
     }
 
     //used for google signup
@@ -29,6 +32,7 @@ public class User implements Serializable {
         this.name=name;
         this.surname=surname;
         this.isAdmin=false;
+        this.isDisabled=false;
     }
 
     public String getUid() {
@@ -79,6 +83,14 @@ public class User implements Serializable {
         this.sector = sector;
     }
 
+    public boolean isDisabled() {
+        return isDisabled;
+    }
+
+    public void setDisabled(boolean disabled) {
+        isDisabled = disabled;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -88,6 +100,7 @@ public class User implements Serializable {
                 ", surname='" + surname + '\'' +
                 ", isAdmin=" + isAdmin +
                 ", sector=" + sector +
+                ", isDisabled=" + isDisabled +
                 '}';
     }
 

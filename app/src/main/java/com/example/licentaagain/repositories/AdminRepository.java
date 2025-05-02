@@ -101,4 +101,20 @@ public class AdminRepository { //de adaugat checks ca current auth e tip admin -
                 });
     }
 
+    public void disableUser(String uid, Consumer<Boolean> callback){
+        Map<String, Object> updatedFields = new HashMap<>();
+        updatedFields.put("isDisabled", true);
+        db.collection("users")
+                .document(uid)
+                .update(updatedFields)
+                .addOnCompleteListener(task->{
+                    if(task.isSuccessful()){
+                        callback.accept(true);
+                    }
+                    else {
+                        callback.accept(false);
+                    }
+                });
+    }
+
 }
