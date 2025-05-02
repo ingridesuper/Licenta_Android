@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.licentaagain.HomePageActivity;
 import com.example.licentaagain.R;
+import com.example.licentaagain.disabled_user.DisabledSearchedUserFragment;
 import com.example.licentaagain.models.Problem;
 import com.example.licentaagain.models.User;
 import com.example.licentaagain.problem.ProblemDetailsFragment;
@@ -53,18 +54,27 @@ public class SearchUserAdapter extends RecyclerView.Adapter<SearchUserAdapter.Us
             Context context=v.getContext();
             if (context instanceof HomePageActivity) {
                 HomePageActivity activity = (HomePageActivity) context;
+                if(user.isDisabled()){
+                    DisabledSearchedUserFragment disabledSearchedUserFragment=new DisabledSearchedUserFragment();
+                    activity.getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.fragment_container_view, disabledSearchedUserFragment)
+                            .addToBackStack(null)
+                            .commit();
+                }
+                else {
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("user", user);
 
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("user", user);
+                    OtherUserFragment otherUserFragment = new OtherUserFragment();
+                    otherUserFragment.setArguments(bundle);
 
-                OtherUserFragment otherUserFragment = new OtherUserFragment();
-                otherUserFragment.setArguments(bundle);
-
-                activity.getSupportFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.fragment_container_view, otherUserFragment)
-                        .addToBackStack(null)
-                        .commit();
+                    activity.getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.fragment_container_view, otherUserFragment)
+                            .addToBackStack(null)
+                            .commit();
+                }
             }
         });
     }

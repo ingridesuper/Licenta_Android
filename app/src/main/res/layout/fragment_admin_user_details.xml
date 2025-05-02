@@ -124,18 +124,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" >
 
-            <Button
-                android:id="@+id/btnDeleteUser"
-                android:text="Delete user"
-                android:layout_marginEnd="15dp"
-                style="@style/Widget.Material3.Button.TonalButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
 
             <!--sau undisable user!-->
             <Button
                 android:id="@+id/btnDisableUser"
-                android:text="Disable user"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
 

@@ -26,6 +26,7 @@ import com.example.licentaagain.HomePageActivity;
 import com.example.licentaagain.R;
 import com.example.licentaagain.account.TopProfileFragment;
 import com.example.licentaagain.custom_adapters.ImageAdapterProblemDetails;
+import com.example.licentaagain.disabled_user.DisabledSearchedUserFragment;
 import com.example.licentaagain.mainpage.MainPageFragment;
 import com.example.licentaagain.models.Problem;
 import com.example.licentaagain.models.ProblemSignature;
@@ -139,37 +140,43 @@ public class ProblemDetailsFragment extends Fragment implements OnMapReadyCallba
 
     private void subscribeAuthorClickToEvent() {
         tvProblemAuthor.setOnClickListener(v->{
-                Context context=v.getContext();
-                if(!author.getUid().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())){
-                    if (context instanceof HomePageActivity) {
-                        HomePageActivity activity = (HomePageActivity) context;
+            Context context=v.getContext();
+            HomePageActivity activity = (HomePageActivity) context;
 
-                        Bundle bundle = new Bundle();
-                        bundle.putSerializable("user", author);
+            if(author.isDisabled()){
+                    DisabledSearchedUserFragment disabledSearchedUserFragment=new DisabledSearchedUserFragment();
+                    getActivity().getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.fragment_container_view, disabledSearchedUserFragment)
+                            .addToBackStack(null)
+                            .commit();
+            }
 
-                        OtherUserFragment otherUserFragment = new OtherUserFragment();
-                        otherUserFragment.setArguments(bundle);
+            else if(!author.getUid().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())){
+                if (context instanceof HomePageActivity) {
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("user", author);
 
-                        activity.getSupportFragmentManager()
-                                .beginTransaction()
-                                .replace(R.id.fragment_container_view, otherUserFragment)
-                                .addToBackStack(null)
-                                .commit();
-                    }
-                }
-                else {
-                    if (context instanceof HomePageActivity) {
-                        HomePageActivity activity = (HomePageActivity) context;
-                        TopProfileFragment topProfileFragment = new TopProfileFragment();
-
-                        activity.getSupportFragmentManager()
-                                .beginTransaction()
-                                .replace(R.id.fragment_container_view, topProfileFragment)
-                                .addToBackStack(null)
-                                .commit();
+                    OtherUserFragment otherUserFragment = new OtherUserFragment();
+                    otherUserFragment.setArguments(bundle);
+                    activity.getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.fragment_container_view, otherUserFragment)
+                            .addToBackStack(null)
+                            .commit();
                     }
                 }
 
+            else {
+                if (context instanceof HomePageActivity) {
+                    TopProfileFragment topProfileFragment = new TopProfileFragment();
+                    activity.getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.fragment_container_view, topProfileFragment)
+                            .addToBackStack(null)
+                            .commit();
+                    }
+                }
             });
     }
 

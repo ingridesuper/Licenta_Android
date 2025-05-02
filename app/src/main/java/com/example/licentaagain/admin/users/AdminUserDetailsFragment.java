@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -56,18 +57,32 @@ public class AdminUserDetailsFragment extends Fragment {
     }
 
     private void setUpButtonEvents(View view) {
-        Button btnDisableUser=view.findViewById(R.id.btnDisableUser);
-        btnDisableUser.setOnClickListener(v->{
-            AlertDialog.Builder builder=new AlertDialog.Builder(getContext());
-            builder.setTitle("Suspendare utilizator")
-                    .setMessage("Sunteți sigur că doriți să suspendați temporar contul acestui utilizator?")
+        Log.i("user", user.toString());
+        Button btnDisableUser = view.findViewById(R.id.btnDisableUser);
+        if (user.isDisabled()) {
+            btnDisableUser.setText("Reactivați utilizatorul");
+        } else {
+            btnDisableUser.setText("Suspendați utilizatorul");
+        }
+
+        btnDisableUser.setOnClickListener(v -> {
+            boolean newStatus = !user.isDisabled();
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+            builder.setTitle(newStatus ? "Suspendare utilizator" : "Reactivare utilizator")
+                    .setMessage(newStatus
+                            ? "Sunteți sigur că doriți să suspendați temporar contul acestui utilizator?"
+                            : "Doriți să reactivați acest utilizator?")
                     .setPositiveButton("Da", (dialog, id) -> {
-                        new AdminRepository().disableUser(user.getUid(), result ->{
-                            if(result){
-                                Toast.makeText(getContext(), "Succes - utilizatorul are contul suspendat.", Toast.LENGTH_SHORT).show();
-                            }
-                            else {
-                                Toast.makeText(getContext(), "A aparut o eroare", Toast.LENGTH_SHORT).show();
+                        new AdminRepository().setUserDisabledStatus(user.getUid(), newStatus, result -> {
+                            if (result) {
+                                user.setDisabled(newStatus);
+                                btnDisableUser.setText(newStatus ? "Reactivați utilizatorul" : "Suspendați utilizatorul");
+                                Toast.makeText(getContext(),
+                                        newStatus ? "Utilizatorul a fost suspendat." : "Utilizatorul a fost reactivat.",
+                                        Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(getContext(), "A apărut o eroare", Toast.LENGTH_SHORT).show();
                             }
                         });
                     })
@@ -75,6 +90,7 @@ public class AdminUserDetailsFragment extends Fragment {
             builder.create().show();
         });
     }
+
 
     private void setUpRecyclerView(View view) {
         RecyclerView rvProblems=view.findViewById(R.id.rvProblems);

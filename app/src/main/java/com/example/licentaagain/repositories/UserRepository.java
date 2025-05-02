@@ -69,11 +69,12 @@ public class UserRepository {
                     if(task.isSuccessful()){
                         List<User> fetchedUsers = new ArrayList<>();
                         for (QueryDocumentSnapshot user : task.getResult()) {
-                            String name=user.getString("name"); //un user poate sa nu le aiba setate
+                            String name=user.getString("name"); //un user poate sa nu le aiba setate!!! -> vezi ce faci aici sa nu dea crash
                             String surname=user.getString("surname");
                             String email=user.getString("email");
                             String uid=user.getString("uid");
                             boolean isAdmin=user.getBoolean("isAdmin");
+                            boolean isDisabled=user.getBoolean("isDisabled");
                             String nameSurname=name+ " "+surname;
                             String surnameName=surname+" "+name;
                             if(name!=null && surname!=null && email!=null){
@@ -85,6 +86,8 @@ public class UserRepository {
                                 ) {
                                     if(!uid.equals(FirebaseAuth.getInstance().getCurrentUser().getUid()) && !isAdmin){
                                         User newUser = user.toObject(User.class);
+                                        newUser.setDisabled(isDisabled); //must be here -> otherwise use builder which sets isDisabled to false
+                                        newUser.setAdmin(isAdmin);
                                         fetchedUsers.add(newUser);
                                     }
 
@@ -108,6 +111,7 @@ public class UserRepository {
                     if(task.isSuccessful()){
                         for (QueryDocumentSnapshot doc : task.getResult()){
                             User user=doc.toObject(User.class);
+                            user.setDisabled(doc.getBoolean("isDisabled"));
                             callback.accept(user);
                             Log.i("userA", user.toString());
                         }
