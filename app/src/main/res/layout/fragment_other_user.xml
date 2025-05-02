@@ -114,16 +114,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvEmailSubheading" />
 
-    <TextView
-        android:id="@+id/headingProblemsReported"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvEmail"
-        android:layout_marginStart="36dp"
-        android:text="Problems reported by Ingrid Pislaru:"
-        android:layout_width="wrap_content"
-        android:layout_marginTop="20dp"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/manrope_bold"/>
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/userProblemListFragment"
@@ -131,7 +121,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/headingProblemsReported" />
+        app:layout_constraintTop_toBottomOf="@+id/tvEmail" />
 
     <!--Mai deoparte aici pot fi problems reported by user
     si ceva gen this user has signed for your x problems:  ..... -->

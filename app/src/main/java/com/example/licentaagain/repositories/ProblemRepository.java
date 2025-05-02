@@ -843,4 +843,36 @@ public class ProblemRepository {
                 });
     }
 
+    public ListenerRegistration listenToAllProblemsByUser(String uid, Consumer<List<Problem>> callback){
+        return db.collection("problems")
+                .whereEqualTo("authorUid", uid)
+                .addSnapshotListener((snapshots, e) -> {
+                    if (e != null) {
+                        Log.e("Firestore", "Listen failed.", e);
+                        return;
+                    }
+
+                    List<Problem> problems = new ArrayList<>();
+                    for (QueryDocumentSnapshot doc : snapshots) {
+                        Problem newProblem = new Problem(
+                                doc.getString("address"),
+                                doc.getString("authorUid"),
+                                doc.getString("description"),
+                                doc.getDouble("latitude"),
+                                doc.getDouble("longitude"),
+                                doc.getDouble("sector").intValue(),
+                                doc.getString("title"),
+                                doc.getString("categorieProblema"),
+                                (List<String>) doc.get("imageUrls"),
+                                StareProblema.fromString(doc.getString("stareProblema")),
+                                doc.getString("facebookGroupLink")
+                        );
+                        newProblem.setId(doc.getId());
+                        problems.add(newProblem);
+                    }
+
+                    callback.accept(problems);
+                });
+    }
+
 }

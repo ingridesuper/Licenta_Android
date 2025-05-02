@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.example.licentaagain.enums.StareProblema;
 import com.example.licentaagain.models.Problem;
+import com.example.licentaagain.models.User;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -74,6 +75,29 @@ public class AdminRepository { //de adaugat checks ca current auth e tip admin -
                     } else {
                         callback.accept(false);
                     }
+                });
+    }
+
+    public ListenerRegistration listenToAllUsers(Consumer<List<User>> callback){
+        return db.collection("users")
+                .addSnapshotListener((snapshots, e)->{
+                    if (e != null) {
+                        Log.e("Firestore", "Listen failed.", e);
+                        return;
+                    }
+                    assert snapshots!=null;
+                    List<User> users = new ArrayList<>();
+                    for (QueryDocumentSnapshot doc : snapshots) {
+                        User newUser=new User(
+                                doc.getString("uid"),
+                                doc.getString("email"),
+                                doc.getString("name"),
+                                doc.getString("surname"),
+                                doc.getDouble("sector").intValue()
+                        );
+                        users.add(newUser);
+                    }
+                    callback.accept(users);
                 });
     }
 
