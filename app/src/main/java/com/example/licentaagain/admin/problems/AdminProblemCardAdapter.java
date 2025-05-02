@@ -14,12 +14,16 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.licentaagain.HomePageActivity;
 import com.example.licentaagain.R;
 import com.example.licentaagain.admin.AdminPageActivity;
 import com.example.licentaagain.models.Problem;
+import com.example.licentaagain.problem.ProblemDetailsFragment;
 import com.example.licentaagain.repositories.ProblemRepository;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.imageview.ShapeableImageView;
+
+import org.checkerframework.checker.units.qual.A;
 
 import java.util.List;
 
@@ -43,6 +47,25 @@ public class AdminProblemCardAdapter extends RecyclerView.Adapter<AdminProblemCa
     }
 
     private void setOnProblemClickListener(ProblemViewHolder holder, Problem problem) {
+        holder.itemView.setOnClickListener(v->{
+            Context context = v.getContext();
+
+            if (context instanceof AdminPageActivity) {
+                AdminPageActivity activity = (AdminPageActivity) context;
+
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("problem", problem);
+
+                AdminProblemDetailsFragment adminProblemDetailsFragment = new AdminProblemDetailsFragment();
+                adminProblemDetailsFragment.setArguments(bundle);
+
+                activity.getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.fragment_container_view, adminProblemDetailsFragment)
+                        .commit();
+            }
+
+        });
     }
 
     private void setButtonListeners(ProblemViewHolder holder, Problem problem) {

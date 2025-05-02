@@ -8,27 +8,16 @@
 
     <SearchView
         android:id="@+id/searchView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="32dp"
+        android:layout_width="match_parent"
+        android:layout_marginStart="15dp"
         android:layout_marginEnd="15dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
         android:iconifiedByDefault="false"
         android:backgroundTint="@color/primaryPurple"
         android:queryHint="Search..."
-        app:layout_constraintEnd_toStartOf="@id/btnFilter"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
-        android:id="@+id/btnFilter"
-        style="@style/Widget.Material3.Button.IconButton.Filled.Tonal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        app:icon="@drawable/ic_filter"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/searchView"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
