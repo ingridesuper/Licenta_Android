@@ -9,6 +9,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
@@ -23,6 +25,7 @@ import android.widget.Toast;
 import com.example.licentaagain.HomePageActivity;
 import com.example.licentaagain.R;
 import com.example.licentaagain.admin.AdminPageActivity;
+import com.example.licentaagain.admin.users.AdminUserAdapter;
 import com.example.licentaagain.admin.users.AdminUserDetailsFragment;
 import com.example.licentaagain.custom_adapters.ImageAdapterProblemDetails;
 import com.example.licentaagain.models.Problem;
@@ -30,6 +33,7 @@ import com.example.licentaagain.models.User;
 import com.example.licentaagain.repositories.ProblemRepository;
 import com.example.licentaagain.repositories.ProblemSignatureRepository;
 import com.example.licentaagain.repositories.UserRepository;
+import com.example.licentaagain.view_models.SemnatariViewModel;
 import com.example.licentaagain.views.WorkaroundMapFragment;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -40,6 +44,9 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
 
+import org.checkerframework.checker.units.qual.A;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -78,11 +85,23 @@ public class AdminProblemDetailsFragment extends Fragment implements OnMapReadyC
             author = result;
             if (author != null) {
                 fillUiWithProblemData(view);
+                fillUpSemnatariRecyclerView(view);
                 subscribeButtonsToEvents();
             }
         });
 
         setUpMapFragment(view);
+    }
+
+    private void fillUpSemnatariRecyclerView(View view) {
+        RecyclerView rvSemnatari=view.findViewById(R.id.rvSemnatariList);
+        rvSemnatari.setNestedScrollingEnabled(false);
+        AdminUserAdapter adapter=new AdminUserAdapter(new ArrayList<>());
+        rvSemnatari.setLayoutManager(new LinearLayoutManager(getActivity()));
+        rvSemnatari.setAdapter(adapter);
+        SemnatariViewModel viewModel=new ViewModelProvider(requireActivity()).get(SemnatariViewModel.class);
+        viewModel.getUsers().observe(getViewLifecycleOwner(), users -> adapter.updateData(users));
+        viewModel.getSemnatariOfProblema(problem.getId());
     }
 
     private void subscribeButtonsToEvents() {
@@ -160,9 +179,7 @@ public class AdminProblemDetailsFragment extends Fragment implements OnMapReadyC
     }
 
     private void subscribeBtnCloseToEvent() {
-        btnClose.setOnClickListener(v->{
-            getChildFragmentManager().popBackStack();
-        });
+        btnClose.setOnClickListener(v -> getParentFragmentManager().popBackStack());
     }
 
     private void setUpMapFragment(View view) {

@@ -62,6 +62,7 @@ public class AdminProblemCardAdapter extends RecyclerView.Adapter<AdminProblemCa
                 activity.getSupportFragmentManager()
                         .beginTransaction()
                         .replace(R.id.fragment_container_view, adminProblemDetailsFragment)
+                        .addToBackStack(null)
                         .commit();
             }
 
