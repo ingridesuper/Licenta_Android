@@ -17,6 +17,7 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.example.licentaagain.about.AboutFragment;
 import com.example.licentaagain.account.TopProfileFragment;
 import com.example.licentaagain.auth.LoginActivity;
 import com.example.licentaagain.mainpage.MainPageFragment;
@@ -27,6 +28,8 @@ import com.google.firebase.messaging.FirebaseMessaging;
 
 import android.Manifest;
 import android.util.Log;
+
+import org.checkerframework.checker.units.qual.A;
 
 
 public class HomePageActivity extends AppCompatActivity {
@@ -124,6 +127,10 @@ public class HomePageActivity extends AppCompatActivity {
             else if(item.getItemId()==R.id.bmSearchAccount){
                 SearchUserFragment otherUserTopPageFragment=new SearchUserFragment();
                 fragmentTransaction.replace(R.id.fragment_container_view, otherUserTopPageFragment);
+            }
+            else if (item.getItemId()==R.id.bmTutorial){
+                AboutFragment aboutFragment=new AboutFragment();
+                fragmentTransaction.replace(R.id.fragment_container_view, aboutFragment);
             }
             fragmentTransaction.addToBackStack(null);
             fragmentTransaction.commit();

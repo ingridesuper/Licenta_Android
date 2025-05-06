@@ -17,9 +17,9 @@
         android:icon="@drawable/ic_add" />
 
     <item
-        android:id="@+id/bmIdeas"
+        android:id="@+id/bmTutorial"
         android:enabled="true"
-        android:icon="@drawable/ic_lightbulb"/>
+        android:icon="@drawable/ic_about"/>
 
     <item
         android:id="@+id/bmAccount"
