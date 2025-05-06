@@ -60,7 +60,7 @@ public class AdminUserAdapter extends RecyclerView.Adapter<AdminUserAdapter.User
                 activity.getSupportFragmentManager()
                         .beginTransaction()
                         .replace(R.id.fragment_container_view, adminUserDetailsFragment)
-                        .addToBackStack(null)
+                        .addToBackStack("user_details")
                         .commit();
             }
         });

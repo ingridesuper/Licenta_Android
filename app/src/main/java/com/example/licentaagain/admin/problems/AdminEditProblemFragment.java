@@ -381,14 +381,9 @@ public class AdminEditProblemFragment extends Fragment implements OnMapReadyCall
 
     }
     private void navigateBackToProblemList() {
-        FragmentManager fm = requireActivity().getSupportFragmentManager();
-        fm.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-
-        AdminProblemListFragment fragment = new AdminProblemListFragment();
-
-        fm.beginTransaction()
-                .replace(R.id.fragment_container_view, fragment)
-                .commit();
+        requireActivity()
+                .getSupportFragmentManager()
+                .popBackStack("user_details", 0);
     }
 
     private void setUpAutocompleteFragment() {
