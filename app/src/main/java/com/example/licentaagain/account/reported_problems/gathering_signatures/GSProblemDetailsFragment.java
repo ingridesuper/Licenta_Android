@@ -1,5 +1,6 @@
 package com.example.licentaagain.account.reported_problems.gathering_signatures;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -105,6 +106,11 @@ public class GSProblemDetailsFragment extends Fragment implements OnMapReadyCall
 
     private void subscribeBtnTakeActionToEvent() {
         btnTakeAction.setOnClickListener(v -> {
+            ProgressDialog loadingDialog = new ProgressDialog(getContext());
+            loadingDialog.setMessage("Se generează emailul...");
+            loadingDialog.setCancelable(false);
+            loadingDialog.show();
+
             new UserRepository().getUsersWhoSignedProblem(problem.getId(), semnatari -> {
                 DocumentReference documentReference = FirebaseFirestore.getInstance()
                         .collection("users")
@@ -134,37 +140,42 @@ public class GSProblemDetailsFragment extends Fragment implements OnMapReadyCall
                                         .append(user.getEmail()).append("\n");
                             }
 
-                            //start loading bar here!
-                            GeminiHelper geminiHelper=new GeminiHelper();
+                            GeminiHelper geminiHelper = new GeminiHelper();
                             geminiHelper.getResponse(getContext(), prompt.toString(), new GeminiHelper.ResponseCallback() {
                                 @Override
                                 public void onResponse(String response) {
-                                    //email permite atasamente existente pe local storage => le descarcam
                                     StorageHelper.downloadFiles(getContext(), problem.getImageUrls(), new StorageHelper.OnDownloadCompleteListener() {
                                         @Override
                                         public void onDownloadComplete(List<File> downloadedFiles) {
+                                            loadingDialog.dismiss();
                                             EmailHelper.sendEmailWithAttachments(
                                                     getContext(),
                                                     "Sesizare: " + problem.getTitle(),
-                                                    response, // textul răspunsului generat
+                                                    response,
                                                     downloadedFiles
                                             );
                                         }
 
                                         @Override
                                         public void onDownloadFailed(Exception e) {
+                                            loadingDialog.dismiss();
                                             Toast.makeText(getContext(), "Eroare la descărcarea imaginilor.", Toast.LENGTH_SHORT).show();
                                         }
                                     });
-
                                 }
 
                                 @Override
                                 public void onError(Throwable throwable) {
+                                    loadingDialog.dismiss();
                                     Log.e("Gemini", throwable.getMessage());
+                                    Toast.makeText(getContext(), "Eroare la generarea emailului.", Toast.LENGTH_SHORT).show();
                                 }
                             });
+                        } else {
+                            loadingDialog.dismiss();
                         }
+                    } else {
+                        loadingDialog.dismiss();
                     }
                 });
             });
