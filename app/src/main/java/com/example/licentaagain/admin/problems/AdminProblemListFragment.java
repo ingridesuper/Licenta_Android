@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.SearchView;
 
 import com.example.licentaagain.R;
 import com.google.firebase.auth.FirebaseAuth;
@@ -28,7 +29,7 @@ public class AdminProblemListFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        viewModel=new ViewModelProvider(requireActivity()).get(AdminProblemsViewModel.class);
+        viewModel = new ViewModelProvider(requireActivity()).get(AdminProblemsViewModel.class);
     }
 
     @Override
@@ -39,16 +40,37 @@ public class AdminProblemListFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        RecyclerView rvProblems=view.findViewById(R.id.rvProblems);
+
+        RecyclerView rvProblems = view.findViewById(R.id.rvProblems);
         AdminProblemCardAdapter adapter = new AdminProblemCardAdapter(getContext(), new ArrayList<>());
         rvProblems.setLayoutManager(new LinearLayoutManager(requireContext()));
         rvProblems.setAdapter(adapter);
+
         viewModel.getProblems().observe(getViewLifecycleOwner(), adapter::updateData);
 
-        String uid = FirebaseAuth.getInstance().getCurrentUser() != null ? FirebaseAuth.getInstance().getCurrentUser().getUid() : null;
+        String uid = FirebaseAuth.getInstance().getCurrentUser() != null ?
+                FirebaseAuth.getInstance().getCurrentUser().getUid() : null;
         if (uid != null) {
             viewModel.startListening();
         }
+
+        setUpSearchEvents(view);
+    }
+
+    private void setUpSearchEvents(View view) {
+        SearchView searchView = view.findViewById(R.id.searchView);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                viewModel.filterProblems(newText);
+                return true;
+            }
+        });
     }
 
     @Override
