@@ -48,12 +48,12 @@ public class LoginActivity extends AppCompatActivity {
 
 
     @Override
-    public void onStart() {
+    protected void onStart() {
         super.onStart();
+
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser != null) {
             String uid = currentUser.getUid();
-
             db.collection("users").document(uid).get()
                     .addOnSuccessListener(documentSnapshot -> {
                         boolean isAdmin = Boolean.TRUE.equals(documentSnapshot.getBoolean("isAdmin"));
@@ -61,31 +61,44 @@ public class LoginActivity extends AppCompatActivity {
 
                         if (isDisabled) {
                             mAuth.signOut();
-                            Intent intent=new Intent(getApplicationContext(), DisabledUserActivity.class);
-                            startActivity(intent);
+                            startActivity(new Intent(this, DisabledUserActivity.class));
                             finish();
                         } else if (isAdmin) {
                             goToAdminPage();
+                            finish();
                         } else if (currentUser.isEmailVerified()) {
                             goToHomePage();
+                            finish();
                         } else {
                             Toast.makeText(this, "Please verify your email before logging in.", Toast.LENGTH_LONG).show();
                             mAuth.signOut();
+                            showLoginUI();
                         }
                     })
                     .addOnFailureListener(e -> {
                         Toast.makeText(this, "Could not check user role.", Toast.LENGTH_SHORT).show();
                         mAuth.signOut();
+                        showLoginUI();
                     });
+        } else {
+            showLoginUI();
         }
     }
-
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
+
+        // Load splash while we check auth status
+        setContentView(R.layout.activity_splash);
+
+        mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
+    }
+
+    private void showLoginUI() {
         setContentView(R.layout.activity_login);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -97,17 +110,7 @@ public class LoginActivity extends AppCompatActivity {
         subscribeToEvents();
     }
 
-    private void initializeVariables(){
-        mAuth=FirebaseAuth.getInstance();
-        db= FirebaseFirestore.getInstance();
 
-        btnSignup=findViewById(R.id.btnSignup);
-        btnLogin=findViewById(R.id.btnLogin);
-        btnForgotPassword=findViewById(R.id.btnForgotPassowrd);
-        btnGoogleSignin=findViewById(R.id.btnSigninGoogle);
-        etEmail=findViewById(R.id.etEmail);
-        etPassword=findViewById(R.id.etPassword);
-    }
 
     private void subscribeToEvents(){
         btnSignup.setOnClickListener(v -> {
@@ -294,6 +297,18 @@ public class LoginActivity extends AppCompatActivity {
                         //updateUI(null);
                     }
                 });
+    }
+
+    private void initializeVariables(){
+        mAuth=FirebaseAuth.getInstance();
+        db= FirebaseFirestore.getInstance();
+
+        btnSignup=findViewById(R.id.btnSignup);
+        btnLogin=findViewById(R.id.btnLogin);
+        btnForgotPassword=findViewById(R.id.btnForgotPassowrd);
+        btnGoogleSignin=findViewById(R.id.btnSigninGoogle);
+        etEmail=findViewById(R.id.etEmail);
+        etPassword=findViewById(R.id.etPassword);
     }
 
 
