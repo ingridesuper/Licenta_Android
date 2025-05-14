@@ -589,6 +589,8 @@ public class ProblemRepository {
                 })
                 .addOnFailureListener(e -> {
                     onFailure.onFailure(e);
+                    Log.e("FirebaseStorage", "Error uploading image: " + e.getMessage());
+
                 });
     }
 

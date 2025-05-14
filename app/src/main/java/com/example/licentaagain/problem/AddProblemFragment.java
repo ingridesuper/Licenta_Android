@@ -190,7 +190,7 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
             @Override
             public void onFailure(Exception e) {
                 Log.e("Firestore", "Failed to add problem", e);
-                showToast("Error adding problem");
+                showToast("Error adding problem"); //aici intra, dar se adauga in firebase si nu in storage; dupa da crash
                 showLoadingOverlay(false);
             }
         });

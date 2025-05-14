@@ -1,165 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".about.AboutFragment"
-    android:orientation="vertical"
-    android:padding="30dp">
 
-    <LinearLayout
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    tools:context=".about.AboutFragment"
+    android:paddingBottom="120dp">
+
+        <WebView
+        android:id="@+id/webView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingBottom="150dp"
-        android:orientation="vertical">
+        />
 
-        <TextView
-            android:id="@+id/tvHeading"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/manrope_bold"
-            android:textSize="20sp"
-            android:text="Salut și bine ai venit în comunitatea Conectat la București!"
-            android:layout_marginBottom="15dp"/>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="17sp"
-            android:fontFamily="@font/manrope_bold"
-            android:textColor="@color/primaryPurple"
-            android:layout_marginBottom="15dp"
-            android:text="Cum funcționează aplicația?"/>
-
-        <TextView
-            android:id="@+id/tvHowToUseApp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/manrope_semibold"
-            android:textSize="15sp"/>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="17sp"
-            android:fontFamily="@font/manrope_bold"
-            android:textColor="@color/primaryPurple"
-            android:layout_marginBottom="10dp"
-            android:text="Tutorial Sesizări"/>
-
-        <TextView
-            android:id="@+id/tvTutorial"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/manrope_semibold"
-            android:textSize="15sp"/>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="17sp"
-            android:fontFamily="@font/manrope_bold"
-            android:textColor="@color/primaryPurple"
-            android:layout_marginBottom="10dp"
-            android:text="Unde trimiți sesizarea ta?" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/manrope_semibold"
-            android:textSize="15sp"
-            android:text="Bucureștiul are o structură administrativă complexă, cu responsabilități împărțite între primăriile de sector, Primăria Generală, ADP-uri, ALPAB, Administrația Străzilor și alte instituții. Pentru cetățeanul de rând, poate fi dificil să înțeleagă cine se ocupă de ce. De aceea, am creat această secțiune pentru a te ajuta să identifici rapid instituția potrivită căreia să îi adresezi sesizarea ta." />
-
-        <TextView
-            android:id="@+id/tvUndeTrimitiSesizare"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/manrope_semibold" />
-
-        <TextView
-            android:text="Sectorul 1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/manrope_bold"
-            android:textSize="16sp"/>
-
-        <TextView
-            android:id="@+id/tvSector1Date"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
-        <TextView
-            android:text="Sectorul 2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/manrope_bold"
-            android:textSize="16sp"/>
-
-        <TextView
-            android:id="@+id/tvSector2Date"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
-        <TextView
-            android:text="Sectorul 3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/manrope_bold"
-            android:textSize="16sp"/>
-
-        <TextView
-            android:id="@+id/tvSector3Date"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
-        <TextView
-            android:text="Sectorul 4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/manrope_bold"
-            android:textSize="16sp"/>
-
-        <TextView
-            android:id="@+id/tvSector4Date"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
-        <TextView
-            android:text="Sectorul 5"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/manrope_bold"
-            android:textSize="16sp"/>
-
-        <TextView
-            android:id="@+id/tvSector5Date"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
-        <TextView
-            android:text="Sectorul 6"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/manrope_bold"
-            android:textSize="16sp"/>
-
-        <TextView
-            android:id="@+id/tvSector6Date"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+</LinearLayout>
 
 
-        <TextView
-            android:text="PMB"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/manrope_bold"
-            android:textSize="16sp"/>
-
-        <TextView
-            android:id="@+id/tvPMBDate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
-    </LinearLayout>
-</ScrollView>

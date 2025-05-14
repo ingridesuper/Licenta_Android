@@ -83,22 +83,21 @@
                 android:paddingRight="12dp" />
 
             <com.google.android.material.button.MaterialButton
-                style="@style/Widget.Material3.Button.IconButton.Filled.Tonal"
                 android:id="@+id/btnDelete"
+                style="@style/Widget.Material3.Button.IconButton.Filled.Tonal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
+                android:paddingStart="15dp"
+                android:paddingLeft="12dp"
+                android:paddingRight="12dp"
                 android:text="Șterge"
                 android:textSize="11sp"
-                android:paddingStart="15dp"
-                android:paddingEnd="15dp"
                 app:icon="@drawable/ic_close"
-                app:iconSize="18dp"
                 app:iconPadding="8dp"
-                app:layout_constraintEnd_toStartOf="@id/btnEdit"
+                app:iconSize="18dp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                android:layout_marginEnd="12dp"
-                android:paddingLeft="12dp"
-                android:paddingRight="12dp" />
+                app:layout_constraintEnd_toStartOf="@id/btnEdit" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

@@ -40,7 +40,7 @@ public class GeminiHelper {
         String apiKey = context.getResources().getString(R.string.gemini_ai_api_key);
 
         GenerationConfig.Builder configBuilder = new GenerationConfig.Builder();
-        configBuilder.temperature = 0.9f;
+        configBuilder.temperature = 0.4f;
         configBuilder.topK = 16;
         configBuilder.topP = 0.1f;
         GenerationConfig generationConfig = configBuilder.build();
