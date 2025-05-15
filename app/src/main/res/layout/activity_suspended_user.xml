@@ -1,30 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
+    android:id="@+id/main"
     android:orientation="vertical"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="30dp"
-    tools:context=".disabled_user.DisabledSearchedUserFragment">
+    tools:context=".suspened_user.SuspendedUserActivity"
+    android:layout_margin="30dp">
 
     <TextView
         android:layout_marginTop="200dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Account Disabled"
+        android:text="@string/account_suspended"
         android:textSize="20sp"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="This account has been temporarily disabled due to the violation of our comunity guidelines."
+        android:text="@string/account_suspended_description"
         android:textSize="13sp"/>
 
     <Button
-        android:id="@+id/btnBack"
-        android:text="Back"
-        android:layout_marginTop="20dp"
+        android:id="@+id/btnExit"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="@string/exit"/>
 
 </LinearLayout>

@@ -32,7 +32,7 @@
                 android:id="@+id/tvReportedByAuthor"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Reported by: "
+                android:text="@string/reported_by"
                 android:textSize="13sp" />
 
             <TextView
@@ -49,14 +49,14 @@
             android:layout_marginTop="8dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Stare problemă: "
+            android:text="@string/stare_problem"
             android:textSize="13sp"/>
 
         <TextView
             android:id="@+id/tvNrSemnaturi"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Număr semnături: "
+            android:text="@string/number_signatures"
             android:layout_marginTop="8dp"
             android:textSize="12sp"/>
 
@@ -85,7 +85,7 @@
             android:textStyle="bold"
             android:layout_marginBottom="15dp"
             android:textSize="11sp"
-            android:text="Category: category" />
+            android:text="Categorie: categorie" />
 
         <TextView
             android:id="@+id/tvProblemAddressSector"
@@ -116,7 +116,7 @@
 
         <TextView
             android:id="@+id/tvFacebookLink"
-            android:text="Link grup Facebook: "
+            android:text="@string/link_fb"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"/>
@@ -124,7 +124,7 @@
         <TextView
             android:id="@+id/tvNrSemnatariHeading"
             android:layout_marginTop="20dp"
-            android:text="Semnatari:"
+            android:text="@string/semnatari"
             android:layout_marginBottom="15dp"
             android:fontFamily="@font/manrope_bold"
             android:layout_width="match_parent"
@@ -146,7 +146,7 @@
                 android:id="@+id/btnDelete"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Șterge"
+                android:text="@string/sterge"
                 android:textSize="11sp"
                 android:paddingStart="15dp"
                 android:paddingEnd="15dp"
@@ -164,7 +164,7 @@
                 android:id="@+id/btnEdit"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Editează"
+                android:text="@string/edit"
                 android:textSize="11sp"
                 app:icon="@drawable/ic_edit"
                 app:iconSize="18dp"
@@ -184,7 +184,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="120dp"
             android:layout_marginTop="15dp"
-            android:text="Close"/>
+            android:text="@string/close"/>
 
     </LinearLayout>
 

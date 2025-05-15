@@ -1,4 +1,4 @@
-package com.example.licentaagain.disabled_user;
+package com.example.licentaagain.suspened_user;
 
 import android.os.Bundle;
 
@@ -14,10 +14,10 @@ import android.widget.Button;
 import com.example.licentaagain.R;
 
 
-public class DisabledSearchedUserFragment extends Fragment {
+public class SuspendedSearchedUserFragment extends Fragment {
 
 
-    public DisabledSearchedUserFragment() {
+    public SuspendedSearchedUserFragment() {
         // Required empty public constructor
     }
 
@@ -28,7 +28,7 @@ public class DisabledSearchedUserFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_disabled_searched_user, container, false);
+        return inflater.inflate(R.layout.fragment_suspended_searched_user, container, false);
     }
 
     @Override

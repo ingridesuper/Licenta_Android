@@ -14,7 +14,7 @@
         android:id="@+id/tvSortHeading"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Sort by"
+        android:text="@string/sort_by"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         android:fontFamily="@font/manrope_bold"
@@ -35,20 +35,20 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="20dp"
-            android:text="Newest" />
+            android:text="@string/newest" />
 
         <RadioButton
             android:id="@+id/rbOldest"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Oldest" />
+            android:text="@string/oldest" />
 
     </RadioGroup>
 
     <TextView
         android:layout_marginTop="18dp"
         android:id="@+id/tvFilterHeading"
-        android:text="Filter by"
+        android:text="@string/filter_by"
         android:fontFamily="@font/manrope_bold"
         android:textSize="21dp"
         android:layout_width="match_parent"
@@ -63,7 +63,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@+id/tvFilterHeading"
         app:layout_constraintStart_toStartOf="parent"
-        android:text="Sector"
+        android:text="@string/sector"
         android:fontFamily="@font/manrope_bold"
         android:textSize="17dp"
         android:layout_marginTop="8dp"/>
@@ -81,7 +81,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@+id/chipGroupSector"
         app:layout_constraintStart_toStartOf="parent"
-        android:text="Categorie"
+        android:text="@string/categorie"
         android:fontFamily="@font/manrope_bold"
         android:textSize="17dp"
         android:layout_marginTop="8dp"/>
@@ -119,7 +119,7 @@
             android:textSize="15dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/chipGroupCategory"
-            android:text="Clear"/>
+            android:text="@string/clear"/>
 
         <Button
             style="@style/Widget.Material3.Button"
@@ -130,7 +130,7 @@
             app:layout_constraintTop_toBottomOf="@+id/chipGroupCategory"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Apply"/>
+            android:text="@string/apply"/>
 
     </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>

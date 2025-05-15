@@ -1,20 +1,19 @@
 <resources>
-    <string name="default_web_client_id">739276874828-g6c7cvvmcgm8a7jn9oek57ejcg6tigem.apps.googleusercontent.com</string>
-    <string name="gemini_ai_api_key">AIzaSyD41CAJ94hOAx7Aato-gyiSJaCdfWn4Z60</string>
-    <string name="algolia_search_api_key">9a2c1138d3f385ee3c93b69082f9f487</string>
-    <string name="algolia_application_id">QKURZB5XNA</string>
+    <string name="default_web_client_id" translatable="false">739276874828-g6c7cvvmcgm8a7jn9oek57ejcg6tigem.apps.googleusercontent.com</string>
+    <string name="gemini_ai_api_key" translatable="false">AIzaSyD41CAJ94hOAx7Aato-gyiSJaCdfWn4Z60</string>
+    <string name="algolia_search_api_key" translatable="false">9a2c1138d3f385ee3c93b69082f9f487</string>
+    <string name="algolia_application_id" translatable="false">QKURZB5XNA</string>
 
-    <string name="app_name">Conectat la București</string>
+    <string name="app_name" translatable="false">Conectat la București</string>
 
-    <string name="name">Name</string>
-    <string name="surname">Surname</string>
+    <string name="surname">Nume</string>
     <string name="email">Email</string>
-    <string name="password">Password</string>
-    <string name="title">Title</string>
-    <string name="description">Description</string>
+    <string name="password">Parolă</string>
+    <string name="title">Titlu</string>
+    <string name="description">Descriere</string>
     <string name="contact">Contact</string>
     <string name="sector">Sector</string>
-    <string name="address">Address</string>
+    <string name="address">Adresă</string>
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
@@ -22,24 +21,24 @@
     <string name="cancel">Cancel</string>
 
     <string name="log_out">Log out</string>
-    <string name="log_in">Log in</string>
-    <string name="sign_up">Sign up</string>
-    <string name="sign_in_using_google">Sign in using Google</string>
-    <string name="sign_up_with_google">Sign up with Google</string>
+    <string name="log_in">Login</string>
+    <string name="sign_up">Signup</string>
+    <string name="sign_in_using_google">Signin cu Google</string>
+    <string name="sign_up_with_google">Signup cu Google</string>
 
     <string name="main_page">This is the main page!</string>
-    <string name="add_problem">Add a problem!</string>
-    <string name="your_profile">Your profile</string>
-    <string name="edit_account_title">Editing your account</string>
-    <string name="edit_account">Edit account</string>
+    <string name="add_problem">Adaugă o problemă!</string>
+    <string name="your_profile">Profilul tău</string>
+    <string name="edit_account_title">Editare cont</string>
+    <string name="edit_account">Editează cont</string>
     <string name="search_place">Caută...</string>
-    <string name="edit_problem">Editing problem</string>
+    <string name="edit_problem">Editare problemă</string>
 
-    <string name="required_title_error_message">Title is required</string>
-    <string name="required_description_error_message">Description is required</string>
-    <string name="required_sector_error_message">Please select a valid sector</string>
-    <string name="required_category_error_message">Please select a valid category</string>
-    <string name="required_location_error_message">Please select a location</string>
+    <string name="required_title_error_message">Titlul este obligatoriu</string>
+    <string name="required_description_error_message">Descrierea este obligatorie</string>
+    <string name="required_sector_error_message">Vă rugăm să selectați un sector</string>
+    <string name="required_category_error_message">Vă rugăm să selectați o categorie</string>
+    <string name="required_location_error_message">Vă rugăm să selectați o locație</string>
 
     <string name="sign_problem">Semnează</string>
     <string name="signed">Semnat</string>
@@ -55,6 +54,37 @@
     </string>
 
 
-    <string name="notification_channel_id">superSecretChannelId</string>
+    <string name="notification_channel_id" translatable="false">superSecretChannelId</string>
+    <string name="name">Prenume</string>
+    <string name="forgot_password">Ți-ai uitat parola?</string>
+    <string name="sector_domiciliu">În ce sector aveți domiciliul?</string>
+    <string name="account_suspended">Cont suspendat temporar</string>
+    <string name="account_suspended_description">Ne pare rău, contul dumneavoastră a fost dezactivat temporar din cauza încălcării regulilor comunității noastre. \n\n Pentru mai multe informații, puteți trimite un email la adresa conectatlabucuresti.team@gmail.com.</string>
+    <string name="exit">Exit</string>
+    <string name="edit">Editează</string>
+    <string name="sterge">Șterge</string>
+    <string name="sort_by">Sortează în funcție de:</string>
+    <string name="newest">Cel mai nou</string>
+    <string name="oldest">Cel mai vechi</string>
+    <string name="filter_by">Filtrează după:</string>
+    <string name="categorie">Categorie</string>
+    <string name="clear">Resetează</string>
+    <string name="apply">Aplică</string>
+    <string name="in_what_sector_is_problem">În ce sector se află problema?</string>
+    <string name="select_category">Selectați o categorie:</string>
+    <string name="do_you_want_fb_group">Doriți să asociați și un grup de organizare acestei probleme? \n Puteți adăuga unul și mai târziu.</string>
+    <string name="link_fb">Link grup inițiativă Facebook: </string>
+    <string name="take_picture">Fă o poză</string>
+    <string name="add_pictures">Încarcă poze</string>
+    <string name="stare_problem">Stare problemă:</string>
+    <string name="save_edits">Salvează</string>
+    <string name="delete_problem">Șterge problema</string>
+    <string name="reported_by">Raportat de către:</string>
+    <string name="number_signatures">Număr de semnături:</string>
+    <string name="semnatari">Semnatari:</string>
+    <string name="close">Închide</string>
+    <string name="search_by_title_description">Caută după titlu și descriere...</string>
+    <string name="sesizari">Sesizări</string>
+    <string name="problems_reported_by_user">Probleme raportate de către acest utilizator:</string>
 
 </resources>

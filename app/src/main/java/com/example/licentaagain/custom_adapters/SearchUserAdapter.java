@@ -12,16 +12,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.licentaagain.HomePageActivity;
 import com.example.licentaagain.R;
-import com.example.licentaagain.disabled_user.DisabledSearchedUserFragment;
-import com.example.licentaagain.models.Problem;
+import com.example.licentaagain.suspened_user.SuspendedSearchedUserFragment;
 import com.example.licentaagain.models.User;
-import com.example.licentaagain.problem.ProblemDetailsFragment;
-import com.example.licentaagain.repositories.UserRepository;
 import com.example.licentaagain.user_page.OtherUserFragment;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class SearchUserAdapter extends RecyclerView.Adapter<SearchUserAdapter.UserViewHolder> {
 
@@ -55,7 +50,7 @@ public class SearchUserAdapter extends RecyclerView.Adapter<SearchUserAdapter.Us
             if (context instanceof HomePageActivity) {
                 HomePageActivity activity = (HomePageActivity) context;
                 if(user.isDisabled()){
-                    DisabledSearchedUserFragment disabledSearchedUserFragment=new DisabledSearchedUserFragment();
+                    SuspendedSearchedUserFragment disabledSearchedUserFragment=new SuspendedSearchedUserFragment();
                     activity.getSupportFragmentManager()
                             .beginTransaction()
                             .replace(R.id.fragment_container_view, disabledSearchedUserFragment)

@@ -27,7 +27,7 @@ import androidx.credentials.exceptions.GetCredentialException;
 import com.example.licentaagain.HomePageActivity;
 import com.example.licentaagain.R;
 import com.example.licentaagain.admin.AdminPageActivity;
-import com.example.licentaagain.disabled_user.DisabledUserActivity;
+import com.example.licentaagain.suspened_user.SuspendedUserActivity;
 import com.example.licentaagain.models.User;
 import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption;
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential;
@@ -61,7 +61,7 @@ public class LoginActivity extends AppCompatActivity {
 
                         if (isDisabled) {
                             mAuth.signOut();
-                            startActivity(new Intent(this, DisabledUserActivity.class));
+                            startActivity(new Intent(this, SuspendedUserActivity.class));
                             finish();
                         } else if (isAdmin) {
                             goToAdminPage();
@@ -144,7 +144,7 @@ public class LoginActivity extends AppCompatActivity {
 
                                         if (isDisabled) {
                                             mAuth.signOut();
-                                            Intent intent=new Intent(getApplicationContext(), DisabledUserActivity.class);
+                                            Intent intent=new Intent(getApplicationContext(), SuspendedUserActivity.class);
                                             startActivity(intent);
                                             finish();
                                         } else if (isAdmin) {
@@ -278,7 +278,7 @@ public class LoginActivity extends AppCompatActivity {
 
                                     if (isDisabled) {
                                         mAuth.signOut();
-                                        Intent intent=new Intent(getApplicationContext(), DisabledUserActivity.class);
+                                        Intent intent=new Intent(getApplicationContext(), SuspendedUserActivity.class);
                                         startActivity(intent);
                                         finish();
                                     } else  {

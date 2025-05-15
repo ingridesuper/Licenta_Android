@@ -110,13 +110,11 @@ public class AdminUserDetailsFragment extends Fragment {
         TextView tvName=view.findViewById(R.id.tvName);
         TextView tvEmail=view.findViewById(R.id.tvEmail);
         TextView tvSector=view.findViewById(R.id.tvSector);
-        TextView headingProblemsReported=view.findViewById(R.id.headingProblemsReported);
         TextView tvNrProblemeRaportate=view.findViewById(R.id.tvNrProblemeRaportate);
 
         tvName.setText(user.getName()+" "+user.getSurname());
         tvEmail.setText(user.getEmail());
         tvSector.setText("Sectorul "+user.getSector());
-        headingProblemsReported.setText("Problems reported by "+user.getName()+" "+user.getSurname()+":");
 
         viewModel.getProblemsCount().observe(getViewLifecycleOwner(), count -> {
             if (count != null) {

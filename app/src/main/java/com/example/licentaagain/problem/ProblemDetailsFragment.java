@@ -11,7 +11,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.viewpager2.widget.ViewPager2;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -26,10 +25,9 @@ import com.example.licentaagain.HomePageActivity;
 import com.example.licentaagain.R;
 import com.example.licentaagain.account.TopProfileFragment;
 import com.example.licentaagain.custom_adapters.ImageAdapterProblemDetails;
-import com.example.licentaagain.disabled_user.DisabledSearchedUserFragment;
+import com.example.licentaagain.suspened_user.SuspendedSearchedUserFragment;
 import com.example.licentaagain.mainpage.MainPageFragment;
 import com.example.licentaagain.models.Problem;
-import com.example.licentaagain.models.ProblemSignature;
 import com.example.licentaagain.models.User;
 import com.example.licentaagain.repositories.ProblemSignatureRepository;
 import com.example.licentaagain.repositories.UserRepository;
@@ -40,12 +38,9 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.List;
 import java.util.Locale;
@@ -144,7 +139,7 @@ public class ProblemDetailsFragment extends Fragment implements OnMapReadyCallba
             HomePageActivity activity = (HomePageActivity) context;
 
             if(author.isDisabled()){
-                    DisabledSearchedUserFragment disabledSearchedUserFragment=new DisabledSearchedUserFragment();
+                    SuspendedSearchedUserFragment disabledSearchedUserFragment=new SuspendedSearchedUserFragment();
                     getActivity().getSupportFragmentManager()
                             .beginTransaction()
                             .replace(R.id.fragment_container_view, disabledSearchedUserFragment)

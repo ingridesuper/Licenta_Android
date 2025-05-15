@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
-    android:orientation="vertical"
     android:layout_width="match_parent"
+    android:orientation="vertical"
     android:layout_height="match_parent"
-    tools:context=".disabled_user.DisabledUserActivity"
-    android:layout_margin="30dp">
+    android:layout_margin="30dp"
+    tools:context=".suspened_user.SuspendedSearchedUserFragment">
 
     <TextView
         android:layout_marginTop="200dp"
@@ -19,14 +17,14 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Sorry, your account has been temporarily disabled due to the violation of our comunity guidelines."
+        android:text="This account has been temporarily disabled due to the violation of our comunity guidelines."
         android:textSize="13sp"/>
 
     <Button
-        android:id="@+id/btnExit"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:id="@+id/btnBack"
+        android:text="Back"
         android:layout_marginTop="20dp"
-        android:text="Exit"/>
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
 
 </LinearLayout>
