@@ -16,5 +16,10 @@ public enum Sector {
     public int getNumar() {
         return this.numar;
     }
+    @Override
+    public String toString() {
+        return "Sectorul " + numar;
+    }
+
 
 }

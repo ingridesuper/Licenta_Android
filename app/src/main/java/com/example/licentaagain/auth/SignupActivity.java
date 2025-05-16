@@ -89,7 +89,7 @@ public class SignupActivity extends AppCompatActivity {
         spnSector=findViewById(R.id.spnSector);
     }
     private void populateSpinner(){
-        ArrayAdapter<Sector> arrayAdapterSpinner=new ArrayAdapter<Sector>(this, android.R.layout.simple_spinner_item, Sector.values());
+        ArrayAdapter<Sector> arrayAdapterSpinner=new ArrayAdapter<Sector>(this, R.layout.spinner_item, Sector.values());
         spnSector.setAdapter(arrayAdapterSpinner);
     }
     private void subscribeToEvents(){
