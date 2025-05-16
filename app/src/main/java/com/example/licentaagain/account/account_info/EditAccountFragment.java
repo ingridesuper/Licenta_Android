@@ -67,7 +67,7 @@ public class EditAccountFragment extends Fragment {
     }
 
     private void populateSpinner(){
-        ArrayAdapter<Sector> arrayAdapterSpinner=new ArrayAdapter<Sector>(requireActivity(), android.R.layout.simple_spinner_item, Sector.values());
+        ArrayAdapter<Sector> arrayAdapterSpinner=new ArrayAdapter<Sector>(requireActivity(), R.layout.spinner_item, Sector.values());
         spnSector.setAdapter(arrayAdapterSpinner);
     }
 

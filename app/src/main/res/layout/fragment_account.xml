@@ -67,25 +67,31 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvEmailSubheading" />
 
-    <Button
-        android:id="@+id/btnLogout"
+    <LinearLayout
+        android:id="@+id/linearLayoutButtons"
         android:layout_width="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="20dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="68dp"
         android:layout_marginStart="36dp"
-        android:text="@string/log_out"
-        app:layout_constraintHorizontal_bias="0.114"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvEmail" />
+        app:layout_constraintTop_toBottomOf="@+id/tvEmail"
+        app:layout_constraintStart_toStartOf="parent">
 
-    <Button
-        android:id="@+id/btnEditAccount"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="36dp"
-        android:layout_marginTop="10dp"
-        android:text="@string/edit_account"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnLogout" />
+        <Button
+            android:id="@+id/btnEditAccount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/edit_account"/>
+
+        <Button
+            style="@style/Widget.Material3.Button.ElevatedButton"
+            android:id="@+id/btnLogout"
+            android:layout_marginTop="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/log_out" />
+
+    </LinearLayout>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
