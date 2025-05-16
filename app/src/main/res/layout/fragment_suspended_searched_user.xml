@@ -11,18 +11,18 @@
         android:layout_marginTop="200dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Account Disabled"
+        android:text="@string/account_suspended"
         android:textSize="20sp"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="This account has been temporarily disabled due to the violation of our comunity guidelines."
+        android:text="@string/other_suspended_account"
         android:textSize="13sp"/>
 
     <Button
         android:id="@+id/btnBack"
-        android:text="Back"
+        android:text="@string/back"
         android:layout_marginTop="20dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>

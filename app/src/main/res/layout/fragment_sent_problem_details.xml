@@ -44,7 +44,7 @@
             android:id="@+id/tvStare"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Stare curenta: "
+            android:text="@string/stare_curenta"
             android:layout_marginBottom="8dp"
             android:textSize="12sp"/>
 
@@ -54,8 +54,7 @@
             android:layout_height="wrap_content"
             android:textStyle="bold"
             android:layout_marginBottom="15dp"
-            android:textSize="11sp"
-            android:text="Category: category" />
+            android:textSize="11sp" />
 
         <TextView
             android:id="@+id/tvProblemAddressSector"
@@ -63,8 +62,7 @@
             android:layout_marginBottom="10dp"
             android:textStyle="bold"
             android:textSize="11sp"
-            android:layout_height="wrap_content"
-            android:text="Adresa, Sector sector" />
+            android:layout_height="wrap_content" />
 
         <fragment
             android:id="@+id/map"
@@ -76,7 +74,7 @@
             android:id="@+id/btnOpenInGoogleMaps"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Open in Google Maps"
+            android:text="@string/open_in_google_maps"
             android:textColor="@color/black"
             android:textSize="11sp"
             app:iconSize="14dp"
@@ -88,12 +86,12 @@
             android:id="@+id/tvFacebookLink"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Grup de inițiativă Facebook: "
+            android:text="@string/link_fb"
             android:layout_marginBottom="20dp"/>
 
         <TextView
             android:id="@+id/tvNrSemnatariHeading"
-            android:text="Semnatari:"
+            android:text="@string/semnatari"
             android:layout_marginBottom="15dp"
             android:fontFamily="@font/manrope_bold"
             android:layout_width="match_parent"
@@ -116,7 +114,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Close"/>
+                android:text="@string/close"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

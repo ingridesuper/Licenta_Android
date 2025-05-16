@@ -32,7 +32,7 @@
                 android:id="@+id/tvReportedByAuthor"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Reported by: "
+                android:text="@string/reported_by"
                 android:textSize="13sp" />
 
             <TextView
@@ -49,14 +49,14 @@
             android:layout_marginTop="8dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Stare problemă: "
+            android:text="@string/stare_problem"
             android:textSize="13sp"/>
 
         <TextView
             android:id="@+id/tvNrSemnaturi"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Număr semnături: "
+            android:text="@string/number_signatures"
             android:layout_marginTop="8dp"
             android:textSize="12sp"/>
 
@@ -84,8 +84,7 @@
             android:layout_height="wrap_content"
             android:textStyle="bold"
             android:layout_marginBottom="15dp"
-            android:textSize="11sp"
-            android:text="Category: category" />
+            android:textSize="11sp"/>
 
         <TextView
             android:id="@+id/tvProblemAddressSector"
@@ -93,8 +92,7 @@
             android:layout_marginBottom="10dp"
             android:textStyle="bold"
             android:textSize="11sp"
-            android:layout_height="wrap_content"
-            android:text="Adresa, Sector sector" />
+            android:layout_height="wrap_content" />
 
         <fragment
             android:id="@+id/map"
@@ -106,7 +104,7 @@
             android:id="@+id/btnOpenInGoogleMaps"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Open in Google Maps"
+            android:text="@string/open_in_google_maps"
             android:textColor="@color/black"
             android:textSize="11sp"
             app:iconSize="14dp"
@@ -124,7 +122,7 @@
             android:textSize="13sp"
             app:iconPadding="5dp"
             app:iconTint="#0866FF"
-            android:text="Join grup de inițiativă"/>
+            android:text="@string/join_grup_de_ini_iativ"/>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -138,7 +136,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Close"/>
+                android:text="@string/close"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

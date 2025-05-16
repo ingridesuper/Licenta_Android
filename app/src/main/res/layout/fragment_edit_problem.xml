@@ -70,7 +70,7 @@
                 android:layout_width="300dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
-                android:hint="Link grup inițiativă Facebook"
+                android:hint="@string/link_fb"
                 app:endIconMode="clear_text"
                 app:errorEnabled="true"
                 app:cursorColor="@color/primaryPurple">
@@ -83,7 +83,7 @@
 
 
             <TextView
-                android:text="În ce sector se află problema?"
+                android:text="@string/in_what_sector_is_problem"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="20dp"
                 android:layout_width="wrap_content"
@@ -118,7 +118,7 @@
                 android:layout_height="400dp" />
 
             <TextView
-                android:text="Selectați o categorie:"
+                android:text="@string/select_category"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="30dp"
                 android:layout_width="wrap_content"
@@ -145,7 +145,7 @@
                     android:id="@+id/btnTakePhoto"
                     style="@style/Widget.Material3.Button.ElevatedButton"
                     app:icon="@drawable/ic_add_photo"
-                    android:text="Take picture"
+                    android:text="@string/take_picture"
                     android:layout_marginEnd="20dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
@@ -155,7 +155,7 @@
                     android:id="@+id/btnAddPictures"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Add pictures"
+                    android:text="@string/add_pictures"
                     app:icon="@drawable/ic_photo_library" />
 
 
@@ -184,7 +184,7 @@
                     style="@style/Widget.Material3.Button.TextButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Cancel"
+                    android:text="@string/cancel"
                     android:layout_marginEnd="20dp"
                     android:layout_gravity="start"/>
 
@@ -192,7 +192,7 @@
                     android:id="@+id/btnSaveEdits"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Save edits"/>
+                    android:text="@string/save"/>
 
             </LinearLayout>
 
@@ -201,7 +201,7 @@
                 style="@style/Widget.Material3.Button.TonalButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Delete problem"
+                android:text="@string/delete_problem"
                 android:layout_marginBottom="50dp"
                 android:layout_gravity="center" />
 

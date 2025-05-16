@@ -14,7 +14,7 @@
 
         <TextView
             android:id="@+id/tvHeadingGatheringSignatures"
-            android:text="Problems gathering signatures:"
+            android:text="@string/problems_gathering_signatures"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             android:layout_marginStart="20dp"
@@ -34,7 +34,7 @@
 
         <TextView
             android:id="@+id/tvHeadingProblemsSent"
-            android:text="Problems sent:"
+            android:text="@string/problems_sent_to_authorities"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             android:layout_marginStart="20dp"
@@ -54,7 +54,7 @@
 
         <TextView
             android:id="@+id/tvHeadingSolvedProblems"
-            android:text="Problems solved:"
+            android:text="@string/problems_solved"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             android:layout_marginStart="20dp"

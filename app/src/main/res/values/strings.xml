@@ -73,10 +73,10 @@
     <string name="in_what_sector_is_problem">În ce sector se află problema?</string>
     <string name="select_category">Selectați o categorie:</string>
     <string name="do_you_want_fb_group">Doriți să asociați și un grup de organizare acestei probleme? \n Puteți adăuga unul și mai târziu.</string>
-    <string name="link_fb">Link grup inițiativă Facebook: </string>
+    <string name="link_fb">Link grup de inițiativă Facebook</string>
     <string name="take_picture">Fă o poză</string>
     <string name="add_pictures">Încarcă poze</string>
-    <string name="stare_problem">Stare problemă:</string>
+    <string name="stare_problem">Status problemă:</string>
     <string name="save_edits">Salvează</string>
     <string name="delete_problem">Șterge problema</string>
     <string name="reported_by">Raportat de către:</string>
@@ -86,5 +86,19 @@
     <string name="search_by_title_description">Caută după titlu și descriere...</string>
     <string name="sesizari">Sesizări</string>
     <string name="problems_reported_by_user">Probleme raportate de către acest utilizator:</string>
+    <string name="search_user_by_name_or_email">Caută un nume sau un email...</string>
+    <string name="problems_gathering_signatures">Problems în curs de strângere de semnături:</string>
+    <string name="problems_sent_to_authorities">Probleme trimise către autorități:</string>
+    <string name="open_in_google_maps">Deschide în Google Maps</string>
+    <string name="join_grup_de_ini_iativ">Alătură-te grupului de inițiativă</string>
+    <string name="problems_solved">Probleme soluționate:</string>
+    <string name="stare_curenta">Status curent:</string>
+    <string name="back">Înapoi</string>
+    <string name="other_suspended_account">Activitatea acestui cont a fost suspendată temporar din cauza încălcării regulamentului acestei comunități.</string>
+    <string name="your_reports">Sesizările tale</string>
+    <string name="solved">Rezolvate</string>
+    <string name="your_signatures">Semnături</string>
+    <string name="account">Cont</string>
+    <string name="update_stare">Schimbă status</string>
 
 </resources>

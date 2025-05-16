@@ -93,7 +93,7 @@
             android:textSize="12sp"
             style="@style/Widget.Material3.Button.TextButton.Icon"
             android:layout_width="wrap_content"
-            android:text="Your reports"
+            android:text="@string/your_reports"
             android:layout_height="wrap_content"
             app:iconTint="@color/darkGray"
             android:textColor="@color/darkGray"
@@ -106,7 +106,7 @@
             android:textSize="12sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Solved"
+            android:text="@string/solved"
             app:iconTint="@color/darkGray"
             android:textColor="@color/darkGray"
             app:icon="@drawable/ic_solved_problem_check" />
@@ -118,7 +118,7 @@
             style="@style/Widget.Material3.Button.TextButton.Icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Your signatures"
+            android:text="@string/your_signatures"
             app:iconTint="@color/darkGray"
             android:textColor="@color/darkGray"
             app:icon="@drawable/ic_sign" />
@@ -131,7 +131,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:iconTint="@color/darkGray"
-            android:text="Account"
+            android:text="@string/account"
             android:textColor="@color/darkGray"
             app:icon="@drawable/ic_settings" />
 
