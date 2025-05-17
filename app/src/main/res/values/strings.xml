@@ -100,5 +100,6 @@
     <string name="your_signatures">Semnături</string>
     <string name="account">Cont</string>
     <string name="update_stare">Schimbă status</string>
+    <string name="delete_account">Șterge cont</string>
 
 </resources>

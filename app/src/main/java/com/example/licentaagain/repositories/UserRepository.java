@@ -9,11 +9,16 @@ import com.example.licentaagain.models.User;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.WriteBatch;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.ListResult;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -214,6 +219,79 @@ public class UserRepository {
                     Log.e("Firestore", "Failed to fetch problem signatures", e);
                     callback.accept(new ArrayList<>());
                 });
+    }
+
+    //write batch - mecanism care îți permite să faci mai multe operații de scriere (create, update, delete) într-un singur pas atomic.
+    // Asta înseamnă ca dacă una eșuează, nicio operație nu este aplicată!!
+
+    //stergere semnaturi, probleme, poze probleme, user
+    public void deleteUser(String uid, Consumer<Boolean> callback) {
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        CollectionReference problemsRef = db.collection("problems");
+
+        Task<QuerySnapshot> problemsQuery = problemsRef.whereEqualTo("authorUid", uid).get();
+
+        problemsQuery.continueWithTask(task -> {
+            List<Task<Void>> deleteImageTasks = new ArrayList<>();
+            WriteBatch batch = db.batch();
+
+            for (QueryDocumentSnapshot problemDoc : task.getResult()) {
+                String problemId = problemDoc.getId();
+
+                StorageReference imagesRef = storage.getReference().child("problems/" + problemId + "/images/");
+                Task<ListResult> listTask = imagesRef.listAll();
+                Task<Void> deleteImagesTask = listTask.continueWithTask(listResultTask -> {
+                    List<StorageReference> imageRefs = listResultTask.getResult().getItems();
+                    List<Task<Void>> deletes = new ArrayList<>();
+                    for (StorageReference imgRef : imageRefs) {
+                        deletes.add(imgRef.delete());
+                    }
+                    return Tasks.whenAll(deletes);
+                });
+                deleteImageTasks.add(deleteImagesTask);
+
+                batch.delete(problemDoc.getReference());
+            }
+
+            return Tasks.whenAll(deleteImageTasks).continueWithTask(t -> batch.commit());
+        }).continueWithTask(task -> db.collection("problem_signatures")
+                .whereEqualTo("userId", uid)
+                .get()
+                .continueWithTask(signaturesTask -> {
+                    WriteBatch batch = db.batch();
+                    for (QueryDocumentSnapshot doc : signaturesTask.getResult()) {
+                        batch.delete(doc.getReference());
+                    }
+                    return batch.commit();
+                })).continueWithTask(task -> db.collection("users")
+                .whereEqualTo("uid", uid)
+                .get()
+                .continueWithTask(usersTask -> {
+                    WriteBatch batch = db.batch();
+                    for (QueryDocumentSnapshot doc : usersTask.getResult()) {
+                        batch.delete(doc.getReference());
+                    }
+                    return batch.commit();
+                })).addOnSuccessListener(unused -> {
+            if (currentUser != null && currentUser.getUid().equals(uid)) {
+                currentUser.delete()
+                        .addOnSuccessListener(aVoid -> {
+                            Log.d("Auth", "User deleted from Firebase Auth");
+                            callback.accept(true);
+                        })
+                        .addOnFailureListener(e -> {
+                            Log.e("Auth", "Eroare la ștergerea userului din Firebase Auth", e);
+                            callback.accept(false);
+                        });
+            } else {
+                Log.w("Auth", "Nu s-a șters contul din Firebase Auth (necesită Admin SDK)");
+                callback.accept(true);
+            }
+        }).addOnFailureListener(e -> {
+            Log.e("Firestore", "Eroare la ștergerea userului și datelor asociate", e);
+            callback.accept(false);
+        });
     }
 
 
