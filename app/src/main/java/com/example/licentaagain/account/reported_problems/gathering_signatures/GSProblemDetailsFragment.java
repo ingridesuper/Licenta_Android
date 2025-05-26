@@ -26,8 +26,10 @@ import com.example.licentaagain.R;
 import com.example.licentaagain.account.TopProfileFragment;
 import com.example.licentaagain.custom_adapters.ImageAdapterProblemDetails;
 import com.example.licentaagain.custom_adapters.SearchUserAdapter;
+import com.example.licentaagain.models.DateContact;
 import com.example.licentaagain.models.Problem;
 import com.example.licentaagain.models.User;
+import com.example.licentaagain.repositories.ContactRepository;
 import com.example.licentaagain.repositories.ProblemSignatureRepository;
 import com.example.licentaagain.repositories.UserRepository;
 import com.example.licentaagain.utils.EmailHelper;
@@ -60,7 +62,6 @@ public class GSProblemDetailsFragment extends Fragment implements OnMapReadyCall
     private MaterialButton btnTakeAction;
     private SemnatariViewModel viewModel;
     private SearchUserAdapter adapter;
-
 
 
     @Override
@@ -132,7 +133,7 @@ public class GSProblemDetailsFragment extends Fragment implements OnMapReadyCall
                             prompt.append("Descriere: ").append(problem.getDescription()).append("\n");
                             prompt.append("Adresa: ").append(problem.getAddress()).append("\n\n");
                             prompt.append("Persoana cere un număr de înregistrare și vrea să primească răspuns la adresa ").append(userEmail).append(".\n");
-                            prompt.append("Include și o listă de susținători cu nume și email.\n\n");
+                            prompt.append("Include și lista următoare de semnatari, cu nume și email:\n\n");
 
                             for (User user : semnatari) {
                                 prompt.append("- ").append(user.getName()).append(" ")
@@ -140,37 +141,65 @@ public class GSProblemDetailsFragment extends Fragment implements OnMapReadyCall
                                         .append(user.getEmail()).append("\n");
                             }
 
-                            GeminiHelper geminiHelper = new GeminiHelper();
-                            geminiHelper.getResponse(getContext(), prompt.toString(), new GeminiHelper.ResponseCallback() {
-                                @Override
-                                public void onResponse(String response) {
-                                    StorageHelper.downloadFiles(getContext(), problem.getImageUrls(), new StorageHelper.OnDownloadCompleteListener() {
-                                        @Override
-                                        public void onDownloadComplete(List<File> downloadedFiles) {
-                                            loadingDialog.dismiss();
-                                            EmailHelper.sendEmailWithAttachments(
-                                                    getContext(),
-                                                    "Sesizare: " + problem.getTitle(),
-                                                    response,
-                                                    downloadedFiles
-                                            );
-                                        }
+                            new ContactRepository().getAiDestinationPrompt(
+                                    aiPrompt -> {
+                                        prompt.append("\n").append("Pentru adresele de destinatie ale emailului, ia în considerare și următoarele informații:\n");
+                                        prompt.append(aiPrompt).append("\n");
+                                        prompt.append("Și faptul că adresele de contact sunt (sugerează și una sau ma multe dintre ele):\n");
 
-                                        @Override
-                                        public void onDownloadFailed(Exception e) {
-                                            loadingDialog.dismiss();
-                                            Toast.makeText(getContext(), "Eroare la descărcarea imaginilor.", Toast.LENGTH_SHORT).show();
-                                        }
-                                    });
-                                }
+                                        new ContactRepository().getDateContact(
+                                                contactList -> {
+                                                    for (DateContact contact : contactList) {
+                                                        if(contact.getEmail()!=null){
+                                                            prompt.append("- ").append(contact.getInstitutie() != null ? contact.getInstitutie() : "")
+                                                                    .append(" | ").append(contact.getEmail() != null ? contact.getEmail() : "")
+                                                                    .append("\n");
+                                                        }
+                                                    }
 
-                                @Override
-                                public void onError(Throwable throwable) {
-                                    loadingDialog.dismiss();
-                                    Log.e("Gemini", throwable.getMessage());
-                                    Toast.makeText(getContext(), "Eroare la generarea emailului.", Toast.LENGTH_SHORT).show();
-                                }
-                            });
+                                                    GeminiHelper geminiHelper = new GeminiHelper();
+                                                    geminiHelper.getResponse(getContext(), prompt.toString(), new GeminiHelper.ResponseCallback() {
+                                                        @Override
+                                                        public void onResponse(String response) {
+                                                            StorageHelper.downloadFiles(getContext(), problem.getImageUrls(), new StorageHelper.OnDownloadCompleteListener() {
+                                                                @Override
+                                                                public void onDownloadComplete(List<File> downloadedFiles) {
+                                                                    loadingDialog.dismiss();
+                                                                    EmailHelper.sendEmailWithAttachments(
+                                                                            getContext(),
+                                                                            "Sesizare: " + problem.getTitle(),
+                                                                            response,
+                                                                            downloadedFiles
+                                                                    );
+                                                                }
+
+                                                                @Override
+                                                                public void onDownloadFailed(Exception e) {
+                                                                    loadingDialog.dismiss();
+                                                                    Toast.makeText(getContext(), "Eroare la descărcarea imaginilor.", Toast.LENGTH_SHORT).show();
+                                                                }
+                                                            });
+                                                        }
+
+                                                        @Override
+                                                        public void onError(Throwable throwable) {
+                                                            loadingDialog.dismiss();
+                                                            Log.e("Gemini", throwable.getMessage());
+                                                            Toast.makeText(getContext(), "Eroare la generarea emailului.", Toast.LENGTH_SHORT).show();
+                                                        }
+                                                    });
+                                                },
+                                                error -> {
+                                                    loadingDialog.dismiss();
+                                                    Toast.makeText(getContext(), "Eroare la încărcarea datelor de contact.", Toast.LENGTH_SHORT).show();
+                                                }
+                                        );
+                                    },
+                                    error -> {
+                                        loadingDialog.dismiss();
+                                        Toast.makeText(getContext(), "Eroare la obținerea promptului AI.", Toast.LENGTH_SHORT).show();
+                                    }
+                            );
                         } else {
                             loadingDialog.dismiss();
                         }
@@ -181,6 +210,7 @@ public class GSProblemDetailsFragment extends Fragment implements OnMapReadyCall
             });
         });
     }
+
 
     private void subscribeOpenInGoogleMaps() {
         btnOpenInGoogleMaps.setOnClickListener(v->{

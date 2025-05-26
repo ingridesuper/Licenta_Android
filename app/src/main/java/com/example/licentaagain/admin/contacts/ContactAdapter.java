@@ -32,19 +32,10 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ContactV
     @Override
     public void onBindViewHolder(@NonNull ContactViewHolder holder, int position) {
         DateContact contact = contactList.get(position);
-        holder.tvInstitutie.setText(contact.getInstitutie() != null ? contact.getInstitutie() : "");
-        holder.tvEmail.setText(contact.getEmail() != null ? contact.getEmail() : "");
-        holder.tvTelefon.setText(contact.getTelefon() != null ? contact.getTelefon() : "");
-        holder.tvExtra.setText(contact.getExtra() != null ? contact.getExtra() : "");
-
-
-        holder.btnEdit.setOnClickListener(v -> {
-            // ceva
-        });
-
-        holder.btnDelete.setOnClickListener(v->{
-
-        });
+        holder.tvInstitutie.setText(contact.getInstitutie() != null ? contact.getInstitutie() : "Instituție: -");
+        holder.tvEmail.setText(contact.getEmail() != null ? "Email: "+contact.getEmail() : "Email: -");
+        holder.tvTelefon.setText(contact.getTelefon() != null ? "Telefon: "+contact.getTelefon() : "Telefon: -");
+        holder.tvExtra.setText(contact.getExtra() != null ? "Informații extra: "+contact.getExtra() : "Informații extra: -");
     }
 
     @Override
@@ -54,7 +45,6 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ContactV
 
     static class ContactViewHolder extends RecyclerView.ViewHolder {
         TextView tvInstitutie, tvEmail, tvTelefon, tvExtra;
-        MaterialButton btnEdit, btnDelete;
 
         public ContactViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -62,8 +52,6 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ContactV
             tvEmail = itemView.findViewById(R.id.tvEmail);
             tvExtra=itemView.findViewById(R.id.tvExtra);
             tvTelefon = itemView.findViewById(R.id.tvTelefon);
-            btnEdit = itemView.findViewById(R.id.btnEdit);
-            btnDelete=itemView.findViewById(R.id.btnDelete);
         }
     }
 }

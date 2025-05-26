@@ -17,6 +17,8 @@ import android.widget.TextView;
 import com.example.licentaagain.R;
 import com.example.licentaagain.repositories.ContactRepository;
 
+import org.checkerframework.checker.units.qual.C;
+
 import java.util.List;
 
 public class AdminContactsFragment extends Fragment {
@@ -42,16 +44,23 @@ public class AdminContactsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         rvContacts = view.findViewById(R.id.rvContacts);
+        TextView tvPrompt=view.findViewById(R.id.tvPrompt);
         rvContacts.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        new ContactRepository().getDateContact(
+        ContactRepository contactRepository=new ContactRepository();
+
+        contactRepository.getAiDestinationPrompt(
+                prompt->tvPrompt.setText(prompt),
+                error->Log.e("FirestoreError", "Eroare la încărcarea contactelor", error)
+        );
+
+        contactRepository.getDateContact(
                 contactList -> {
                     adapter = new ContactAdapter(contactList);
                     rvContacts.setAdapter(adapter);
                 },
-                error -> {
-                    Log.e("FirestoreError", "Eroare la încărcarea contactelor", error);
-                }
+                error ->
+                    Log.e("FirestoreError", "Eroare la încărcarea contactelor", error)
         );
     }
 

@@ -29,4 +29,22 @@ public class ContactRepository {
                 .addOnFailureListener(onFailure::accept);
     }
 
+    public void getAiDestinationPrompt(Consumer<String> onSuccess, Consumer<Exception> onFailure){
+        db.collection("static_variables")
+                .whereEqualTo("purpose", "ai_email_destination_prompt")
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if (!queryDocumentSnapshots.isEmpty()) {
+                        String prompt = queryDocumentSnapshots.getDocuments()
+                                .get(0)
+                                .getString("text");
+                        onSuccess.accept(prompt != null ? prompt : "");
+                    } else {
+                        onSuccess.accept("");
+                    }
+                })
+                .addOnFailureListener(onFailure::accept);
+    }
+
+
 }
