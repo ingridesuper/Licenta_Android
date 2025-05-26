@@ -5,6 +5,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,6 +20,8 @@ import com.example.licentaagain.repositories.ContactRepository;
 import java.util.List;
 
 public class AdminContactsFragment extends Fragment {
+    private RecyclerView rvContacts;
+    private ContactAdapter adapter;
 
 
     public AdminContactsFragment() {
@@ -37,14 +41,18 @@ public class AdminContactsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        TextView tvContact=view.findViewById(R.id.tvContacts);
+        rvContacts = view.findViewById(R.id.rvContacts);
+        rvContacts.setLayoutManager(new LinearLayoutManager(getContext()));
+
         new ContactRepository().getDateContact(
-                contactlist->{
-                    tvContact.setText(contactlist.toString());
+                contactList -> {
+                    adapter = new ContactAdapter(contactList);
+                    rvContacts.setAdapter(adapter);
                 },
-                error->{
+                error -> {
                     Log.e("FirestoreError", "Eroare la încărcarea contactelor", error);
                 }
         );
     }
+
 }

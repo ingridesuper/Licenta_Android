@@ -5,8 +5,8 @@
     android:layout_height="match_parent"
     tools:context=".admin.contacts.AdminContactsFragment">
 
-    <TextView
-        android:id="@+id/tvContacts"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvContacts"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
