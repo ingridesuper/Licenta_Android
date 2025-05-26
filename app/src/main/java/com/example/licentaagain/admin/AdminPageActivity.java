@@ -13,6 +13,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.example.licentaagain.R;
+import com.example.licentaagain.admin.contacts.AdminContactsFragment;
 import com.example.licentaagain.admin.problems.AdminProblemListFragment;
 import com.example.licentaagain.admin.users.AdminUserListFragment;
 import com.example.licentaagain.auth.LoginActivity;
@@ -70,6 +71,10 @@ public class AdminPageActivity extends AppCompatActivity {
             } else if(itemId == R.id.bmUsers){
                 AdminUserListFragment userListFragment = new AdminUserListFragment();
                 fragmentTransaction.replace(R.id.fragment_container_view, userListFragment);
+            }
+            else if(itemId==R.id.bmContacts){
+                AdminContactsFragment adminContactsFragment=new AdminContactsFragment();
+                fragmentTransaction.replace(R.id.fragment_container_view, adminContactsFragment);
             }
 
             fragmentTransaction.addToBackStack(null);
