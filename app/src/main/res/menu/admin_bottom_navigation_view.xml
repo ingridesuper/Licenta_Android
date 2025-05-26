@@ -15,4 +15,11 @@
         android:title="Users"
         />
 
+    <item
+        android:id="@+id/bmLogout"
+        android:icon="@drawable/ic_logout"
+        android:enabled="true"
+        android:title="Logout"
+        />
+
 </menu>

@@ -1,5 +1,7 @@
 package com.example.licentaagain.admin;
 
+import android.app.AlertDialog;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.activity.EdgeToEdge;
@@ -13,11 +15,15 @@ import androidx.fragment.app.FragmentTransaction;
 import com.example.licentaagain.R;
 import com.example.licentaagain.admin.problems.AdminProblemListFragment;
 import com.example.licentaagain.admin.users.AdminUserListFragment;
+import com.example.licentaagain.auth.LoginActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.auth.FirebaseAuth;
 
 public class AdminPageActivity extends AppCompatActivity {
     FragmentManager fragmentManager;
     BottomNavigationView bottomNavigationView;
+    private int lastSelectedItemId = R.id.bmProblems;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,22 +40,45 @@ public class AdminPageActivity extends AppCompatActivity {
         setupNavigationMenuEvents();
     }
 
+
     private void setupNavigationMenuEvents() {
         bottomNavigationView.setOnItemSelectedListener(item -> {
-            FragmentTransaction fragmentTransaction=fragmentManager.beginTransaction();
-            if(item.getItemId()==R.id.bmProblems){
-                AdminProblemListFragment problemListFragment=new AdminProblemListFragment();
-                fragmentTransaction.replace(R.id.fragment_container_view, problemListFragment);
+            int itemId = item.getItemId();
+
+            if(itemId == R.id.bmLogout){
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("Sunteți sigur că vreți să ieșiți din cont?")
+                        .setPositiveButton("Da", (dialog, id) -> {
+                            FirebaseAuth.getInstance().signOut();
+                            Intent intent = new Intent(this, LoginActivity.class);
+                            startActivity(intent);
+                            this.finish();
+                        })
+                        .setNegativeButton("Nu", (dialog, id) -> {
+                            dialog.dismiss();
+                            // revenire la ultimul tab selectat
+                            bottomNavigationView.setSelectedItemId(lastSelectedItemId);
+                        });
+                builder.create().show();
+                return false;
             }
-            else if(item.getItemId()==R.id.bmUsers){
-                AdminUserListFragment userListFragment=new AdminUserListFragment();
+
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            if(itemId == R.id.bmProblems){
+                AdminProblemListFragment problemListFragment = new AdminProblemListFragment();
+                fragmentTransaction.replace(R.id.fragment_container_view, problemListFragment);
+            } else if(itemId == R.id.bmUsers){
+                AdminUserListFragment userListFragment = new AdminUserListFragment();
                 fragmentTransaction.replace(R.id.fragment_container_view, userListFragment);
             }
+
             fragmentTransaction.addToBackStack(null);
             fragmentTransaction.commit();
+            lastSelectedItemId = itemId;
             return true;
         });
     }
+
 
     private void initializeVariables(){
         fragmentManager=getSupportFragmentManager();
