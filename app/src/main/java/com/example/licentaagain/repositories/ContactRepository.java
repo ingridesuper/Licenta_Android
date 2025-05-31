@@ -1,5 +1,8 @@
 package com.example.licentaagain.repositories;
 
+import android.util.Log;
+import android.widget.Toast;
+
 import com.example.licentaagain.models.DateContact;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -22,11 +25,14 @@ public class ContactRepository {
                     List<DateContact> contactList = new ArrayList<>();
                     for (DocumentSnapshot document : queryDocumentSnapshots.getDocuments()) {
                         DateContact contact = document.toObject(DateContact.class);
-                        contactList.add(contact);
+                        if (contact != null) {
+                            contact.setId(document.getId());
+                            contactList.add(contact);
+                        }
                     }
                     onSuccess.accept(contactList);
                 })
-                .addOnFailureListener(onFailure::accept);
+                .addOnFailureListener(e->Log.e("error fetching contacts", "error fetching contacts"));
     }
 
     public void getAiDestinationPrompt(Consumer<String> onSuccess, Consumer<Exception> onFailure){
@@ -69,6 +75,17 @@ public class ContactRepository {
                     }
                 })
                 .addOnFailureListener(onFailure::accept);
+    }
+
+
+
+    public void updateContact(DateContact contact, Consumer<Boolean> onSuccess, Consumer<Boolean> onFail) {
+
+        db.collection("contacts")
+                .document(contact.getId())
+                .set(contact)
+                .addOnSuccessListener(unused -> onSuccess.accept(true))
+                .addOnFailureListener(e -> onFail.accept(false));
     }
 
 }

@@ -6,11 +6,20 @@ public class DateContact {
     private String institutie;
 
     private String locatie;
+    private String id;
     private String email;
     private String telefon;
     private String extra;
 
     public DateContact() { //required!
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public DateContact(String institutie, String locatie, String email) {
