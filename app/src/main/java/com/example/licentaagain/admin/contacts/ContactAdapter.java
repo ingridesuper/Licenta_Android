@@ -54,5 +54,10 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ContactV
             tvTelefon = itemView.findViewById(R.id.tvTelefon);
         }
     }
+    public void updateData(List<DateContact> newList) {
+        this.contactList = newList;
+        notifyDataSetChanged();
+    }
+
 }
 

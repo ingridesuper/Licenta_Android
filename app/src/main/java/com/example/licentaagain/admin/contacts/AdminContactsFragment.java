@@ -12,18 +12,24 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.SearchView;
 import android.widget.TextView;
 
 import com.example.licentaagain.R;
+import com.example.licentaagain.models.DateContact;
 import com.example.licentaagain.repositories.ContactRepository;
 
 import org.checkerframework.checker.units.qual.C;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class AdminContactsFragment extends Fragment {
     private RecyclerView rvContacts;
     private ContactAdapter adapter;
+    private List<DateContact> fullContactList = new ArrayList<>();
+
 
 
     public AdminContactsFragment() {
@@ -43,19 +49,42 @@ public class AdminContactsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        rvContacts = view.findViewById(R.id.rvContacts);
-        TextView tvPrompt=view.findViewById(R.id.tvPrompt);
-        rvContacts.setLayoutManager(new LinearLayoutManager(getContext()));
+        setUpRecyclerView(view);
+        setUpAiPrompt(view);
+        setUpSearchEvents(view);
+    }
 
-        ContactRepository contactRepository=new ContactRepository();
+    private void setUpSearchEvents(View view) {
+        SearchView searchView=view.findViewById(R.id.searchBar);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
 
-        contactRepository.getAiDestinationPrompt(
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                filterContacts(newText);
+                return true;
+            }
+        });
+    }
+
+    private void setUpAiPrompt(View view) {
+        TextView tvPrompt= view.findViewById(R.id.tvPrompt);
+        new ContactRepository().getAiDestinationPrompt(
                 prompt->tvPrompt.setText(prompt),
                 error->Log.e("FirestoreError", "Eroare la încărcarea contactelor", error)
         );
+    }
+    private void setUpRecyclerView(@NonNull View view) {
+        rvContacts = view.findViewById(R.id.rvContacts);
 
-        contactRepository.getDateContact(
+        rvContacts.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        new ContactRepository().getDateContact(
                 contactList -> {
+                    fullContactList=contactList;
                     adapter = new ContactAdapter(contactList);
                     rvContacts.setAdapter(adapter);
                 },
@@ -63,5 +92,25 @@ public class AdminContactsFragment extends Fragment {
                     Log.e("FirestoreError", "Eroare la încărcarea contactelor", error)
         );
     }
+
+    private void filterContacts(String query) {
+        List<DateContact> filteredList = new ArrayList<>();
+        String lowerCaseQuery = query.toLowerCase();
+
+        for (DateContact contact : fullContactList) {
+            String institutie = contact.getInstitutie();
+            String email = contact.getEmail();
+            String locatie = contact.getLocatie();
+
+            if ((institutie != null && institutie.toLowerCase().contains(lowerCaseQuery)) ||
+                    (email != null && email.toLowerCase().contains(lowerCaseQuery)) ||
+                    (locatie != null && locatie.toLowerCase().contains(lowerCaseQuery))) {
+                filteredList.add(contact);
+            }
+        }
+
+        adapter.updateData(filteredList);
+    }
+
 
 }
