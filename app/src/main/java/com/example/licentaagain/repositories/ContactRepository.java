@@ -47,4 +47,28 @@ public class ContactRepository {
     }
 
 
+    public void updateAiPrompt(String newPrompt, Runnable onSuccess, Consumer<Exception> onFailure) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        db.collection("static_variables")
+                .whereEqualTo("purpose", "ai_email_destination_prompt")
+                .limit(1)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if (!queryDocumentSnapshots.isEmpty()) {
+                        DocumentSnapshot document = queryDocumentSnapshots.getDocuments().get(0);
+                        String docId = document.getId();
+
+                        db.collection("static_variables")
+                                .document(docId)
+                                .update("text", newPrompt)
+                                .addOnSuccessListener(aVoid -> onSuccess.run())
+                                .addOnFailureListener(onFailure::accept);
+                    } else {
+                        onFailure.accept(new Exception("Document not found"));
+                    }
+                })
+                .addOnFailureListener(onFailure::accept);
+    }
+
 }

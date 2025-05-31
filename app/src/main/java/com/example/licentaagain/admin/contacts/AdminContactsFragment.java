@@ -1,5 +1,6 @@
 package com.example.licentaagain.admin.contacts;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -12,6 +13,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.SearchView;
 import android.widget.TextView;
 
@@ -52,7 +55,38 @@ public class AdminContactsFragment extends Fragment {
         setUpRecyclerView(view);
         setUpAiPrompt(view);
         setUpSearchEvents(view);
+        subscribeEditEvent(view);
     }
+
+    private void subscribeEditEvent(View view) {
+        Button btnEdit = view.findViewById(R.id.btnEdit);
+        TextView tvPrompt = view.findViewById(R.id.tvPrompt);
+
+        btnEdit.setOnClickListener(v -> {
+            final EditText input = new EditText(getContext());
+            input.setText(tvPrompt.getText().toString());
+
+            new AlertDialog.Builder(requireContext())
+                    .setTitle("Editează Prompt AI")
+                    .setView(input)
+                    .setPositiveButton("Salvează", (dialog, which) -> {
+                        String newPrompt = input.getText().toString().trim();
+                        if (!newPrompt.isEmpty()) {
+                            new ContactRepository().updateAiPrompt(
+                                    newPrompt,
+                                    () -> {
+                                        tvPrompt.setText(newPrompt); // Actualizează local
+                                        Log.d("AI Prompt", "Prompt actualizat cu succes");
+                                    },
+                                    error -> Log.e("FirestoreError", "Eroare la salvarea promptului", error)
+                            );
+                        }
+                    })
+                    .setNegativeButton("Anulează", null)
+                    .show();
+        });
+    }
+
 
     private void setUpSearchEvents(View view) {
         SearchView searchView=view.findViewById(R.id.searchBar);
