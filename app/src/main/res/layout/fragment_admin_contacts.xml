@@ -2,6 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_marginBottom="120dp"
     android:padding="16dp"
@@ -23,11 +24,13 @@
         android:text="Promptul AI aici..." />
 
     <Button
+        style="@style/Widget.Material3.Button.Icon"
         android:text="@string/edit"
+        app:icon="@drawable/ic_edit"
         android:id="@+id/btnEdit"
         android:layout_width="wrap_content"
         android:layout_gravity="end"
-        android:layout_marginEnd="20dp"
+        android:layout_marginEnd="15dp"
         android:layout_marginTop="15dp"
         android:layout_marginBottom="30dp"
         android:layout_height="wrap_content"/>
