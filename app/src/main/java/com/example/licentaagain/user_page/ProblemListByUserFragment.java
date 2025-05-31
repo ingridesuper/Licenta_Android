@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.example.licentaagain.R;
 import com.example.licentaagain.custom_adapters.ProblemCardAdapter;
@@ -50,32 +51,66 @@ public class ProblemListByUserFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        TextView tvNoItemsGS = view.findViewById(R.id.tvNoItemsGS);
+        TextView tvNoProblemsSent = view.findViewById(R.id.tvNoProblemsSent);
+        TextView tvNoProblemsSolved = view.findViewById(R.id.tvNoProblemsSolved);
+
         RecyclerView rvProblemsGS = view.findViewById(R.id.rvProblemsGS);
         rvProblemsGS.setNestedScrollingEnabled(false);
         gsCardAdapter = new ProblemCardAdapter(getContext(), new ArrayList<>());
         rvProblemsGS.setLayoutManager(new LinearLayoutManager(getActivity()));
         rvProblemsGS.setAdapter(gsCardAdapter);
 
-        RecyclerView rvProblemsSent=view.findViewById(R.id.rvProblemsSent);
+        RecyclerView rvProblemsSent = view.findViewById(R.id.rvProblemsSent);
         rvProblemsSent.setNestedScrollingEnabled(false);
-        sentCardAdapter=new ProblemsSentSolvedCardAdapter(getContext(), new ArrayList<>());
+        sentCardAdapter = new ProblemsSentSolvedCardAdapter(getContext(), new ArrayList<>());
         rvProblemsSent.setLayoutManager(new LinearLayoutManager(getActivity()));
         rvProblemsSent.setAdapter(sentCardAdapter);
 
-        RecyclerView rvProblemsSolved=view.findViewById(R.id.rvProblemsSolved);
+        RecyclerView rvProblemsSolved = view.findViewById(R.id.rvProblemsSolved);
         rvProblemsSolved.setNestedScrollingEnabled(false);
-        solvedCardAdapter=new ProblemsSentSolvedCardAdapter(getContext(), new ArrayList<>());
+        solvedCardAdapter = new ProblemsSentSolvedCardAdapter(getContext(), new ArrayList<>());
         rvProblemsSolved.setLayoutManager(new LinearLayoutManager(getActivity()));
         rvProblemsSolved.setAdapter(solvedCardAdapter);
 
-        problemViewModel.getProblemsGatheringSignatures().observe(getViewLifecycleOwner(), gsCardAdapter::updateData);
-        problemViewModel.getProblemsSent().observe(getViewLifecycleOwner(), sentCardAdapter::updateData);
-        problemViewModel.getProblemsSolved().observe(getViewLifecycleOwner(), solvedCardAdapter::updateData);
+        problemViewModel.getProblemsGatheringSignatures().observe(getViewLifecycleOwner(), list -> {
+            gsCardAdapter.updateData(list);
+            if (list.isEmpty()) {
+                tvNoItemsGS.setVisibility(View.VISIBLE);
+                rvProblemsGS.setVisibility(View.GONE);
+            } else {
+                tvNoItemsGS.setVisibility(View.GONE);
+                rvProblemsGS.setVisibility(View.VISIBLE);
+            }
+        });
+
+        problemViewModel.getProblemsSent().observe(getViewLifecycleOwner(), list -> {
+            sentCardAdapter.updateData(list);
+            if (list.isEmpty()) {
+                tvNoProblemsSent.setVisibility(View.VISIBLE);
+                rvProblemsSent.setVisibility(View.GONE);
+            } else {
+                tvNoProblemsSent.setVisibility(View.GONE);
+                rvProblemsSent.setVisibility(View.VISIBLE);
+            }
+        });
+
+        problemViewModel.getProblemsSolved().observe(getViewLifecycleOwner(), list -> {
+            solvedCardAdapter.updateData(list);
+            if (list.isEmpty()) {
+                tvNoProblemsSolved.setVisibility(View.VISIBLE);
+                rvProblemsSolved.setVisibility(View.GONE);
+            } else {
+                tvNoProblemsSolved.setVisibility(View.GONE);
+                rvProblemsSolved.setVisibility(View.VISIBLE);
+            }
+        });
 
         if (selectedUserId != null) {
             problemViewModel.startListening(selectedUserId);
         }
     }
+
 
     @Override
     public void onDestroyView() {

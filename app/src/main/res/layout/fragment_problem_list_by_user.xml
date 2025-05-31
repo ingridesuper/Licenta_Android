@@ -18,17 +18,33 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             android:layout_marginStart="20dp"
-            android:textSize="16dp"
+            android:textSize="16sp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fontFamily="@font/manrope_bold"/>
+
+        <TextView
+            android:id="@+id/tvNoItemsGS"
+            android:textStyle="italic"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginBottom="20dp"
+            android:layout_marginTop="10dp"
+            android:text="Nicio problemă în curs de strângere de semnături"
+            android:visibility="gone"
+            android:textAppearance="?attr/textAppearanceBody1"
+            app:layout_constraintTop_toTopOf="@id/rvProblemsGS"
+            app:layout_constraintStart_toStartOf="@id/rvProblemsGS"
+            app:layout_constraintEnd_toEndOf="@id/rvProblemsGS"
+            android:gravity="center" />
+
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvProblemsGS"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="16dp"
+            android:layout_marginTop="10dp"
             android:scrollbars="vertical"
             android:paddingBottom="50dp"/>
 
@@ -38,17 +54,33 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             android:layout_marginStart="20dp"
-            android:textSize="16dp"
+            android:textSize="16sp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fontFamily="@font/manrope_bold"/>
+
+        <TextView
+            android:id="@+id/tvNoProblemsSent"
+            android:layout_width="wrap_content"
+            android:layout_marginStart="20dp"
+            android:textStyle="italic"
+            android:layout_marginBottom="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_height="wrap_content"
+            android:text="Nicio problemă trimisă către autorități"
+            android:visibility="gone"
+            android:textAppearance="?attr/textAppearanceBody1"
+            app:layout_constraintTop_toTopOf="@id/rvProblemsGS"
+            app:layout_constraintStart_toStartOf="@id/rvProblemsGS"
+            app:layout_constraintEnd_toEndOf="@id/rvProblemsGS"
+            android:gravity="center" />
+
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvProblemsSent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="16dp"
+            android:layout_marginTop="10dp"
             android:scrollbars="vertical"
             android:paddingBottom="50dp"/>
 
@@ -63,14 +95,31 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/manrope_bold"/>
 
+        <TextView
+            android:id="@+id/tvNoProblemsSolved"
+            android:layout_width="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginBottom="20dp"
+            android:textStyle="italic"
+            android:layout_marginTop="10dp"
+            android:paddingBottom="130dp"
+            android:layout_height="wrap_content"
+            android:text="Nicio problemă marcată ca rezolvată"
+            android:visibility="gone"
+            android:textAppearance="?attr/textAppearanceBody1"
+            app:layout_constraintTop_toTopOf="@id/rvProblemsGS"
+            app:layout_constraintStart_toStartOf="@id/rvProblemsGS"
+            app:layout_constraintEnd_toEndOf="@id/rvProblemsGS"
+            android:gravity="center" />
+
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvProblemsSolved"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="16dp"
+            android:layout_marginTop="10dp"
             android:scrollbars="vertical"
-            android:paddingBottom="150dp"/>
+            android:paddingBottom="130dp"/>
 
     </LinearLayout>
 </ScrollView>

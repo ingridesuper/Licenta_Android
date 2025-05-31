@@ -86,8 +86,8 @@
     <string name="search_by_title_description">Caută după titlu și descriere...</string>
     <string name="sesizari">Sesizări</string>
     <string name="problems_reported_by_user">Probleme raportate de către acest utilizator:</string>
-    <string name="search_user_by_name_or_email">Caută un nume sau un email...</string>
-    <string name="problems_gathering_signatures">Problems în curs de strângere de semnături:</string>
+    <string name="search_user_by_name_or_email">Caută utilizator...</string>
+    <string name="problems_gathering_signatures">Probleme în curs de strângere de semnături:</string>
     <string name="problems_sent_to_authorities">Probleme trimise către autorități:</string>
     <string name="open_in_google_maps">Deschide în Google Maps</string>
     <string name="join_grup_de_ini_iativ">Alătură-te grupului de inițiativă</string>
