@@ -82,6 +82,28 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ContactV
                     .show();
 
         });
+
+        holder.btnDelete.setOnClickListener(v -> {
+            new androidx.appcompat.app.AlertDialog.Builder(v.getContext())
+                    .setTitle("Confirmare ștergere")
+                    .setMessage("Sunteți sigur că vreți să ștergeți acest contact?")
+                    .setPositiveButton("Șterge", (dialog, which) -> {
+                        new ContactRepository().deleteContact(contact.getId(),
+                                success -> {
+                                    if (success) {
+                                        contactList.remove(position);
+                                        notifyItemRemoved(position);
+                                        Toast.makeText(v.getContext(), "Contactul a fost șters.", Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        Toast.makeText(v.getContext(), "Eroare la ștergere", Toast.LENGTH_SHORT).show();
+                                    }
+                                },
+                                fail -> Toast.makeText(v.getContext(), "Eroare de rețea", Toast.LENGTH_SHORT).show());
+                    })
+                    .setNegativeButton("Anulează", null)
+                    .show();
+        });
+
     }
 
     @Override
@@ -91,7 +113,7 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ContactV
 
     static class ContactViewHolder extends RecyclerView.ViewHolder {
         TextView tvInstitutie, tvEmail, tvTelefon, tvExtra;
-        MaterialButton btnEdit;
+        MaterialButton btnEdit, btnDelete;
 
         public ContactViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -100,6 +122,7 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ContactV
             tvTelefon = itemView.findViewById(R.id.tvTelefon);
             tvExtra = itemView.findViewById(R.id.tvExtra);
             btnEdit = itemView.findViewById(R.id.btnEdit);
+            btnDelete = itemView.findViewById(R.id.btnDelete);
         }
     }
 

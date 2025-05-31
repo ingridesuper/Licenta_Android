@@ -88,4 +88,11 @@ public class ContactRepository {
                 .addOnFailureListener(e -> onFail.accept(false));
     }
 
+    public void deleteContact(String contactId, Consumer<Boolean> onSuccess, Consumer<Boolean> onFail) {
+        db.collection("contacts").document(contactId)
+                .delete()
+                .addOnSuccessListener(aVoid -> onSuccess.accept(true))
+                .addOnFailureListener(e -> onFail.accept(false));
+    }
+
 }
