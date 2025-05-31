@@ -110,6 +110,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="28dp"
+        android:fontFamily="sans-serif"
         android:width="300dp"
         android:text="@string/sector_domiciliu"
         app:layout_constraintEnd_toEndOf="parent"

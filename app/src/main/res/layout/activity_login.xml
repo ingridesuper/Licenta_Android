@@ -64,12 +64,14 @@
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnForgotPassowrd"
         style="@style/Widget.Material3.Button.TextButton"
-        android:layout_width="wrap_content"
+        android:layout_width="300dp"
+        android:gravity="end"
         android:layout_height="wrap_content"
         android:layout_marginEnd="52dp"
         android:text="@string/forgot_password"
         android:textColor="@color/black"
         android:textSize="12sp"
+        android:layout_marginTop="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tfPassword" />
 
@@ -103,16 +105,17 @@
     <Button
         android:id="@+id/btnSigninGoogle"
         style="@style/Widget.Material3.Button.TextButton.Icon"
-        android:layout_width="wrap_content"
+        android:layout_width="300dp"
+        android:gravity="start"
         android:layout_height="wrap_content"
-        android:layout_marginStart="56dp"
-        android:layout_marginBottom="28dp"
+        android:layout_marginBottom="30dp"
         android:text="@string/sign_in_using_google"
         android:textColor="@color/darkGray"
-        android:textSize="14sp"
         app:icon="@drawable/google_logo"
+        app:iconSize="15sp"
         app:iconTint="@null"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
