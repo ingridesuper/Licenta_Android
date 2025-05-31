@@ -27,7 +27,7 @@
     <string name="sign_up_with_google">Signup cu Google</string>
 
     <string name="main_page">This is the main page!</string>
-    <string name="add_problem">Adaugă o problemă!</string>
+    <string name="add_problem">Sesizează o problemă!</string>
     <string name="your_profile">Profilul tău</string>
     <string name="edit_account_title">Editare cont</string>
     <string name="edit_account">Editează cont</string>
@@ -72,7 +72,7 @@
     <string name="apply">Aplică</string>
     <string name="in_what_sector_is_problem">În ce sector se află problema?</string>
     <string name="select_category">Selectați o categorie:</string>
-    <string name="do_you_want_fb_group">Doriți să asociați și un grup de organizare acestei probleme? \n Puteți adăuga unul și mai târziu.</string>
+    <string name="do_you_want_fb_group">Doriți să asociați și un grup de organizare acestei probleme? Puteți adăuga unul și mai târziu.</string>
     <string name="link_fb">Link grup de inițiativă Facebook</string>
     <string name="take_picture">Fă o poză</string>
     <string name="add_pictures">Încarcă poze</string>
