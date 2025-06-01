@@ -79,7 +79,7 @@
     <string name="stare_problem">Status problemă:</string>
     <string name="save_edits">Salvează</string>
     <string name="delete_problem">Șterge problema</string>
-    <string name="reported_by">Raportat de către:</string>
+    <string name="reported_by">Raportat de către: </string>
     <string name="number_signatures">Număr de semnături:</string>
     <string name="semnatari">Semnatari:</string>
     <string name="close">Închide</string>

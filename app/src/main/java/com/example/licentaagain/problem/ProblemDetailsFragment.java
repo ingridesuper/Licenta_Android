@@ -273,10 +273,10 @@ public class ProblemDetailsFragment extends Fragment implements OnMapReadyCallba
 
         tvProblemTitle.setText(problem.getTitle());
         if(author.getUid().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())){
-            tvProblemAuthor.setText("Dvs");
+            tvProblemAuthor.setText(" Dvs");
         }
         else {
-            tvProblemAuthor.setText(author.getName()+" "+author.getSurname());
+            tvProblemAuthor.setText(" "+author.getName()+" "+author.getSurname());
         }
         tvProblemDescription.setText(problem.getDescription());
         tvProblemCategory.setText("Categorie: "+problem.getCategorieProblema());
