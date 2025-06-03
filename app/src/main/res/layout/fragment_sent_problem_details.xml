@@ -9,7 +9,7 @@
     tools:context=".account.reported_problems.sent.SentProblemDetailsFragment">
 
     <LinearLayout
-        android:padding="20dp"
+        android:padding="30dp"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -19,14 +19,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fontFamily="@font/manrope_bold"
-            android:textSize="21sp"
-            android:text="This is the problem's title" />
+            android:textSize="23sp" />
 
 
         <androidx.recyclerview.widget.RecyclerView
             android:layout_width="match_parent"
             android:layout_height="350dp"
-            android:layout_marginTop="10sp"
+            android:layout_marginTop="10dp"
             android:id="@+id/recyclerViewPictures"
             app:layoutManager="com.google.android.material.carousel.CarouselLayoutManager"/>
 
@@ -35,33 +34,30 @@
             android:layout_marginTop="30dp"
             android:id="@+id/tvProblemDescription"
             android:layout_marginBottom="8dp"
-            android:textSize="12sp"
+            android:textSize="15sp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="This is the description of the problem." />
+            android:layout_height="wrap_content"/>
 
         <TextView
             android:id="@+id/tvStare"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/stare_curenta"
-            android:layout_marginBottom="8dp"
-            android:textSize="12sp"/>
+            android:layout_marginBottom="10dp"
+            android:textSize="15sp"/>
 
         <TextView
             android:id="@+id/tvProblemCategory"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textStyle="bold"
             android:layout_marginBottom="15dp"
-            android:textSize="11sp" />
+            android:textSize="15sp" />
 
         <TextView
             android:id="@+id/tvProblemAddressSector"
             android:layout_width="match_parent"
             android:layout_marginBottom="10dp"
-            android:textStyle="bold"
-            android:textSize="11sp"
+            android:textSize="15sp"
             android:layout_height="wrap_content" />
 
         <fragment
@@ -76,7 +72,7 @@
             android:layout_height="wrap_content"
             android:text="@string/open_in_google_maps"
             android:textColor="@color/black"
-            android:textSize="11sp"
+            android:textSize="13sp"
             app:iconSize="14dp"
             app:iconTint="@null"
             style="@style/Widget.Material3.Button.TextButton.Icon"
@@ -93,7 +89,8 @@
             android:id="@+id/tvNrSemnatariHeading"
             android:text="@string/semnatari"
             android:layout_marginBottom="15dp"
-            android:fontFamily="@font/manrope_bold"
+            android:textSize="15sp"
+            android:fontFamily="sans-serif"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
 

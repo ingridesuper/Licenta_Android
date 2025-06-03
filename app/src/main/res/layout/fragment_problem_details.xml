@@ -20,8 +20,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fontFamily="@font/manrope_bold"
-            android:textSize="23sp"
-            android:text="This is the problem's title" />
+            android:textSize="23sp"/>
 
         <LinearLayout
             android:layout_width="match_parent"
