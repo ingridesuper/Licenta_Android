@@ -222,8 +222,13 @@ public class MainPageFragment extends Fragment implements OnMapReadyCallback, Fi
 
     private void updateMap() {
         if (myMap != null && currentLocation != null) {
-            LatLng current = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
-            myMap.moveCamera(CameraUpdateFactory.newLatLngZoom(current, 11));
+
+            //use this for actual phone
+            //LatLng current = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
+            //myMap.moveCamera(CameraUpdateFactory.newLatLngZoom(current, 11));
+
+            //for emulator, which does not have gps
+            myMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(44.439663,  26.096306), 10.7F));
         } else {
             Log.i("map", "Map or location not available yet");
         }

@@ -4,14 +4,15 @@ import androidx.annotation.NonNull;
 
 public enum CategorieProblema {
     GUNOI("Gunoi"),
-    RECICLARE("Reciclare nerespectata sau inadecvata"),
-    TRECERE_PIETONI("Trecere de pietoni neconforma"),
-    PISTA_BICICLETA("Pista de bicicleta blocata sau "),
-    GROAPA("Groapa in asfalt, groapa etc"),
-    GURA_CANALIZARE("Gura de canalizare sparta, deteriorata etc"),
-    PARCARE("Parcare ilegala"),
+    RECICLARE("Reciclare neconformă"),
+    TRECERE_PIETONI("Trecere de pietoni"),
+    PISTA_BICICLETA("Pistă de bicicletă"),
+    GROAPA("Groapă în asfalt"),
+    GURA_CANALIZARE("Gură de canalizare deteriorată"),
+    PARCARE("Parcare ilegală"),
     ACCESIBILITATE("Accesibilitate"),
-    SPATII_VERZI("Spatii verzi"),
+    SPATII_VERZI("Spații verzi"),
+    ILUMINAT("Iluminat stradal"),
     ALTCEVA("Altceva");
 
     private String categorie;
