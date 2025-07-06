@@ -183,14 +183,13 @@ public class AddProblemFragment extends Fragment implements OnMapReadyCallback {
         problemRepository.addProblem(problem, selectedImageUris, new ProblemRepository.ProblemCreationCallback() {
             @Override
             public void onSuccess() {
-                showToast("Problem added");
                 navigateBackToMainPage();
             }
 
             @Override
             public void onFailure(Exception e) {
                 Log.e("Firestore", "Failed to add problem", e);
-                showToast("Error adding problem"); //aici intra, dar se adauga in firebase si nu in storage; dupa da crash
+                showToast("A apărut o eroare."); //aici intra, dar se adauga in firebase si nu in storage; dupa da crash
                 showLoadingOverlay(false);
             }
         });

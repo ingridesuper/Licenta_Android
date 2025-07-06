@@ -3,11 +3,11 @@ package com.example.licentaagain.enums;
 import androidx.annotation.NonNull;
 
 public enum StareProblema {
-    CURS_STRANGERE_SEMNATURI("In curs de strangere de semnaturi"),
-    AWAITING_RESPONSE("Trimisa catre autoritati - in asteptare raspuns"),
-    AWAITING_RESOLVATION("Asteptarea rezolvare"),
-    UNSATISFACTORY("Raspuns nesatisfactor"),
-    SOLVED("Rezolvata")
+    CURS_STRANGERE_SEMNATURI("În curs de strângere de semnături"),
+    AWAITING_RESPONSE("Trimisă către autorități - în așteptare răspuns"),
+    AWAITING_RESOLVATION("Așteptare rezolvare"),
+    UNSATISFACTORY("Răspuns nesatisfăcător"),
+    SOLVED("Rezolvată")
     ;
     private String stare;
 

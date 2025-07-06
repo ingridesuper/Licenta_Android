@@ -138,4 +138,10 @@ public class HomePageActivity extends AppCompatActivity {
         });
     }
 
+    public void selectProfileTab() {
+        if (bottomNavigationView != null) {
+            bottomNavigationView.setSelectedItemId(R.id.bmAccount);
+        }
+    }
+
 }

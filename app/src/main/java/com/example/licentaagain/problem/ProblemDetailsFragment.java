@@ -162,17 +162,16 @@ public class ProblemDetailsFragment extends Fragment implements OnMapReadyCallba
                     }
                 }
 
-            else {
-                if (context instanceof HomePageActivity) {
-                    TopProfileFragment topProfileFragment = new TopProfileFragment();
-                    activity.getSupportFragmentManager()
-                            .beginTransaction()
-                            .replace(R.id.fragment_container_view, topProfileFragment)
-                            .addToBackStack(null)
-                            .commit();
-                    }
-                }
-            });
+            else if (context instanceof HomePageActivity) {
+                TopProfileFragment topProfileFragment = new TopProfileFragment();
+                activity.getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.fragment_container_view, topProfileFragment)
+                        .addToBackStack(null)
+                        .commit();
+                activity.selectProfileTab();
+            }
+        });
     }
 
     private void subscribeOpenInGoogleMaps() {
