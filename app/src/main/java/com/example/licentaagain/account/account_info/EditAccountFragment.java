@@ -54,10 +54,10 @@ public class EditAccountFragment extends Fragment {
     private void getDataFromBundle(){
         Bundle bundle = getArguments();
         if (bundle != null) {
-            oldSurname = bundle.getString("nume", "N/A");
-            oldName = bundle.getString("prenume", "N/A");
+            oldSurname = bundle.getString("nume", "");
+            oldName = bundle.getString("prenume", "");
             oldSector = bundle.getInt("sector", 0);
-            email = bundle.getString("email", "N/A");
+            email = bundle.getString("email", "");
 
             Log.i("info bundle", oldName+" "+oldSurname+" "+oldSector+" "+email);
         }

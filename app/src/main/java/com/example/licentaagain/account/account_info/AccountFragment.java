@@ -115,14 +115,14 @@ public class AccountFragment extends Fragment {
             tvName.setText(name+" "+surname);
         }
         else {
-            tvName.setText("Va rugam sa va completati numele si prenumele. Astfel veti putea semna.");
+            tvName.setText("Vă rugăm să vă completați numele și prenumele.\nAstfel veți putea semna.");
         }
 
         if (sector!=0){
             tvSector.setText("Sectorul "+sector);
         }
         else {
-            tvSector.setText("Va rugam sa va completati sectorul.");
+            tvSector.setText("Vă rugăm să vă completați sectorul.");
         }
 
         tvEmail.setText(user.getEmail());
