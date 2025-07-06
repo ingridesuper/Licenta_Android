@@ -54,7 +54,7 @@ public class SignupActivity extends AppCompatActivity {
     @Override
     public void onStart() {
         super.onStart();
-        FirebaseUser currentUser = mAuth.getCurrentUser(); //? se repeta, care e ok?
+        FirebaseUser currentUser = mAuth.getCurrentUser();
         if(currentUser != null){
             goToHomePage();
         }
@@ -77,7 +77,7 @@ public class SignupActivity extends AppCompatActivity {
     }
 
     private void initializeVariables(){
-        mAuth=FirebaseAuth.getInstance(); //aici se repeta
+        mAuth=FirebaseAuth.getInstance();
         db= FirebaseFirestore.getInstance();
 
         etEmail=findViewById(R.id.etEmail);
@@ -108,14 +108,14 @@ public class SignupActivity extends AppCompatActivity {
                                 firebaseUser.sendEmailVerification()
                                         .addOnCompleteListener(verifyTask -> {
                                             if (verifyTask.isSuccessful()) {
-                                                Toast.makeText(this, "Verification email sent. Please check your inbox.", Toast.LENGTH_LONG).show();
+                                                Toast.makeText(this, "Mail-ul de verificare a adresei a fost trimis, vă rugăm să confirmați!", Toast.LENGTH_LONG).show();
                                                 addUserToFirestore(firebaseUser, false);
                                                 mAuth.signOut();
                                                 Intent intent = new Intent(SignupActivity.this, LoginActivity.class);
                                                 startActivity(intent);
                                                 finish();
                                             } else {
-                                                Toast.makeText(this, "Failed to send verification email.", Toast.LENGTH_SHORT).show();
+                                                Toast.makeText(this, "A apărut o eroare.", Toast.LENGTH_SHORT).show();
                                             }
                                         });
                             }
@@ -139,11 +139,8 @@ public class SignupActivity extends AppCompatActivity {
                     .build();
 
             CancellationSignal cancellationSignal = new CancellationSignal();
-            cancellationSignal.setOnCancelListener(new CancellationSignal.OnCancelListener() {
-                @Override
-                public void onCancel() {
-                    //handle cancellation if needed
-                }
+            cancellationSignal.setOnCancelListener(() -> {
+                //handle cancellation if needed
             });
 
             credentialManager.getCredentialAsync(
@@ -159,7 +156,6 @@ public class SignupActivity extends AppCompatActivity {
 
                         @Override
                         public void onError(GetCredentialException e) {
-                            //handle failure exception
                             Log.e(TAG, "CredentialManager Error: " + e.getMessage(), e);
                         }
                     }
@@ -170,12 +166,12 @@ public class SignupActivity extends AppCompatActivity {
     }
     private void handleSignupException(Exception e){
         if (e instanceof com.google.firebase.auth.FirebaseAuthUserCollisionException) {
-            Toast.makeText(SignupActivity.this, "This email is already in use.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(SignupActivity.this, "Acest email este deja folosit.", Toast.LENGTH_SHORT).show();
         } else if (e instanceof com.google.firebase.auth.FirebaseAuthWeakPasswordException) {
-            Toast.makeText(SignupActivity.this, "Weak password. Please use at least 6 characters.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(SignupActivity.this, "Parolă slabă, folosiți minim 6 caractere", Toast.LENGTH_SHORT).show();
         } else {
             Log.e("SignupError", "Failed to create user", e);
-            Toast.makeText(SignupActivity.this, "Signing up failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(SignupActivity.this, "A apărut o eroare. ", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -195,7 +191,7 @@ public class SignupActivity extends AppCompatActivity {
 
     private boolean isUserInputOk(){
         if(TextUtils.isEmpty(email) || TextUtils.isEmpty(password) || TextUtils.isEmpty(name) || TextUtils.isEmpty(surname)){
-            Toast.makeText(this, "Please complete all fields", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Vă rugăm completați toate câmpurile", Toast.LENGTH_SHORT).show();
             return false;
         }
         return true;
@@ -244,7 +240,7 @@ public class SignupActivity extends AppCompatActivity {
 
                     } else {
                         Log.w(TAG, "signInWithCredential:failure", task.getException());
-                        Toast.makeText(this, "Fail", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "A apărut o eroare", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -257,6 +253,8 @@ public class SignupActivity extends AppCompatActivity {
         User user;
         if(usesGoogleSignup){
             user=new User(uid, firebaseUser.getEmail());
+            user.setIsDisabled(false);
+            user.setIsAdmin(false);
         }
         else {
             user = new User(uid, email, name, surname, selectedSector.getNumar());
@@ -270,7 +268,7 @@ public class SignupActivity extends AppCompatActivity {
                 })
                 .addOnFailureListener(e -> {
                     Log.e("FirestoreError", "Error adding document", e);
-                    Toast.makeText(this, "Failed to save user data.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "A apărut o eroare.", Toast.LENGTH_SHORT).show();
                 });
     }
 

@@ -27,6 +27,7 @@ import androidx.credentials.exceptions.GetCredentialException;
 import com.example.licentaagain.HomePageActivity;
 import com.example.licentaagain.R;
 import com.example.licentaagain.admin.AdminPageActivity;
+import com.example.licentaagain.repositories.UserRepository;
 import com.example.licentaagain.suspened_user.SuspendedUserActivity;
 import com.example.licentaagain.models.User;
 import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption;
@@ -70,13 +71,13 @@ public class LoginActivity extends AppCompatActivity {
                             goToHomePage();
                             finish();
                         } else {
-                            Toast.makeText(this, "Please verify your email before logging in.", Toast.LENGTH_LONG).show();
+                            Toast.makeText(this, "Vă rugăm să vă verificați email-ul.", Toast.LENGTH_LONG).show();
                             mAuth.signOut();
                             showLoginUI();
                         }
                     })
                     .addOnFailureListener(e -> {
-                        Toast.makeText(this, "Could not check user role.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "A apărut o eroare", Toast.LENGTH_SHORT).show();
                         mAuth.signOut();
                         showLoginUI();
                     });
@@ -124,7 +125,7 @@ public class LoginActivity extends AppCompatActivity {
             String password=String.valueOf(etPassword.getText());
 
             if(TextUtils.isEmpty(email) || TextUtils.isEmpty(password)){
-                Toast.makeText(this, "Password and email required.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Vă rugăm să completați toate câmpurile.", Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -152,17 +153,17 @@ public class LoginActivity extends AppCompatActivity {
                                         } else if (user.isEmailVerified()) {
                                             goToHomePage();
                                         } else {
-                                            Toast.makeText(this, "Please verify your email before logging in.", Toast.LENGTH_LONG).show();
+                                            Toast.makeText(this, "Vă rugăm să vă verificați email-ul.", Toast.LENGTH_LONG).show();
                                             mAuth.signOut();
                                         }
                                     })
                                     .addOnFailureListener(e -> {
-                                        Toast.makeText(this, "Failed to fetch user role.", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(this, "A apărut o eroare", Toast.LENGTH_SHORT).show();
                                         mAuth.signOut();
                                     });
 
                         } else {
-                            Toast.makeText(LoginActivity.this, "Authentication failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(LoginActivity.this, "A apărut o eroare", Toast.LENGTH_SHORT).show();
                         }
                     });
         });
@@ -219,9 +220,9 @@ public class LoginActivity extends AppCompatActivity {
             mAuth.sendPasswordResetEmail(email)
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
-                            Toast.makeText(LoginActivity.this, "Reset link sent to your email.", Toast.LENGTH_LONG).show();
+                            Toast.makeText(LoginActivity.this, "Mail-ul de schimbare a parolei a fost trimis!", Toast.LENGTH_LONG).show();
                         } else {
-                            Toast.makeText(LoginActivity.this, "Error: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(LoginActivity.this, "A apărut o eroare", Toast.LENGTH_SHORT).show();
                         }
                     });
         });
@@ -286,14 +287,14 @@ public class LoginActivity extends AppCompatActivity {
                                     }
                                 })
                                 .addOnFailureListener(e -> {
-                                    Toast.makeText(this, "Failed to fetch user role.", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(this, "A apărut o eroare", Toast.LENGTH_SHORT).show();
                                     mAuth.signOut();
                                 });
 
                     } else {
                         // If sign in fails, display a message to the user
                         Log.w(TAG, "signInWithCredential:failure", task.getException());
-                        Toast.makeText(this, "Fail", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "A apărut o eroare", Toast.LENGTH_SHORT).show();
                         //updateUI(null);
                     }
                 });
@@ -332,7 +333,7 @@ public class LoginActivity extends AppCompatActivity {
                 })
                 .addOnFailureListener(e -> {
                     Log.e("FirestoreError", "Error adding document", e);
-                    Toast.makeText(this, "Failed to save user data.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "A apărut o eroare", Toast.LENGTH_SHORT).show();
                 });
     }
 }

@@ -3,9 +3,12 @@ package com.example.licentaagain.repositories;
 import android.telecom.Call;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
 import com.example.licentaagain.enums.StareProblema;
 import com.example.licentaagain.models.Problem;
 import com.example.licentaagain.models.User;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.auth.FirebaseAuth;
@@ -25,7 +28,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
-public class UserRepository {
+public class   UserRepository {
     private FirebaseFirestore db;
 
     //obs current user does not appear in searches
@@ -91,8 +94,8 @@ public class UserRepository {
                                 ) {
                                     if(!uid.equals(FirebaseAuth.getInstance().getCurrentUser().getUid()) && !isAdmin){
                                         User newUser = user.toObject(User.class);
-                                        newUser.setDisabled(isDisabled); //must be here -> otherwise use builder which sets isDisabled to false
-                                        newUser.setAdmin(isAdmin);
+                                        newUser.setIsDisabled(isDisabled); //must be here -> otherwise use builder which sets isDisabled to false
+                                        newUser.setIsAdmin(isAdmin);
                                         fetchedUsers.add(newUser);
                                     }
 
@@ -116,7 +119,7 @@ public class UserRepository {
                     if(task.isSuccessful()){
                         for (QueryDocumentSnapshot doc : task.getResult()){
                             User user=doc.toObject(User.class);
-                            user.setDisabled(doc.getBoolean("isDisabled"));
+                            user.setIsDisabled(doc.getBoolean("isDisabled"));
                             callback.accept(user);
                             Log.i("userA", user.toString());
                         }
@@ -292,6 +295,19 @@ public class UserRepository {
             Log.e("Firestore", "Eroare la ștergerea userului și datelor asociate", e);
             callback.accept(false);
         });
+    }
+
+    public void checkIfUserExists(String email, Consumer<Boolean> callback) {
+        db.collection("users").whereEqualTo("email", email)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        boolean userExists = !task.getResult().isEmpty();
+                        callback.accept(userExists);
+                    } else {
+                        callback.accept(false);
+                    }
+                });
     }
 
 

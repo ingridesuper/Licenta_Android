@@ -49,7 +49,7 @@ public class SearchUserAdapter extends RecyclerView.Adapter<SearchUserAdapter.Us
             Context context=v.getContext();
             if (context instanceof HomePageActivity) {
                 HomePageActivity activity = (HomePageActivity) context;
-                if(user.isDisabled()){
+                if(user.getIsDisabled()){
                     SuspendedSearchedUserFragment disabledSearchedUserFragment=new SuspendedSearchedUserFragment();
                     activity.getSupportFragmentManager()
                             .beginTransaction()

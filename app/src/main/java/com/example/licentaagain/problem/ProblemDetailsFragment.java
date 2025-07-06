@@ -138,7 +138,7 @@ public class ProblemDetailsFragment extends Fragment implements OnMapReadyCallba
             Context context=v.getContext();
             HomePageActivity activity = (HomePageActivity) context;
 
-            if(author.isDisabled()){
+            if(author.getIsDisabled()){
                     SuspendedSearchedUserFragment disabledSearchedUserFragment=new SuspendedSearchedUserFragment();
                     getActivity().getSupportFragmentManager()
                             .beginTransaction()

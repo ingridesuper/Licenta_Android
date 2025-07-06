@@ -59,14 +59,14 @@ public class AdminUserDetailsFragment extends Fragment {
     private void setUpButtonEvents(View view) {
         Log.i("user", user.toString());
         Button btnDisableUser = view.findViewById(R.id.btnDisableUser);
-        if (user.isDisabled()) {
+        if (user.getIsDisabled()) {
             btnDisableUser.setText("Reactivați utilizatorul");
         } else {
             btnDisableUser.setText("Suspendați utilizatorul");
         }
 
         btnDisableUser.setOnClickListener(v -> {
-            boolean newStatus = !user.isDisabled();
+            boolean newStatus = !user.getIsDisabled();
 
             AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
             builder.setTitle(newStatus ? "Suspendare utilizator" : "Reactivare utilizator")
@@ -76,7 +76,7 @@ public class AdminUserDetailsFragment extends Fragment {
                     .setPositiveButton("Da", (dialog, id) -> {
                         new AdminRepository().setUserDisabledStatus(user.getUid(), newStatus, result -> {
                             if (result) {
-                                user.setDisabled(newStatus);
+                                user.setIsDisabled(newStatus);
                                 btnDisableUser.setText(newStatus ? "Reactivați utilizatorul" : "Suspendați utilizatorul");
                                 Toast.makeText(getContext(),
                                         newStatus ? "Utilizatorul a fost suspendat." : "Utilizatorul a fost reactivat.",

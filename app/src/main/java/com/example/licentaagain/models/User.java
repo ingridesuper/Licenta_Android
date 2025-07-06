@@ -55,11 +55,11 @@ public class User implements Serializable {
         this.uid = uid;
     }
 
-    public boolean isAdmin() {
+    public boolean getIsAdmin() {
         return isAdmin;
     }
 
-    public void setAdmin(boolean admin) {
+    public void setIsAdmin(boolean admin) {
         isAdmin = admin;
     }
 
@@ -83,11 +83,11 @@ public class User implements Serializable {
         this.sector = sector;
     }
 
-    public boolean isDisabled() {
+    public boolean getIsDisabled() {
         return isDisabled;
     }
 
-    public void setDisabled(boolean disabled) {
+    public void setIsDisabled(boolean disabled) {
         isDisabled = disabled;
     }
 
