@@ -53,8 +53,6 @@ public class FilterBottomSheet extends BottomSheetDialogFragment {
     private void subscribeToClearFiltersEvents(View view) {
         Button btnClearFilters=view.findViewById(R.id.btnClearFilters);
         btnClearFilters.setOnClickListener(v->{
-            RadioGroup radioGroup = view.findViewById(R.id.rgSort);
-            radioGroup.clearCheck();
 
             clearChipGroupSelection(view, R.id.chipGroupSector);
             clearChipGroupSelection(view, R.id.chipGroupCategory);
@@ -76,14 +74,6 @@ public class FilterBottomSheet extends BottomSheetDialogFragment {
         Button applyFilterButton = view.findViewById(R.id.btnApply);
         applyFilterButton.setOnClickListener(v -> {
             ProblemFilterState newState = new ProblemFilterState();
-
-            RadioGroup radioGroup = view.findViewById(R.id.rgSort);
-            int selectedRadioId = radioGroup.getCheckedRadioButtonId();
-            if (selectedRadioId == R.id.rbNewest) {
-                newState.setSortOrder(ProblemFilterState.SortOrder.NEWEST);
-            } else if (selectedRadioId == R.id.rbOldest) {
-                newState.setSortOrder(ProblemFilterState.SortOrder.OLDEST);
-            }
 
             List<Sector> selectedSectors = getSelectedItemsFromChipGroup(view, R.id.chipGroupSector);
             List<CategorieProblema> selectedCategories = getSelectedItemsFromChipGroup(view, R.id.chipGroupCategory);
@@ -116,13 +106,8 @@ public class FilterBottomSheet extends BottomSheetDialogFragment {
         return selectedItems;
     }
     private void makeUIMirrorCurrentState(View view) {
-        RadioGroup radioGroup = view.findViewById(R.id.rgSort);
         ChipGroup sectorChipGroup = view.findViewById(R.id.chipGroupSector);
         ChipGroup categoryChipGroup = view.findViewById(R.id.chipGroupCategory);
-
-        if (currentState.getSortOrder() == ProblemFilterState.SortOrder.NEWEST || currentState.getSortOrder() == ProblemFilterState.SortOrder.OLDEST) {
-            radioGroup.check(currentState.getSortOrder() == ProblemFilterState.SortOrder.NEWEST ? R.id.rbNewest : R.id.rbOldest);
-        }
 
         //pt sector
         bindChips(sectorChipGroup, Arrays.asList(Sector.values()), currentState.getSelectedSectors(), new ChipAdapter.ChipTextProvider<Sector>() {

@@ -36,6 +36,8 @@ import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.auth.FirebaseAuthInvalidUserException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -163,7 +165,12 @@ public class LoginActivity extends AppCompatActivity {
                                     });
 
                         } else {
-                            Toast.makeText(LoginActivity.this, "A apărut o eroare", Toast.LENGTH_SHORT).show();
+                            Exception exception = task.getException();
+                            if (exception instanceof FirebaseAuthInvalidUserException || exception instanceof FirebaseAuthInvalidCredentialsException) {
+                                Toast.makeText(LoginActivity.this, "Credentialele introduse sunt incorecte.", Toast.LENGTH_LONG).show();
+                            } else {
+                                Toast.makeText(LoginActivity.this, "Autentificarea a eșuat.", Toast.LENGTH_LONG).show();
+                            }
                         }
                     });
         });

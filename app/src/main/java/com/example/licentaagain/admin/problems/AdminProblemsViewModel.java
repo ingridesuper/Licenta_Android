@@ -47,10 +47,14 @@ public class AdminProblemsViewModel extends ViewModel {
     }
 
     public void startListening() {
-        problemListener = adminRepository.listenToAllProblems(problemList -> {
-            allProblems.setValue(problemList);
-            problems.setValue(problemList); // Initially show all problems
-        });
+        try {
+            problemListener = adminRepository.listenToAllProblems(problemList -> {
+                allProblems.setValue(problemList);
+                problems.setValue(problemList); // Initially show all problems
+            });
+        } catch (Exception e) {
+            Log.i("error try catch", "error try catch "+e.getMessage());
+        }
     }
 
     public void stopListening() {

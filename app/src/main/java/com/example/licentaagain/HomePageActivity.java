@@ -62,8 +62,8 @@ public class HomePageActivity extends AppCompatActivity {
         initializeVariables();
         setDefaultFragment();
         setupNavigationMenuEvents();
-        createNotificationChannel();
-        requestNotificationPermission();
+        //createNotificationChannel();
+        //requestNotificationPermission();
     }
 
     private void createNotificationChannel() {

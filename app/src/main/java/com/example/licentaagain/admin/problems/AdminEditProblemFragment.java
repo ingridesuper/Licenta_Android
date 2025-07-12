@@ -25,6 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.licentaagain.R;
+import com.example.licentaagain.admin.AdminPageActivity;
 import com.example.licentaagain.custom_adapters.SelectedImagesAdapter;
 import com.example.licentaagain.enums.CategorieProblema;
 import com.example.licentaagain.enums.Sector;
@@ -47,6 +48,8 @@ import com.google.android.libraries.places.widget.listener.PlaceSelectionListene
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
+
+import org.checkerframework.checker.units.qual.A;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -301,17 +304,26 @@ public class AdminEditProblemFragment extends Fragment implements OnMapReadyCall
                             if(!result){
                                 Toast.makeText(getContext(), "A apărut o eroare", Toast.LENGTH_SHORT).show();
                             }
+                            navigateBackToProblemList();
                         });
-                        navigateBackToProblemList();
                     })
                     .setNegativeButton("Anulează", null)
                     .show();
         });
     }
 
+    private void navigateBackToProblemList() {
+        AdminProblemListFragment adminProblemListFragment=new AdminProblemListFragment();
+        getActivity().getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragment_container_view, adminProblemListFragment)
+                .addToBackStack(null)
+                .commit();
+    }
+
     private void btnCancelSubscribeToEvent(View view) {
         MaterialButton btnCancel=view.findViewById(R.id.btnCancel);
-        btnCancel.setOnClickListener(v-> navigateBackToProblemList());
+        btnCancel.setOnClickListener(v-> navigateBackToProblemDetails());
     }
 
     private void btnAddPicturesSubscribeToEvent(View view) {
@@ -380,10 +392,19 @@ public class AdminEditProblemFragment extends Fragment implements OnMapReadyCall
         }
 
     }
-    private void navigateBackToProblemList() {
-        requireActivity()
-                .getSupportFragmentManager()
-                .popBackStack("user_details", 0);
+    private void navigateBackToProblemDetails() {
+        AdminPageActivity activity = (AdminPageActivity) requireActivity();
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("problem", problem);
+
+        AdminProblemDetailsFragment problemDetailsFragment = new AdminProblemDetailsFragment();
+        problemDetailsFragment.setArguments(bundle);
+
+        activity.getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragment_container_view, problemDetailsFragment)
+                .addToBackStack(null)
+                .commit();
     }
 
     private void setUpAutocompleteFragment() {

@@ -110,6 +110,7 @@ public class EditAccountFragment extends Fragment {
                             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); // curata backstack
                             startActivity(intent);
                             Toast.makeText(requireContext(), "Cont șters cu succes", Toast.LENGTH_SHORT).show();
+                            FirebaseAuth.getInstance().signOut();
                         } else {
                             Toast.makeText(requireContext(), "Eroare la ștergerea contului", Toast.LENGTH_LONG).show();
                         }
