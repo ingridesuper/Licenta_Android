@@ -440,7 +440,7 @@ public class AdminEditProblemFragment extends Fragment implements OnMapReadyCall
     }
 
     private <T> void setupSpinner(Spinner spinner, T[] items) {
-        ArrayAdapter<T> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, items);
+        ArrayAdapter<T> adapter = new ArrayAdapter<>(requireContext(), R.layout.spinner_item, items);
         spinner.setAdapter(adapter);
     }
 

@@ -92,6 +92,7 @@
             <Spinner
                 android:id="@+id/spnStareProblema"
                 android:layout_width="wrap_content"
+                android:background="@drawable/spinner_background"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="10dp"
                 android:layout_height="wrap_content" />
@@ -110,6 +111,7 @@
             <Spinner
                 android:id="@+id/spnSector"
                 android:layout_marginTop="10dp"
+                android:background="@drawable/spinner_background"
                 android:layout_marginStart="20dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
@@ -144,6 +146,7 @@
                 android:id="@+id/spnCategorie"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:background="@drawable/spinner_background"
                 app:layout_constraintStart_toStartOf="parent"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="15dp"
