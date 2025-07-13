@@ -179,8 +179,18 @@ public class AdminProblemDetailsFragment extends Fragment implements OnMapReadyC
     }
 
     private void subscribeBtnCloseToEvent() {
-        btnClose.setOnClickListener(v -> getParentFragmentManager().popBackStack());
+        btnClose.setOnClickListener(v -> navigateBackToProblemList());
     }
+
+    private void navigateBackToProblemList() {
+        AdminProblemListFragment adminProblemListFragment=new AdminProblemListFragment();
+        getActivity().getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragment_container_view, adminProblemListFragment)
+                .addToBackStack(null)
+                .commit();
+    }
+
 
     private void setUpMapFragment(View view) {
         ScrollView mScrollView = view.findViewById(R.id.scrollView);
